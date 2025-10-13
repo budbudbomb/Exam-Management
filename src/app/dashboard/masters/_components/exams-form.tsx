@@ -26,7 +26,12 @@ export default function ExamsForm() {
 
     const handleExamChange = (index: number, field: keyof Exam, value: any) => {
         const newExams = [...exams];
-        (newExams[index] as any)[field] = value;
+        if (field === 'weightage') {
+            const numValue = parseInt(value, 10);
+            (newExams[index] as any)[field] = isNaN(numValue) ? '' : numValue;
+        } else {
+            (newExams[index] as any)[field] = value;
+        }
         setExams(newExams);
     };
 
@@ -38,7 +43,12 @@ export default function ExamsForm() {
     
     const handleGradeChange = (index: number, field: keyof Grade, value: any) => {
         const newGrades = [...grades];
-        (newGrades[index] as any)[field] = value;
+        if (field === 'rangeStart' || field === 'rangeEnd') {
+            const numValue = parseInt(value, 10);
+            (newGrades[index] as any)[field] = isNaN(numValue) ? '' : numValue;
+        } else {
+            (newGrades[index] as any)[field] = value;
+        }
         setGrades(newGrades);
     };
 
@@ -75,7 +85,7 @@ export default function ExamsForm() {
                             </div>
                             <div className="flex-1 space-y-2">
                                 <Label htmlFor={`exam-weightage-${index}`}>Weightage (%)</Label>
-                                <Input id={`exam-weightage-${index}`} type="number" value={exam.weightage} onChange={(e) => handleExamChange(index, 'weightage', parseInt(e.target.value))} placeholder="e.g. 20" />
+                                <Input id={`exam-weightage-${index}`} type="number" value={exam.weightage} onChange={(e) => handleExamChange(index, 'weightage', e.target.value)} placeholder="e.g. 20" />
                             </div>
                             <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => handleDeleteExam(index)}>
                                 <Trash2 className="h-4 w-4" />
@@ -102,11 +112,11 @@ export default function ExamsForm() {
                             </div>
                             <div className="flex-1 space-y-2">
                                 <Label htmlFor={`range-start-${index}`}>Range Start (%)</Label>
-                                <Input id={`range-start-${index}`} type="number" value={grade.rangeStart} onChange={(e) => handleGradeChange(index, 'rangeStart', parseInt(e.target.value))} placeholder="e.g. 91" />
+                                <Input id={`range-start-${index}`} type="number" value={grade.rangeStart} onChange={(e) => handleGradeChange(index, 'rangeStart', e.target.value)} placeholder="e.g. 91" />
                             </div>
                             <div className="flex-1 space-y-2">
                                 <Label htmlFor={`range-end-${index}`}>Range End (%)</Label>
-                                <Input id={`range-end-${index}`} type="number" value={grade.rangeEnd} onChange={(e) => handleGradeChange(index, 'rangeEnd', parseInt(e.target.value))} placeholder="e.g. 100" />
+                                <Input id={`range-end-${index}`} type="number" value={grade.rangeEnd} onChange={(e) => handleGradeChange(index, 'rangeEnd', e.target.value)} placeholder="e.g. 100" />
                             </div>
                              <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => handleDeleteGrade(index)}>
                                 <Trash2 className="h-4 w-4" />

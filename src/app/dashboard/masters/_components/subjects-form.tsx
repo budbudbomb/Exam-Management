@@ -35,7 +35,12 @@ export default function SubjectsForm() {
 
     const handleSubjectChange = (index: number, field: keyof Subject, value: any) => {
         const newSubjects = [...subjects];
-        (newSubjects[index] as any)[field] = value;
+        if (field === 'minMarks' || field === 'maxMarks' || field === 'practicalMinMarks' || field === 'practicalMaxMarks') {
+            const numValue = parseInt(value, 10);
+            (newSubjects[index] as any)[field] = isNaN(numValue) ? '' : numValue;
+        } else {
+            (newSubjects[index] as any)[field] = value;
+        }
         setSubjects(newSubjects);
     }
 
@@ -86,11 +91,11 @@ export default function SubjectsForm() {
 
                                 <div className="space-y-2">
                                     <Label htmlFor={`min-marks-${index}`}>Min Marks (Pass)</Label>
-                                    <Input id={`min-marks-${index}`} type="number" value={subject.minMarks} onChange={(e) => handleSubjectChange(index, 'minMarks', parseInt(e.target.value))} placeholder="e.g. 33" />
+                                    <Input id={`min-marks-${index}`} type="number" value={subject.minMarks} onChange={(e) => handleSubjectChange(index, 'minMarks', e.target.value)} placeholder="e.g. 33" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor={`max-marks-${index}`}>Max Marks</Label>
-                                    <Input id={`max-marks-${index}`} type="number" value={subject.maxMarks} onChange={(e) => handleSubjectChange(index, 'maxMarks', parseInt(e.target.value))} placeholder="e.g. 100" />
+                                    <Input id={`max-marks-${index}`} type="number" value={subject.maxMarks} onChange={(e) => handleSubjectChange(index, 'maxMarks', e.target.value)} placeholder="e.g. 100" />
                                 </div>
                                 
                                 <div className="flex items-center space-x-2 pt-6">
@@ -106,11 +111,11 @@ export default function SubjectsForm() {
                                     <>
                                         <div className="space-y-2">
                                             <Label htmlFor={`practical-min-marks-${index}`}>Practical Min Marks</Label>
-                                            <Input id={`practical-min-marks-${index}`} type="number" value={subject.practicalMinMarks} onChange={(e) => handleSubjectChange(index, 'practicalMinMarks', parseInt(e.target.value))} placeholder="e.g. 10" />
+                                            <Input id={`practical-min-marks-${index}`} type="number" value={subject.practicalMinMarks ?? ''} onChange={(e) => handleSubjectChange(index, 'practicalMinMarks', e.target.value)} placeholder="e.g. 10" />
                                         </div>
                                         <div className="space-y-2">
                                             <Label htmlFor={`practical-max-marks-${index}`}>Practical Max Marks</Label>
-                                            <Input id={`practical-max-marks-${index}`} type="number" value={subject.practicalMaxMarks} onChange={(e) => handleSubjectChange(index, 'practicalMaxMarks', parseInt(e.target.value))} placeholder="e.g. 25" />
+                                            <Input id={`practical-max-marks-${index}`} type="number" value={subject.practicalMaxMarks ?? ''} onChange={(e) => handleSubjectChange(index, 'practicalMaxMarks', e.target.value)} placeholder="e.g. 25" />
                                         </div>
                                     </>
                                 )}
