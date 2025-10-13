@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { generateReportAction, ActionState } from '../_actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -45,7 +46,7 @@ function SubmitButton() {
 
 export default function GeneratorForm() {
   const initialState: ActionState = { status: 'initial', data: null, error: null };
-  const [state, formAction] = useFormState(generateReportAction, initialState);
+  const [state, formAction] = useActionState(generateReportAction, initialState);
 
   return (
     <div className="space-y-8">
