@@ -53,11 +53,6 @@ const navLinks = [
       },
     ],
   },
-  {
-    href: '/dashboard/ai-report-generator',
-    icon: <Bot className="h-4 w-4" />,
-    label: 'AI Report Generator',
-  },
 ];
 
 export default function Navigation() {

@@ -114,12 +114,6 @@ export default function DashboardPage() {
                     Configure Masters
                 </Button>
             </Link>
-             <Link href="/dashboard/ai-report-generator" className="w-full">
-                <Button className="w-full justify-start" variant="outline">
-                    <ArrowUpRight className="mr-2 h-4 w-4" />
-                    AI Report Generator
-                </Button>
-            </Link>
           </CardContent>
         </Card>
       </div>
