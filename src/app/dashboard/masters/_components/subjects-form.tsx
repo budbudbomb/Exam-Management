@@ -13,7 +13,6 @@ import React from 'react';
 
 export default function SubjectsForm() {
     const [subjects, setSubjects] = React.useState<Subject[]>(mockSubjects);
-    const [showPractical, setShowPractical] = React.useState(false);
 
     const handleAddSubject = () => {
         const newSubject: Subject = {
@@ -27,6 +26,18 @@ export default function SubjectsForm() {
         };
         setSubjects([...subjects, newSubject]);
     };
+    
+    const handleDeleteSubject = (index: number) => {
+        const newSubjects = [...subjects];
+        newSubjects.splice(index, 1);
+        setSubjects(newSubjects);
+    };
+
+    const handleSubjectChange = (index: number, field: keyof Subject, value: any) => {
+        const newSubjects = [...subjects];
+        (newSubjects[index] as any)[field] = value;
+        setSubjects(newSubjects);
+    }
 
     return (
         <Card>
@@ -37,15 +48,15 @@ export default function SubjectsForm() {
             <CardContent className="space-y-6">
                 <div className="space-y-4">
                     {subjects.map((subject, index) => (
-                        <Card key={subject.id} className="p-4">
+                        <Card key={index} className="p-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
                                 <div className="space-y-2">
                                     <Label htmlFor={`subject-name-${index}`}>Subject Name</Label>
-                                    <Input id={`subject-name-${index}`} defaultValue={subject.name} placeholder="e.g. Mathematics" />
+                                    <Input id={`subject-name-${index}`} value={subject.name} onChange={(e) => handleSubjectChange(index, 'name', e.target.value)} placeholder="e.g. Mathematics" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor={`subject-category-${index}`}>Category</Label>
-                                    <Select defaultValue={subject.category}>
+                                    <Select value={subject.category} onValueChange={(value) => handleSubjectChange(index, 'category', value)}>
                                         <SelectTrigger id={`subject-category-${index}`}>
                                             <SelectValue placeholder="Select category" />
                                         </SelectTrigger>
@@ -58,7 +69,7 @@ export default function SubjectsForm() {
                                 </div>
                                  <div className="space-y-2">
                                     <Label htmlFor={`subject-subcategory-${index}`}>Sub Category</Label>
-                                    <Select defaultValue={subject.subCategory}>
+                                    <Select value={subject.subCategory} onValueChange={(value) => handleSubjectChange(index, 'subCategory', value)}>
                                         <SelectTrigger id={`subject-subcategory-${index}`}>
                                             <SelectValue placeholder="Select sub-category" />
                                         </SelectTrigger>
@@ -70,28 +81,24 @@ export default function SubjectsForm() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor={`subject-code-${index}`}>Subject Code</Label>
-                                    <Input id={`subject-code-${index}`} defaultValue={subject.code} placeholder="e.g. M-101" />
+                                    <Input id={`subject-code-${index}`} value={subject.code} onChange={(e) => handleSubjectChange(index, 'code', e.target.value)} placeholder="e.g. M-101" />
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor={`min-marks-${index}`}>Min Marks (Pass)</Label>
-                                    <Input id={`min-marks-${index}`} type="number" defaultValue={subject.minMarks} placeholder="e.g. 33" />
+                                    <Input id={`min-marks-${index}`} type="number" value={subject.minMarks} onChange={(e) => handleSubjectChange(index, 'minMarks', parseInt(e.target.value))} placeholder="e.g. 33" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor={`max-marks-${index}`}>Max Marks</Label>
-                                    <Input id={`max-marks-${index}`} type="number" defaultValue={subject.maxMarks} placeholder="e.g. 100" />
+                                    <Input id={`max-marks-${index}`} type="number" value={subject.maxMarks} onChange={(e) => handleSubjectChange(index, 'maxMarks', parseInt(e.target.value))} placeholder="e.g. 100" />
                                 </div>
                                 
                                 <div className="flex items-center space-x-2 pt-6">
-                                    <Checkbox id={`practical-check-${index}`} checked={subject.hasPractical} onCheckedChange={(checked) => {
-                                        const newSubjects = [...subjects];
-                                        newSubjects[index].hasPractical = !!checked;
-                                        setSubjects(newSubjects);
-                                    }}/>
+                                    <Checkbox id={`practical-check-${index}`} checked={subject.hasPractical} onCheckedChange={(checked) => handleSubjectChange(index, 'hasPractical', !!checked)}/>
                                     <Label htmlFor={`practical-check-${index}`}>Has Practical</Label>
                                 </div>
                                 
-                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => handleDeleteSubject(index)}>
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
 
@@ -99,11 +106,11 @@ export default function SubjectsForm() {
                                     <>
                                         <div className="space-y-2">
                                             <Label htmlFor={`practical-min-marks-${index}`}>Practical Min Marks</Label>
-                                            <Input id={`practical-min-marks-${index}`} type="number" defaultValue={subject.practicalMinMarks} placeholder="e.g. 10" />
+                                            <Input id={`practical-min-marks-${index}`} type="number" value={subject.practicalMinMarks} onChange={(e) => handleSubjectChange(index, 'practicalMinMarks', parseInt(e.target.value))} placeholder="e.g. 10" />
                                         </div>
                                         <div className="space-y-2">
                                             <Label htmlFor={`practical-max-marks-${index}`}>Practical Max Marks</Label>
-                                            <Input id={`practical-max-marks-${index}`} type="number" defaultValue={subject.practicalMaxMarks} placeholder="e.g. 25" />
+                                            <Input id={`practical-max-marks-${index}`} type="number" value={subject.practicalMaxMarks} onChange={(e) => handleSubjectChange(index, 'practicalMaxMarks', parseInt(e.target.value))} placeholder="e.g. 25" />
                                         </div>
                                     </>
                                 )}

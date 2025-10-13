@@ -13,6 +13,7 @@ import React from 'react';
 
 export default function ClassesForm() {
     const [classes, setClasses] = React.useState<Class[]>(mockClasses);
+    const [subjectToAdd, setSubjectToAdd] = React.useState<string | undefined>(undefined);
 
     const handleAddClass = () => {
         const newClass: Class = {
@@ -22,6 +23,41 @@ export default function ClassesForm() {
             subjects: [],
         };
         setClasses([...classes, newClass]);
+    };
+
+    const handleClassChange = (index: number, field: keyof Class, value: any) => {
+        const newClasses = [...classes];
+        if (field === 'sections') {
+            (newClasses[index] as any)[field] = value.split(',').map((s: string) => s.trim());
+        } else {
+            (newClasses[index] as any)[field] = value;
+        }
+        setClasses(newClasses);
+    };
+
+    const handleDeleteClass = (index: number) => {
+        const newClasses = [...classes];
+        newClasses.splice(index, 1);
+        setClasses(newClasses);
+    };
+
+    const handleAddSubjectToClass = (classIndex: number) => {
+        if (!subjectToAdd) return;
+        const subject = mockSubjects.find(s => s.id === subjectToAdd);
+        if (!subject) return;
+
+        const newClasses = [...classes];
+        if (!newClasses[classIndex].subjects.find(s => s.id === subject.id)) {
+            newClasses[classIndex].subjects.push(subject);
+            setClasses(newClasses);
+        }
+        setSubjectToAdd(undefined);
+    };
+
+    const handleRemoveSubjectFromClass = (classIndex: number, subjectId: string) => {
+        const newClasses = [...classes];
+        newClasses[classIndex].subjects = newClasses[classIndex].subjects.filter(s => s.id !== subjectId);
+        setClasses(newClasses);
     };
 
     return (
@@ -37,13 +73,13 @@ export default function ClassesForm() {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor={`class-name-${classIndex}`}>Class Name</Label>
-                                    <Input id={`class-name-${classIndex}`} defaultValue={cls.name} placeholder="e.g. Class 10" />
+                                    <Input id={`class-name-${classIndex}`} value={cls.name} onChange={(e) => handleClassChange(classIndex, 'name', e.target.value)} placeholder="e.g. Class 10" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor={`class-sections-${classIndex}`}>Sections (comma-separated)</Label>
-                                    <Input id={`class-sections-${classIndex}`} defaultValue={cls.sections.join(', ')} placeholder="e.g. A, B, C" />
+                                    <Input id={`class-sections-${classIndex}`} value={cls.sections.join(', ')} onChange={(e) => handleClassChange(classIndex, 'sections', e.target.value)} placeholder="e.g. A, B, C" />
                                 </div>
-                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive self-end justify-self-end">
+                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive self-end justify-self-end" onClick={() => handleDeleteClass(classIndex)}>
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
                             </div>
@@ -61,7 +97,7 @@ export default function ClassesForm() {
                                             {cls.subjects.map(subject => (
                                                 <span key={subject.id} className="flex items-center gap-2 bg-muted px-2 py-1 rounded-md text-sm">
                                                     {subject.name}
-                                                    <Button variant="ghost" size="icon" className="h-5 w-5 text-destructive hover:text-destructive">
+                                                    <Button variant="ghost" size="icon" className="h-5 w-5 text-destructive hover:text-destructive" onClick={() => handleRemoveSubjectFromClass(classIndex, subject.id)}>
                                                         <Trash2 className="h-3 w-3" />
                                                     </Button>
                                                 </span>
@@ -70,18 +106,18 @@ export default function ClassesForm() {
                                     </div>
                                     <div className="flex items-end gap-2 mt-4">
                                         <div className="flex-1">
-                                            <Select>
+                                            <Select onValueChange={setSubjectToAdd} value={subjectToAdd}>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Add a subject..." />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {mockSubjects.map(subject => (
+                                                    {mockSubjects.filter(ms => !cls.subjects.some(cs => cs.id === ms.id)).map(subject => (
                                                         <SelectItem key={subject.id} value={subject.id}>{subject.name}</SelectItem>
                                                     ))}
                                                 </SelectContent>
                                             </Select>
                                         </div>
-                                        <Button variant="outline">
+                                        <Button variant="outline" onClick={() => handleAddSubjectToClass(classIndex)}>
                                             <PlusCircle className="mr-2 h-4 w-4" /> Add
                                         </Button>
                                     </div>

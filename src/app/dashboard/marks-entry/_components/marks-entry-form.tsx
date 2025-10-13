@@ -6,14 +6,50 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { mockClasses, mockExams, mockStudents, mockSubjects } from '@/lib/data';
+import { Student } from '@/lib/types';
 import { Save } from 'lucide-react';
 import React, { useState } from 'react';
 
+type Marks = {
+    [studentId: string]: {
+        theory: number | string;
+        practical: number | string;
+    }
+}
+
 export default function MarksEntryForm() {
+    const [selectedClass, setSelectedClass] = useState('');
+    const [selectedSection, setSelectedSection] = useState('');
+    const [students, setStudents] = useState<Student[]>([]);
+    const [marks, setMarks] = useState<Marks>({});
     const [showTable, setShowTable] = useState(false);
 
     const handleSearch = () => {
-        setShowTable(true);
+        if (selectedClass && selectedSection) {
+            const classInfo = mockClasses.find(c => c.id === selectedClass);
+            if (classInfo) {
+                const className = classInfo.name.split(' ')[1];
+                const filteredStudents = mockStudents.filter(s => s.class === className && s.section === selectedSection);
+                setStudents(filteredStudents);
+                
+                const initialMarks: Marks = {};
+                filteredStudents.forEach(student => {
+                    initialMarks[student.id] = { theory: '', practical: '' };
+                });
+                setMarks(initialMarks);
+                setShowTable(true);
+            }
+        }
+    };
+
+    const handleMarkChange = (studentId: string, type: 'theory' | 'practical', value: string) => {
+        setMarks(prevMarks => ({
+            ...prevMarks,
+            [studentId]: {
+                ...prevMarks[studentId],
+                [type]: value === '' ? '' : Number(value)
+            }
+        }));
     };
 
     return (
@@ -45,7 +81,7 @@ export default function MarksEntryForm() {
                 <div className="space-y-2">
                     <Label>Class & Section</Label>
                     <div className="flex gap-2">
-                        <Select>
+                        <Select onValueChange={setSelectedClass}>
                             <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
                             <SelectContent>
                                 {mockClasses.map(cls => (
@@ -53,7 +89,7 @@ export default function MarksEntryForm() {
                                 ))}
                             </SelectContent>
                         </Select>
-                        <Select>
+                        <Select onValueChange={setSelectedSection}>
                             <SelectTrigger><SelectValue placeholder="Section" /></SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="A">A</SelectItem>
@@ -92,15 +128,15 @@ export default function MarksEntryForm() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {mockStudents.filter(s => s.class === "10" && s.section === "A").map(student => (
+                                {students.map(student => (
                                     <TableRow key={student.id}>
                                         <TableCell>{student.rollNumber}</TableCell>
                                         <TableCell>{student.name}</TableCell>
                                         <TableCell>
-                                            <Input type="number" placeholder="Enter marks" className="max-w-[150px] mx-auto text-center" />
+                                            <Input type="number" placeholder="Enter marks" className="max-w-[150px] mx-auto text-center" value={marks[student.id]?.theory} onChange={(e) => handleMarkChange(student.id, 'theory', e.target.value)} />
                                         </TableCell>
                                         <TableCell>
-                                            <Input type="number" placeholder="Enter marks" className="max-w-[150px] mx-auto text-center" />
+                                            <Input type="number" placeholder="Enter marks" className="max-w-[150px] mx-auto text-center" value={marks[student.id]?.practical} onChange={(e) => handleMarkChange(student.id, 'practical', e.target.value)} />
                                         </TableCell>
                                     </TableRow>
                                 ))}
