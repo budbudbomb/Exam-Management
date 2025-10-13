@@ -1,7 +1,7 @@
 import type { Student, Subject, Class, Exam, Grade } from './types';
 
 export const mockStudents: Student[] = [
-  { id: '1', name: 'Aarav Sharma', rollNumber: '10A-01', class: '10', section: 'A', medium: 'English' },
+  { id: '1', name: 'Aarav Sharma', rollNumber: '10A-01', class: '10', section: 'A', medium: 'English', fatherName: 'Suresh Sharma', motherName: 'Sunita Sharma', dob: '15-04-2008', category: 'General', samagraId: '123456789', enrollmentNumber: 'ENR-2024-12345' },
   { id: '2', name: 'Vivaan Singh', rollNumber: '10A-02', class: '10', section: 'A', medium: 'English' },
   { id: '3', name: 'Aditya Kumar', rollNumber: '10A-03', class: '10', section: 'A', medium: 'English' },
   { id: '4', name: 'Diya Gupta', rollNumber: '10B-01', class: '10', section: 'B', medium: 'Hindi' },

@@ -35,6 +35,12 @@ export default function StudentsTable() {
         class: '',
         section: '',
         medium: 'English',
+        fatherName: '',
+        motherName: '',
+        dob: '',
+        category: 'General',
+        samagraId: '',
+        enrollmentNumber: '',
     });
 
     const handleFilterByClass = (classId: string) => {
@@ -62,6 +68,12 @@ export default function StudentsTable() {
             class: '',
             section: '',
             medium: 'English',
+            fatherName: '',
+            motherName: '',
+            dob: '',
+            category: 'General',
+            samagraId: '',
+            enrollmentNumber: '',
         });
     };
     
@@ -105,26 +117,52 @@ export default function StudentsTable() {
                                 <PlusCircle className="mr-2 h-4 w-4" /> Add Student
                             </Button>
                         </DialogTrigger>
-                        <DialogContent>
+                        <DialogContent className="sm:max-w-[600px]">
                             <DialogHeader>
                                 <DialogTitle>Add New Student</DialogTitle>
                                 <DialogDescription>
                                     Fill in the details below to add a new student profile.
                                 </DialogDescription>
                             </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="name" className="text-right">Name</Label>
-                                    <Input id="name" value={newStudent.name} onChange={(e) => setNewStudent({...newStudent, name: e.target.value})} className="col-span-3" />
+                            <div className="grid gap-4 py-4 grid-cols-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="name">Name</Label>
+                                    <Input id="name" value={newStudent.name} onChange={(e) => setNewStudent({...newStudent, name: e.target.value})} />
                                 </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="rollNumber" className="text-right">Roll No.</Label>
-                                    <Input id="rollNumber" value={newStudent.rollNumber} onChange={(e) => setNewStudent({...newStudent, rollNumber: e.target.value})} className="col-span-3" />
+                                <div className="space-y-2">
+                                    <Label htmlFor="rollNumber">Roll No.</Label>
+                                    <Input id="rollNumber" value={newStudent.rollNumber} onChange={(e) => setNewStudent({...newStudent, rollNumber: e.target.value})} />
                                 </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="class" className="text-right">Class</Label>
+                                <div className="space-y-2">
+                                    <Label htmlFor="fatherName">Father's Name</Label>
+                                    <Input id="fatherName" value={newStudent.fatherName} onChange={(e) => setNewStudent({...newStudent, fatherName: e.target.value})} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="motherName">Mother's Name</Label>
+                                    <Input id="motherName" value={newStudent.motherName} onChange={(e) => setNewStudent({...newStudent, motherName: e.target.value})} />
+                                </div>
+                                 <div className="space-y-2">
+                                    <Label htmlFor="dob">Date of Birth</Label>
+                                    <Input id="dob" type="date" value={newStudent.dob} onChange={(e) => setNewStudent({...newStudent, dob: e.target.value})} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="category">Category</Label>
+                                     <Select onValueChange={(value: any) => setNewStudent({...newStudent, category: value})}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select category" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                           <SelectItem value="General">General</SelectItem>
+                                           <SelectItem value="OBC">OBC</SelectItem>
+                                           <SelectItem value="SC">SC</SelectItem>
+                                           <SelectItem value="ST">ST</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="class">Class</Label>
                                      <Select onValueChange={(value) => setNewStudent({...newStudent, class: value.split(' ')[1]})}>
-                                        <SelectTrigger className="col-span-3">
+                                        <SelectTrigger>
                                             <SelectValue placeholder="Select a class" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -134,10 +172,10 @@ export default function StudentsTable() {
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="section" className="text-right">Section</Label>
+                                <div className="space-y-2">
+                                    <Label htmlFor="section">Section</Label>
                                      <Select onValueChange={(value) => setNewStudent({...newStudent, section: value})}>
-                                        <SelectTrigger className="col-span-3">
+                                        <SelectTrigger>
                                             <SelectValue placeholder="Select a section" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -146,17 +184,27 @@ export default function StudentsTable() {
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="medium" className="text-right">Medium</Label>
+                                <div className="space-y-2">
+                                    <Label htmlFor="medium">Medium</Label>
                                     <Select onValueChange={(value: any) => setNewStudent({...newStudent, medium: value})}>
-                                        <SelectTrigger className="col-span-3">
+                                        <SelectTrigger>
                                             <SelectValue placeholder="Select a medium" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="English">English</SelectItem>
                                             <SelectItem value="Hindi">Hindi</SelectItem>
+                                            <SelectItem value="Urdu">Urdu</SelectItem>
+                                            <SelectItem value="Sanskrit">Sanskrit</SelectItem>
                                         </SelectContent>
                                     </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="samagraId">Samagra ID</Label>
+                                    <Input id="samagraId" value={newStudent.samagraId} onChange={(e) => setNewStudent({...newStudent, samagraId: e.target.value})} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="enrollmentNumber">Enrollment No.</Label>
+                                    <Input id="enrollmentNumber" value={newStudent.enrollmentNumber} onChange={(e) => setNewStudent({...newStudent, enrollmentNumber: e.target.value})} />
                                 </div>
                             </div>
                             <DialogFooter>

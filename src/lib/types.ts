@@ -1,6 +1,12 @@
 export interface Student {
     id: string;
     name: string;
+    fatherName?: string;
+    motherName?: string;
+    dob?: string;
+    category?: 'SC' | 'ST' | 'OBC' | 'General';
+    samagraId?: string;
+    enrollmentNumber?: string;
     rollNumber: string;
     class: string;
     section: string;
