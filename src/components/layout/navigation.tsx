@@ -61,8 +61,8 @@ export default function Navigation() {
   return (
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
       <div className="flex h-14 items-center border-b border-sidebar-border px-4 lg:h-[60px] lg:px-6">
-        <Link href="/dashboard" className="flex items-center gap-2 font-semibold font-headline text-sidebar-primary">
-          <Logo className="h-6 w-6 text-sidebar-primary" />
+        <Link href="/dashboard" className="flex items-center gap-2 font-semibold font-headline text-sidebar-primary-foreground">
+          <Logo className="h-6 w-6 text-sidebar-primary-foreground" />
           <span className="">EduReport Pro</span>
         </Link>
       </div>
@@ -78,7 +78,7 @@ export default function Navigation() {
                 defaultValue={link.subLinks.some(sub => pathname.startsWith(sub.href)) ? "item-1" : undefined}
               >
                 <AccordionItem value="item-1" className="border-b-0">
-                  <AccordionTrigger className="flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:no-underline [&[data-state=open]>svg:last-child]:-rotate-90">
+                  <AccordionTrigger className="flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:no-underline [&[data-state=open]]:bg-sidebar-accent [&[data-state=open]]:text-sidebar-accent-foreground [&[data-state=open]>svg:last-child]:-rotate-90">
                     {link.icon}
                     {link.label}
                   </AccordionTrigger>

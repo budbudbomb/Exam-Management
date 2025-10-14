@@ -64,6 +64,7 @@ export default {
         },
         sidebar: {
           DEFAULT: 'hsl(var(--sidebar-background))',
+          background: 'hsl(var(--sidebar-background))',
           foreground: 'hsl(var(--sidebar-foreground))',
           primary: 'hsl(var(--sidebar-primary))',
           'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
@@ -72,6 +73,10 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
+        'header-start': 'hsl(var(--header-start))',
+        'header-end': 'hsl(var(--header-end))',
+        'btn-start': 'hsl(var(--btn-start))',
+        'btn-end': 'hsl(var(--btn-end))',
       },
       borderRadius: {
         lg: 'var(--radius)',
