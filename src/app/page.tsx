@@ -29,16 +29,6 @@ export default function LoginPage() {
 
       <main className="container mx-auto flex flex-col lg:flex-row items-center justify-center p-4 gap-8">
         <div className="w-full lg:w-1/2 flex items-center justify-center">
-            {loginImage && (
-              <Image
-                src="https://storage.googleapis.com/stedi-assets/misc/erp-hex-diagram.png"
-                alt="ERP Hex Diagram"
-                width="600"
-                height="600"
-                className="max-w-md lg:max-w-full"
-                data-ai-hint="erp diagram"
-              />
-            )}
         </div>
 
         <div className="w-full lg:w-1/2 flex justify-center lg:justify-start">
