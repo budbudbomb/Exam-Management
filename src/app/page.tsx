@@ -1,83 +1,112 @@
+
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Logo } from '@/components/icons/logo';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { User, Lock, RefreshCcw, KeyRound, Eye } from 'lucide-react';
+import { useState } from 'react';
 
 export default function LoginPage() {
   const loginImage = PlaceHolderImages.find(p => p.id === 'login-image');
+  const [captcha, setCaptcha] = useState('513532');
+
+  const refreshCaptcha = () => {
+    setCaptcha(Math.random().toString().substring(2, 8));
+  };
 
   return (
-    <div className="w-full min-h-screen lg:grid lg:grid-cols-2">
-      <div className="flex items-center justify-center py-12">
-        <div className="mx-auto grid w-[350px] gap-6">
-          <div className="grid gap-2 text-center">
-            <div className="flex justify-center items-center gap-2 mb-4">
-              <Logo className="h-8 w-8 text-primary" />
-              <h1 className="text-3xl font-bold font-headline">EduReport Pro</h1>
-            </div>
-            <p className="text-balance text-muted-foreground">
-              Enter your email below to login to your account
-            </p>
-          </div>
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href="#"
-                  className="ml-auto inline-block text-sm underline"
-                >
-                  Forgot your password?
-                </Link>
-              </div>
-              <Input id="password" type="password" required />
-            </div>
-            <Button type="submit" className="w-full" asChild>
-                <Link href="/dashboard">Login</Link>
-            </Button>
-            <Button variant="outline" className="w-full" asChild>
-              <Link href="/dashboard">Login with Google</Link>
-            </Button>
-          </div>
-          <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{' '}
-            <Link href="#" className="underline">
-              Sign up
-            </Link>
-          </div>
+    <div className="min-h-screen w-full bg-gray-100 dark:bg-gray-900">
+      <header className="bg-gradient-to-r from-orange-500 to-orange-400 text-white py-3 shadow-md">
+        <div className="container mx-auto text-center">
+          <h1 className="text-xl md:text-2xl font-bold">स्कूल शिक्षा विभाग, मध्य प्रदेश</h1>
+          <p className="text-sm md:text-base">एजुकेशन पोर्टल 3.0</p>
         </div>
-      </div>
-      <div className="hidden bg-muted lg:block">
-        {loginImage && (
-             <Image
-                src={loginImage.imageUrl}
-                alt={loginImage.description}
-                width="1920"
-                height="1080"
-                className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-                data-ai-hint={loginImage.imageHint}
-             />
-        )}
-      </div>
+      </header>
+
+      <main className="container mx-auto flex flex-col lg:flex-row items-center justify-center p-4 gap-8">
+        <div className="w-full lg:w-1/2 flex items-center justify-center">
+            {loginImage && (
+              <Image
+                src="https://storage.googleapis.com/stedi-assets/misc/erp-hex-diagram.png"
+                alt="ERP Hex Diagram"
+                width="600"
+                height="600"
+                className="max-w-md lg:max-w-full"
+                data-ai-hint="erp diagram"
+              />
+            )}
+        </div>
+
+        <div className="w-full lg:w-1/2 flex justify-center lg:justify-start">
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-sm">
+                 <div className="text-center mb-6">
+                    <Image
+                        src="https://storage.googleapis.com/stedi-assets/misc/mp-govt-logo.png"
+                        alt="MP Government Logo"
+                        width="80"
+                        height="80"
+                        className="mx-auto mb-4"
+                    />
+                    <h2 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">User Login</h2>
+                 </div>
+
+                <form className="space-y-6">
+                    <div className="space-y-2">
+                        <Label htmlFor="username">User Name</Label>
+                        <div className="relative">
+                            <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                            <Input id="username" type="text" placeholder="User Name" className="pl-10" required />
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="password">Password</Label>
+                         <div className="relative">
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                            <Input id="password" type="password" placeholder="Password" className="pl-10 pr-10" required />
+                            <Eye className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 cursor-pointer" />
+                        </div>
+                    </div>
+                     <div className="space-y-2">
+                         <Label htmlFor="captcha-input">Captcha</Label>
+                         <div className="flex items-center gap-4">
+                            <div className="flex-1">
+                                 <div className="bg-gray-200 border border-gray-300 rounded-md flex items-center justify-center h-10">
+                                     <span className="text-red-500 font-bold text-2xl tracking-widest" style={{fontFamily: 'monospace', textShadow: '1px 1px 1px rgba(0,0,0,0.1)'}}>{captcha}</span>
+                                 </div>
+                            </div>
+                            <Button variant="ghost" size="icon" type="button" onClick={refreshCaptcha}>
+                                <RefreshCcw className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                            </Button>
+                         </div>
+                        <Input id="captcha-input" type="text" placeholder="Enter Captcha" required />
+                    </div>
+
+                    <Button type="submit" className="w-full text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 font-semibold" asChild>
+                       <Link href="/dashboard">
+                        <KeyRound className="mr-2 h-4 w-4" />
+                        Login
+                       </Link>
+                    </Button>
+                </form>
+            </div>
+        </div>
+      </main>
+
+        <footer className="w-full py-4">
+            <div className="container mx-auto flex flex-wrap justify-center gap-2 md:gap-4">
+                <Button variant="outline" size="sm">Forgot Password</Button>
+                <Button variant="outline" size="sm">अतिथि शिक्षक पोर्टल</Button>
+                <Button variant="outline" size="sm">प्रोजेक्ट अतिथि शिक्षक पोर्टल</Button>
+                <Button variant="outline" size="sm">हमारे-शिक्षक ऐप</Button>
+                <Button variant="outline" size="sm">चाइल्ड ट्रैकिंग ऐप</Button>
+                <Button variant="outline" size="sm">FAQ</Button>
+            </div>
+             <p className="text-center text-sm text-gray-500 mt-4">पोर्टल से संबंधित समस्या के लिए आप help</p>
+        </footer>
     </div>
   );
 }
