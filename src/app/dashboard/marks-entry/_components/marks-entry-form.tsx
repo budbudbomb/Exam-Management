@@ -5,9 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { mockClasses, mockStudents, mockSubjects, mockExams } from '@/lib/data';
 import { Student, Subject } from '@/lib/types';
-import { ArrowRight, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
 import React, { useState } from 'react';
 
 type MarkDetail = {
@@ -23,10 +24,11 @@ export default function MarksEntryForm() {
     const [selectedClass, setSelectedClass] = useState('');
     const [selectedSection, setSelectedSection] = useState('');
     const [classStudents, setClassStudents] = useState<Student[]>([]);
-    const [currentStudentIndex, setCurrentStudentIndex] = useState(0);
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [marks, setMarks] = useState<Marks>({});
     const [showTable, setShowTable] = useState(false);
+    const [isMarksModalOpen, setMarksModalOpen] = useState(false);
+    const [selectedStudentForMarks, setSelectedStudentForMarks] = useState<Student | null>(null);
 
     const handleSearch = () => {
         if (selectedClass && selectedSection) {
@@ -35,37 +37,26 @@ export default function MarksEntryForm() {
                 const className = classInfo.name.split(' ')[1];
                 const filteredStudents = mockStudents.filter(s => s.class === className && s.section === selectedSection);
                 setClassStudents(filteredStudents);
-                setCurrentStudentIndex(0);
                 
-                if (filteredStudents.length > 0) {
-                    const studentSubjects = classInfo.subjects;
-                    setSubjects(studentSubjects);
-                    
-                    const initialMarks: Marks = {};
-                    studentSubjects.forEach(subject => {
-                        initialMarks[subject.id] = { theory: '', practical: '' };
-                    });
-                    setMarks(initialMarks);
-                    setShowTable(true);
-                } else {
-                    setShowTable(false);
-                }
+                const studentSubjects = classInfo.subjects;
+                setSubjects(studentSubjects);
+                
+                setShowTable(true);
             }
         }
     };
-    
-    const handleNextStudent = () => {
-        if(currentStudentIndex < classStudents.length - 1) {
-            setCurrentStudentIndex(prev => prev + 1);
-            // Reset marks for the next student
-            const initialMarks: Marks = {};
-            subjects.forEach(subject => {
-                initialMarks[subject.id] = { theory: '', practical: '' };
-            });
-            setMarks(initialMarks);
-        }
-    }
 
+    const handleOpenMarksModal = (student: Student) => {
+        setSelectedStudentForMarks(student);
+        // Reset marks for the selected student
+        const initialMarks: Marks = {};
+        subjects.forEach(subject => {
+            initialMarks[subject.id] = { theory: '', practical: '' };
+        });
+        setMarks(initialMarks);
+        setMarksModalOpen(true);
+    };
+    
     const handleMarkChange = (subjectId: string, type: 'theory' | 'practical', value: string) => {
         setMarks(prevMarks => ({
             ...prevMarks,
@@ -76,8 +67,6 @@ export default function MarksEntryForm() {
         }));
     };
     
-    const currentStudent = classStudents[currentStudentIndex];
-
     const calculatePercentage = (theory: string | number, practical: string | number, maxTheory: number, maxPractical?: number) => {
         const theoryMarks = Number(theory) || 0;
         const practicalMarks = Number(practical) || 0;
@@ -148,90 +137,119 @@ export default function MarksEntryForm() {
                 </div>
             </div>
 
-            {showTable && currentStudent && (
-                <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                        <h3 className="text-xl font-semibold">
-                            Entering Marks for: <span className="text-primary">{currentStudent.name}</span> (Roll No: {currentStudent.rollNumber})
-                        </h3>
-                        <div className="flex items-center gap-4">
-                            <span className="text-sm font-medium text-muted-foreground">
-                                Student {currentStudentIndex + 1} of {classStudents.length}
-                            </span>
-                             <Button onClick={handleNextStudent} disabled={currentStudentIndex >= classStudents.length - 1}>
-                                Next Student <ArrowRight className="ml-2 h-4 w-4" />
-                            </Button>
-                        </div>
-                    </div>
-                    <div className="rounded-md border">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[50px]">S.No</TableHead>
-                                    <TableHead className="w-[100px]">Roll No.</TableHead>
-                                    <TableHead>Subject Name</TableHead>
-                                    <TableHead colSpan={3} className="text-center border-l">Theory</TableHead>
-                                    <TableHead colSpan={3} className="text-center border-l">Practical</TableHead>
-                                    <TableHead className="text-center border-l">Percentage</TableHead>
-                                    <TableHead className="text-center">Grade</TableHead>
+            {showTable && classStudents.length > 0 && (
+                <div className="rounded-md border">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="w-[50px]">S.No</TableHead>
+                                <TableHead>Roll Number</TableHead>
+                                <TableHead>Father's Name</TableHead>
+                                <TableHead>Mother's Name</TableHead>
+                                <TableHead>Samagra ID</TableHead>
+                                <TableHead className="text-right">Marks</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {classStudents.map((student, index) => (
+                                <TableRow key={student.id}>
+                                    <TableCell>{index + 1}</TableCell>
+                                    <TableCell>{student.rollNumber}</TableCell>
+                                    <TableCell>{student.fatherName || 'N/A'}</TableCell>
+                                    <TableCell>{student.motherName || 'N/A'}</TableCell>
+                                    <TableCell>{student.samagraId || 'N/A'}</TableCell>
+                                    <TableCell className="text-right">
+                                        <Button variant="outline" onClick={() => handleOpenMarksModal(student)}>Update</Button>
+                                    </TableCell>
                                 </TableRow>
-                                <TableRow>
-                                    <TableHead></TableHead>
-                                    <TableHead></TableHead>
-                                    <TableHead></TableHead>
-                                    <TableHead className="text-center border-l text-xs font-medium">Min</TableHead>
-                                    <TableHead className="text-center text-xs font-medium">Max</TableHead>
-                                    <TableHead className="text-center text-xs font-medium">Enter</TableHead>
-                                    <TableHead className="text-center border-l text-xs font-medium">Min</TableHead>
-                                    <TableHead className="text-center text-xs font-medium">Max</TableHead>
-                                    <TableHead className="text-center text-xs font-medium">Enter</TableHead>
-                                    <TableHead></TableHead>
-                                    <TableHead></TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {subjects.map((subject, index) => {
-                                    const percentage = parseFloat(calculatePercentage(marks[subject.id]?.theory || 0, marks[subject.id]?.practical || 0, subject.maxMarks, subject.practicalMaxMarks));
-                                    const grade = getGrade(percentage);
-
-                                    return (
-                                    <TableRow key={subject.id}>
-                                        <TableCell>{index + 1}</TableCell>
-                                        <TableCell>{currentStudent.rollNumber}</TableCell>
-                                        <TableCell>{subject.name}</TableCell>
-                                        
-                                        <TableCell className="text-center border-l">{subject.minMarks}</TableCell>
-                                        <TableCell className="text-center">{subject.maxMarks}</TableCell>
-                                        <TableCell>
-                                            <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.theory} onChange={(e) => handleMarkChange(subject.id, 'theory', e.target.value)} />
-                                        </TableCell>
-                                        
-                                        <TableCell className="text-center border-l">{subject.hasPractical ? subject.practicalMinMarks : 10}</TableCell>
-                                        <TableCell className="text-center">{subject.hasPractical ? subject.practicalMaxMarks : 25}</TableCell>
-                                        <TableCell>
-                                            <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practical} onChange={(e) => handleMarkChange(subject.id, 'practical', e.target.value)} />
-                                        </TableCell>
-
-                                        <TableCell className="text-center border-l font-medium">{percentage.toFixed(2)}%</TableCell>
-                                        <TableCell className="text-center font-semibold">{grade}</TableCell>
-                                    </TableRow>
-                                )})}
-                            </TableBody>
-                        </Table>
-                    </div>
-                    <div className="flex justify-end">
-                        <Button>
-                            <Save className="mr-2 h-4 w-4" />
-                            Save Marks for {currentStudent.name}
-                        </Button>
-                    </div>
+                            ))}
+                        </TableBody>
+                    </Table>
                 </div>
             )}
+
             {showTable && classStudents.length === 0 && (
                 <div className="text-center text-muted-foreground py-8">
                     No students found for the selected class and section.
                 </div>
             )}
+
+            <Dialog open={isMarksModalOpen} onOpenChange={setMarksModalOpen}>
+                <DialogContent className="max-w-4xl">
+                    <DialogHeader>
+                        <DialogTitle>Entering Marks for: <span className="text-primary">{selectedStudentForMarks?.name}</span></DialogTitle>
+                        <DialogDescription>
+                            Enter theory and practical marks for each subject. Grades and percentages will be calculated automatically.
+                        </DialogDescription>
+                    </DialogHeader>
+                    {selectedStudentForMarks && (
+                        <div className="space-y-4 py-4">
+                             <div className="rounded-md border">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[50px]">S.No</TableHead>
+                                            <TableHead className="w-[100px]">Roll No.</TableHead>
+                                            <TableHead>Subject Name</TableHead>
+                                            <TableHead colSpan={3} className="text-center border-l">Theory</TableHead>
+                                            <TableHead colSpan={3} className="text-center border-l">Practical</TableHead>
+                                            <TableHead className="text-center border-l">Percentage</TableHead>
+                                            <TableHead className="text-center">Grade</TableHead>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableHead></TableHead>
+                                            <TableHead></TableHead>
+                                            <TableHead></TableHead>
+                                            <TableHead className="text-center border-l text-xs font-medium">Min</TableHead>
+                                            <TableHead className="text-center text-xs font-medium">Max</TableHead>
+                                            <TableHead className="text-center text-xs font-medium">Enter</TableHead>
+                                            <TableHead className="text-center border-l text-xs font-medium">Min</TableHead>
+                                            <TableHead className="text-center text-xs font-medium">Max</TableHead>
+                                            <TableHead className="text-center text-xs font-medium">Enter</TableHead>
+                                            <TableHead></TableHead>
+                                            <TableHead></TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {subjects.map((subject, index) => {
+                                            const percentage = parseFloat(calculatePercentage(marks[subject.id]?.theory || 0, marks[subject.id]?.practical || 0, subject.maxMarks, subject.practicalMaxMarks));
+                                            const grade = getGrade(percentage);
+
+                                            return (
+                                            <TableRow key={subject.id}>
+                                                <TableCell>{index + 1}</TableCell>
+                                                <TableCell>{selectedStudentForMarks.rollNumber}</TableCell>
+                                                <TableCell>{subject.name}</TableCell>
+                                                
+                                                <TableCell className="text-center border-l">{subject.minMarks}</TableCell>
+                                                <TableCell className="text-center">{subject.maxMarks}</TableCell>
+                                                <TableCell>
+                                                    <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.theory} onChange={(e) => handleMarkChange(subject.id, 'theory', e.target.value)} />
+                                                </TableCell>
+                                                
+                                                <TableCell className="text-center border-l">{subject.practicalMinMarks ?? 10}</TableCell>
+                                                <TableCell className="text-center">{subject.practicalMaxMarks ?? 25}</TableCell>
+                                                <TableCell>
+                                                    <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practical} onChange={(e) => handleMarkChange(subject.id, 'practical', e.target.value)} />
+                                                </TableCell>
+
+                                                <TableCell className="text-center border-l font-medium">{percentage.toFixed(2)}%</TableCell>
+                                                <TableCell className="text-center font-semibold">{grade}</TableCell>
+                                            </TableRow>
+                                        )})}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </div>
+                    )}
+                    <DialogFooter>
+                        <Button onClick={() => setMarksModalOpen(false)}>
+                            <Save className="mr-2 h-4 w-4" />
+                            Save Marks for {selectedStudentForMarks?.name}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
