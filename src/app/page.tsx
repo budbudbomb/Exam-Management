@@ -44,13 +44,6 @@ export default function LoginPage() {
         <div className="w-full lg:w-1/2 flex justify-center lg:justify-start">
             <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-sm">
                  <div className="text-center mb-6">
-                    <Image
-                        src="https://storage.googleapis.com/stedi-assets/misc/mp-govt-logo.png"
-                        alt="MP Government Logo"
-                        width="80"
-                        height="80"
-                        className="mx-auto mb-4"
-                    />
                     <h2 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">User Login</h2>
                  </div>
 
