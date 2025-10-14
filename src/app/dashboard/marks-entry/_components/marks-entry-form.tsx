@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { mockClasses, mockStudents, mockSubjects } from '@/lib/data';
+import { mockClasses, mockStudents, mockSubjects, mockExams } from '@/lib/data';
 import { Student, Subject } from '@/lib/types';
 import { ArrowRight, Save } from 'lucide-react';
 import React, { useState } from 'react';
