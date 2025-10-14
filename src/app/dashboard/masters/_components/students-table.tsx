@@ -200,11 +200,6 @@ export default function StudentsTable() {
                     </DialogContent>
                 </Dialog>
 
-                <div className="flex justify-end mt-4">
-                     <Button>
-                        <FilePlus2 className="mr-2 h-4 w-4" /> Save All Changes
-                    </Button>
-                </div>
             </CardContent>
         </Card>
     );
