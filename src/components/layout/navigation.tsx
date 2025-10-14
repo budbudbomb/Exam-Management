@@ -67,7 +67,7 @@ export default function Navigation() {
         </Link>
       </div>
       <div className="flex-1">
-        <nav className="grid items-start px-2 text-sm font-medium lg:px-4 py-4">
+        <nav className="grid items-start px-2 text-sm font-medium lg:px-4 py-4 gap-2">
           {navLinks.map((link) =>
             link.isAccordion && link.subLinks ? (
               <Accordion
@@ -78,7 +78,7 @@ export default function Navigation() {
                 defaultValue={link.subLinks.some(sub => pathname.startsWith(sub.href)) ? "item-1" : undefined}
               >
                 <AccordionItem value="item-1" className="border-b-0">
-                  <AccordionTrigger className="flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:no-underline [&[data-state=open]]:bg-sidebar-accent [&[data-state=open]]:text-sidebar-accent-foreground [&[data-state=open]>svg:last-child]:-rotate-90">
+                  <AccordionTrigger className="flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-primary-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:no-underline [&[data-state=open]]:bg-sidebar-accent [&[data-state=open]]:text-sidebar-accent-foreground [&[data-state=open]>svg:last-child]:-rotate-90">
                     {link.icon}
                     {link.label}
                   </AccordionTrigger>
