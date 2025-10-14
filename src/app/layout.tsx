@@ -29,7 +29,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      <body className={cn('font-body antialiased', fontBody.variable, fontHeadline.variable)}>
+      <body
+        className={cn(
+          'font-body antialiased',
+          fontBody.variable,
+          fontHeadline.variable
+        )}
+        suppressHydrationWarning
+      >
         {children}
         <Toaster />
       </body>
