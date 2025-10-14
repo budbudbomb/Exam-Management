@@ -205,18 +205,13 @@ export default function MarksEntryForm() {
                                         <TableCell>
                                             <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.theory} onChange={(e) => handleMarkChange(subject.id, 'theory', e.target.value)} />
                                         </TableCell>
+                                        
+                                        <TableCell className="text-center border-l">{subject.hasPractical ? subject.practicalMinMarks : 10}</TableCell>
+                                        <TableCell className="text-center">{subject.hasPractical ? subject.practicalMaxMarks : 25}</TableCell>
+                                        <TableCell>
+                                            <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practical} onChange={(e) => handleMarkChange(subject.id, 'practical', e.target.value)} />
+                                        </TableCell>
 
-                                        {subject.hasPractical ? (
-                                            <>
-                                                <TableCell className="text-center border-l">{subject.practicalMinMarks}</TableCell>
-                                                <TableCell className="text-center">{subject.practicalMaxMarks}</TableCell>
-                                                <TableCell>
-                                                    <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practical} onChange={(e) => handleMarkChange(subject.id, 'practical', e.target.value)} />
-                                                </TableCell>
-                                            </>
-                                        ) : (
-                                            <TableCell colSpan={3} className="text-center border-l bg-muted/50">N/A</TableCell>
-                                        )}
                                         <TableCell className="text-center border-l font-medium">{percentage.toFixed(2)}%</TableCell>
                                         <TableCell className="text-center font-semibold">{grade}</TableCell>
                                     </TableRow>
