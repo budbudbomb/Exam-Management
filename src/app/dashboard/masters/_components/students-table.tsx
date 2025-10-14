@@ -8,7 +8,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -23,7 +22,7 @@ import { Student } from '@/lib/types';
 
 export default function StudentsTable() {
     const [students, setStudents] = useState<Student[]>(mockStudents);
-    const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
+    const [filteredStudents, setFilteredStudents] = useState<Student[]>(mockStudents);
     const [selectedClass, setSelectedClass] = useState<string>('');
     const [showTable, setShowTable] = useState(false);
     const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
@@ -32,6 +31,9 @@ export default function StudentsTable() {
     const handleSearch = () => {
         if (selectedClass) {
             setFilteredStudents(students.filter(student => student.class === selectedClass));
+            setShowTable(true);
+        } else {
+            setFilteredStudents(students);
             setShowTable(true);
         }
     };
@@ -50,13 +52,15 @@ export default function StudentsTable() {
         // Re-filter students in case the updated student affects the filtered list
         if (showTable && selectedClass) {
             setFilteredStudents(newStudents.filter(student => student.class === selectedClass));
+        } else if (showTable) {
+            setFilteredStudents(newStudents);
         }
         
         setUpdateModalOpen(false);
         setSelectedStudent(null);
     }
 
-    const classOptions = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
+    const classOptions = Array.from(new Set(mockStudents.map(s => s.class))).sort((a,b) => Number(a) - Number(b));
 
 
     return (
@@ -96,6 +100,7 @@ export default function StudentsTable() {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className="w-[50px]">S.no</TableHead>
+                                    <TableHead>Student Name</TableHead>
                                     <TableHead>Samagra ID</TableHead>
                                     <TableHead>Father Name</TableHead>
                                     <TableHead>Mother Name</TableHead>
@@ -107,6 +112,7 @@ export default function StudentsTable() {
                                 {filteredStudents.map((student, index) => (
                                     <TableRow key={student.id}>
                                         <TableCell>{index + 1}</TableCell>
+                                        <TableCell className="font-medium">{student.name}</TableCell>
                                         <TableCell>{student.samagraId || 'N/A'}</TableCell>
                                         <TableCell>{student.fatherName || 'N/A'}</TableCell>
                                         <TableCell>{student.motherName || 'N/A'}</TableCell>
