@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import Link from 'next/link';
@@ -8,8 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { User, Lock, RefreshCcw, KeyRound, Eye } from 'lucide-react';
+import { User, Lock, RefreshCcw, KeyRound, Eye, ChevronDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export default function LoginPage() {
   const [captcha, setCaptcha] = useState('');
@@ -71,12 +76,27 @@ export default function LoginPage() {
                         <Input id="captcha-input" type="text" placeholder="Enter Captcha" required />
                     </div>
 
-                    <Button type="submit" className="w-full text-white bg-gradient-to-r from-btn-start to-btn-end hover:from-btn-start/90 hover:to-btn-end/90 font-semibold" asChild>
-                       <Link href="/dashboard">
-                        <KeyRound className="mr-2 h-4 w-4" />
-                        Login
-                       </Link>
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button className="w-full text-white bg-gradient-to-r from-btn-start to-btn-end hover:from-btn-start/90 hover:to-btn-end/90 font-semibold">
+                          <KeyRound className="mr-2 h-4 w-4" />
+                          Login As
+                          <ChevronDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-full max-w-sm">
+                        <DropdownMenuItem asChild>
+                          <Link href="/dashboard" className="cursor-pointer">School</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/pariksha-prabhar-dashboard" className="cursor-pointer">Pariksha Prabhari</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/sankool-dashboard" className="cursor-pointer">Sankool</Link>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
                 </form>
             </div>
         </div>
