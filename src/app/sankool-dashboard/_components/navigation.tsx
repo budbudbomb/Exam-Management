@@ -21,6 +21,7 @@ const navLinks = [
 export default function SankoolNavigation() {
   const pathname = usePathname();
   const [currentDate] = useState(new Date().toLocaleDateString('en-GB', {
+    weekday: 'long',
     day: '2-digit',
     month: 'long',
     year: 'numeric'
@@ -28,27 +29,27 @@ export default function SankoolNavigation() {
 
   return (
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
-      <div className="flex h-[88px] items-center bg-white px-4 lg:px-6 flex-col justify-center border-b">
-         <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-foreground">
-          <Logo className="h-10 w-10 text-primary" />
+      <div className="flex h-[88px] items-center bg-sidebar px-4 lg:px-6 flex-col justify-center border-b border-sidebar-border">
+         <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-sidebar-primary-foreground">
+          <Logo className="h-10 w-10 text-white" />
           <div className='flex flex-col'>
             <span className="text-sm">Madhya Pradesh</span>
-            <span className="text-sm font-bold">Education Portal 3.0</span>
+            <span className="text-xl font-bold">Education Portal 3.0</span>
           </div>
         </Link>
       </div>
-      <div className="h-8 bg-header-start text-white flex items-center justify-center text-xs font-semibold border-b border-t border-white/20">
+      <div className="h-8 bg-white text-orange-500 flex items-center justify-center text-sm font-semibold border-b border-sidebar-border">
         {currentDate}
       </div>
-      <div className="flex-1">
+      <div className="flex-1 bg-sidebar-accent">
         <nav className="grid items-start px-2 text-sm font-medium lg:px-4 py-4 gap-2">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-                pathname === link.href && 'bg-sidebar-accent text-sidebar-accent-foreground'
+                'flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar/80 hover:text-sidebar-accent-foreground',
+                pathname === link.href && 'bg-sidebar/80 text-sidebar-accent-foreground'
               )}
             >
               {link.icon}
@@ -57,9 +58,9 @@ export default function SankoolNavigation() {
           ))}
         </nav>
       </div>
-       <div className="mt-auto p-4">
+       <div className="mt-auto p-4 bg-sidebar-accent">
           <div className="flex items-center gap-2">
-            <select className="w-full bg-sidebar-accent text-sidebar-accent-foreground text-sm rounded-md border-0 p-2 focus:ring-0">
+            <select className="w-full bg-sidebar text-sidebar-foreground text-sm rounded-md border-0 p-2 focus:ring-0">
               <option>English</option>
               <option>Hindi</option>
             </select>
