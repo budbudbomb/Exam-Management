@@ -95,10 +95,12 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
 
     const handleOtpSubmit = () => {
         setOtpModalOpen(false);
-        toast({
-            title: "Success",
-            description: "Marks sent to Sankool for final verification",
-        });
+        if (userRole === 'prabhari') {
+            toast({
+                title: "Success",
+                description: "Marks sent to Sankool for final verification",
+            });
+        }
     }
 
     return (
@@ -193,6 +195,11 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                     {userRole === 'prabhari' && (
                         <div className="flex justify-end">
                             <Button onClick={() => setOtpModalOpen(true)}>Verify & Forward to Sankool</Button>
+                        </div>
+                    )}
+                    {userRole === 'sankool' && (
+                        <div className="flex justify-end">
+                            <Button>DSC and generate result</Button>
                         </div>
                     )}
                 </>
