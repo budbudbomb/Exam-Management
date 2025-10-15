@@ -11,7 +11,6 @@ import { User, Lock, RefreshCcw, KeyRound, Eye } from 'lucide-react';
 import { useState } from 'react';
 
 export default function LoginPage() {
-  const loginImage = PlaceHolderImages.find(p => p.id === 'login-image');
   const [captcha, setCaptcha] = useState('513532');
 
   const refreshCaptcha = () => {
@@ -19,7 +18,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-100 dark:bg-gray-900">
+    <div className="min-h-screen w-full flex flex-col bg-gray-100 dark:bg-gray-900">
       <header className="bg-gradient-to-r from-orange-500 to-orange-400 text-white py-3 shadow-md">
         <div className="container mx-auto text-center">
           <h1 className="text-xl md:text-2xl font-bold">स्कूल शिक्षा विभाग, मध्य प्रदेश</h1>
@@ -27,7 +26,7 @@ export default function LoginPage() {
         </div>
       </header>
 
-      <main className="container mx-auto flex flex-col lg:flex-row items-center justify-center p-4 gap-8">
+      <main className="container mx-auto flex flex-1 flex-col lg:flex-row items-center justify-center p-4 gap-8">
         <div className="w-full lg:w-1/2 flex items-center justify-center">
         </div>
 
