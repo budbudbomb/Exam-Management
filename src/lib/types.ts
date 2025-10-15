@@ -12,6 +12,7 @@ export interface Student {
     section: string;
     medium: 'English' | 'Hindi' | 'Urdu' | 'Sanskrit';
     photoUrl?: string;
+    stream?: 'PCB' | 'PCM' | 'Commerce' | 'Arts' | 'Vocational Courses';
   }
   
   export interface Subject {
