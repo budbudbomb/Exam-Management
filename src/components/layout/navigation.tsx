@@ -24,6 +24,7 @@ import {
   User,
 } from 'lucide-react';
 import { Logo } from '../icons/logo';
+import { useState } from 'react';
 
 const navLinks = [
   {
@@ -62,14 +63,26 @@ const navLinks = [
 
 export default function Navigation() {
   const pathname = usePathname();
+  const [currentDate] = useState(new Date().toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  }));
+
 
   return (
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
-      <div className="flex h-14 items-center border-b border-sidebar-border px-4 lg:h-[60px] lg:px-6">
-        <Link href="/dashboard" className="flex items-center gap-2 font-semibold font-headline text-sidebar-primary-foreground">
-          <Logo className="h-6 w-6 text-sidebar-primary-foreground" />
-          <span className="">EduReport Pro</span>
+      <div className="flex h-[88px] items-center bg-white px-4 lg:px-6 flex-col justify-center border-b">
+         <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-foreground">
+          <Logo className="h-10 w-10 text-primary" />
+          <div className='flex flex-col'>
+            <span className="text-sm">Madhya Pradesh</span>
+            <span className="text-sm font-bold">Education Portal 3.0</span>
+          </div>
         </Link>
+      </div>
+      <div className="h-8 bg-header-start text-white flex items-center justify-center text-xs font-semibold border-b border-t border-white/20">
+        {currentDate}
       </div>
       <div className="flex-1">
         <nav className="grid items-start px-2 text-sm font-medium lg:px-4 py-4 gap-2">
@@ -122,6 +135,14 @@ export default function Navigation() {
           )}
         </nav>
       </div>
+      <div className="mt-auto p-4">
+          <div className="flex items-center gap-2">
+            <select className="w-full bg-sidebar-accent text-sidebar-accent-foreground text-sm rounded-md border-0 p-2 focus:ring-0">
+              <option>English</option>
+              <option>Hindi</option>
+            </select>
+          </div>
+        </div>
     </div>
   );
 }
