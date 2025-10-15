@@ -131,15 +131,14 @@ export default function SubjectsForm() {
 
                                 {/* Column 3: Practical/Projects */}
                                 <div className="space-y-4">
-                                     <h4 className="font-medium text-sm text-muted-foreground">Practical/Projects</h4>
                                     <div className="flex items-center space-x-4 pt-2">
                                         <div className="flex items-center space-x-2">
                                             <Checkbox id={`practical-check-${index}`} checked={subject.hasPractical} onCheckedChange={(checked) => handleSubjectChange(index, 'hasPractical', !!checked)}/>
-                                            <Label htmlFor={`practical-check-${index}`}>Has Practical</Label>
+                                            <Label htmlFor={`practical-check-${index}`} className="font-medium">Has Practical</Label>
                                         </div>
                                         <div className="flex items-center space-x-2">
                                             <Checkbox id={`project-check-${index}`} checked={subject.hasProject} onCheckedChange={(checked) => handleSubjectChange(index, 'hasProject', !!checked)}/>
-                                            <Label htmlFor={`project-check-${index}`}>Has Project</Label>
+                                            <Label htmlFor={`project-check-${index}`} className="font-medium">Has Project</Label>
                                         </div>
                                     </div>
 
