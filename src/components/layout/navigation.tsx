@@ -42,14 +42,14 @@ const navLinks = [
         label: 'Masters',
       },
       {
-        href: '/dashboard/marks-entry',
-        icon: <ClipboardEdit className="h-4 w-4" />,
-        label: 'Marks Entry',
-      },
-      {
         href: '/dashboard/student-details-update',
         icon: <User className="h-4 w-4" />,
         label: 'Student Details update',
+      },
+      {
+        href: '/dashboard/marks-entry',
+        icon: <ClipboardEdit className="h-4 w-4" />,
+        label: 'Marks Entry',
       },
       {
         href: '/dashboard/reports',
