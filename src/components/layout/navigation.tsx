@@ -47,6 +47,11 @@ const navLinks = [
         label: 'Marks Entry',
       },
       {
+        href: '/dashboard/student-details-update',
+        icon: <User className="h-4 w-4" />,
+        label: 'Student Details update',
+      },
+      {
         href: '/dashboard/reports',
         icon: <FileText className="h-4 w-4" />,
         label: 'Report Cards',
