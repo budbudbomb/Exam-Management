@@ -73,7 +73,18 @@ export default function ClassesForm() {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor={`class-name-${classIndex}`}>Class Name</Label>
-                                    <Input id={`class-name-${classIndex}`} value={cls.name} onChange={(e) => handleClassChange(classIndex, 'name', e.target.value)} placeholder="e.g. Class 10" />
+                                    <Select onValueChange={(value) => handleClassChange(classIndex, 'name', value)} value={cls.name}>
+                                        <SelectTrigger id={`class-name-${classIndex}`}>
+                                            <SelectValue placeholder="Select a class" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {Array.from({ length: 12 }, (_, i) => i + 1).map(classNum => (
+                                                <SelectItem key={classNum} value={`Class ${classNum}`}>
+                                                    {`Class ${classNum}`}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor={`class-sections-${classIndex}`}>Sections (comma-separated)</Label>
