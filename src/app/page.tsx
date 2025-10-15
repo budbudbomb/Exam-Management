@@ -19,21 +19,20 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen w-full flex flex-col bg-gray-100 dark:bg-gray-900">
-      <header className="bg-gradient-to-r from-orange-500 to-orange-400 text-white py-3 shadow-md">
+      <header className="bg-gradient-to-r from-header-start to-header-end text-white py-3 shadow-md">
         <div className="container mx-auto text-center">
           <h1 className="text-xl md:text-2xl font-bold">स्कूल शिक्षा विभाग, मध्य प्रदेश</h1>
           <p className="text-sm md:text-base">एजुकेशन पोर्टल 3.0</p>
         </div>
       </header>
 
-      <main className="container mx-auto flex flex-1 flex-col lg:flex-row items-center justify-center p-4 gap-8">
-        <div className="w-full lg:w-1/2 flex items-center justify-center">
-        </div>
+      <main className="container mx-auto flex flex-1 flex-col lg:flex-row items-center p-4 gap-8">
+        <div className="w-full lg:w-1/2 flex items-center justify-center" />
 
         <div className="w-full lg:w-1/2 flex justify-center">
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-sm">
-                 <div className="text-center mb-6">
-                    <h2 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">User Login</h2>
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-sm mt-8">
+                <div className="text-center mb-6">
+                    <h2 className="text-2xl font-bold text-primary">User Login</h2>
                  </div>
 
                 <form className="space-y-6">
@@ -67,7 +66,7 @@ export default function LoginPage() {
                         <Input id="captcha-input" type="text" placeholder="Enter Captcha" required />
                     </div>
 
-                    <Button type="submit" className="w-full text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 font-semibold" asChild>
+                    <Button type="submit" className="w-full text-white bg-gradient-to-r from-btn-start to-btn-end hover:from-btn-start/90 hover:to-btn-end/90 font-semibold" asChild>
                        <Link href="/dashboard">
                         <KeyRound className="mr-2 h-4 w-4" />
                         Login
