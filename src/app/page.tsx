@@ -30,7 +30,7 @@ export default function LoginPage() {
         <div className="w-full lg:w-1/2 flex items-center justify-center">
         </div>
 
-        <div className="w-full lg:w-1/2 flex justify-center lg:justify-end">
+        <div className="w-full lg:w-1/2 flex justify-center">
             <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-sm">
                  <div className="text-center mb-6">
                     <h2 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">User Login</h2>
