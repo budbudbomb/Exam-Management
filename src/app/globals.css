@@ -16,21 +16,20 @@
     --secondary-foreground: 220 10% 20%;
     --muted: 220 10% 95%;
     --muted-foreground: 220 10% 40%;
-    --accent: 220 80% 50%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 24 94% 50%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
     --border: 220 10% 85%;
     --input: 220 10% 85%;
     --ring: 220 80% 50%;
-    --radius: 0.5rem;
 
     --header-start: 22 100% 50%;
     --header-end: 38 90% 50%;
     --btn-start: 262 80% 55%;
     --btn-end: 290 80% 50%;
     
-    --sidebar-background: 222.2 47.4% 11.2%;
+    --sidebar-background: 200 80% 60%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 210 40% 98%;
     --sidebar-primary-foreground: 210 40% 98%;
@@ -61,7 +60,7 @@
     --input: 220 10% 25%;
     --ring: 220 80% 50%;
     
-    --sidebar-background: 222.2 84% 4.9%;
+    --sidebar-background: 200 80% 60%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 210 40% 98%;
     --sidebar-primary-foreground: 210 40% 98%;
