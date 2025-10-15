@@ -14,11 +14,11 @@ export const mockStudents: Student[] = [
 ];
 
 export const mockSubjects: Subject[] = [
-  { id: 'S1', name: 'Mathematics', category: 'Core', subCategory: 'Standard', code: 'M-101', minMarks: 33, maxMarks: 100, hasPractical: false },
-  { id: 'S2', name: 'Science', category: 'Core', code: 'S-101', minMarks: 33, maxMarks: 75, hasPractical: true, practicalMinMarks: 10, practicalMaxMarks: 25 },
-  { id: 'S3', name: 'English', category: 'Language', code: 'E-101', minMarks: 33, maxMarks: 100, hasPractical: false },
-  { id: 'S4', name: 'Social Science', category: 'Core', code: 'SS-101', minMarks: 33, maxMarks: 100, hasPractical: false },
-  { id: 'S5', name: 'Computer Science', category: 'Vocational', code: 'CS-101', minMarks: 20, maxMarks: 50, hasPractical: true, practicalMinMarks: 20, practicalMaxMarks: 50 },
+  { id: 'S1', name: 'Mathematics', category: 'Core', subCategory: 'Standard', code: 'M-101', minMarks: 0, maxMarks: 100, passingMarks: 33, hasPractical: false },
+  { id: 'S2', name: 'Science', category: 'Core', code: 'S-101', minMarks: 0, maxMarks: 75, passingMarks: 25, hasPractical: true, practicalMinMarks: 0, practicalMaxMarks: 25, practicalPassingMarks: 8 },
+  { id: 'S3', name: 'English', category: 'Language', code: 'E-101', minMarks: 0, maxMarks: 100, passingMarks: 33, hasPractical: false },
+  { id: 'S4', name: 'Social Science', category: 'Core', code: 'SS-101', minMarks: 0, maxMarks: 100, passingMarks: 33, hasPractical: false },
+  { id: 'S5', name: 'Computer Science', category: 'Vocational', code: 'CS-101', minMarks: 0, maxMarks: 50, passingMarks: 17, hasPractical: true, practicalMinMarks: 0, practicalMaxMarks: 50, practicalPassingMarks: 17 },
 ];
 
 export const mockClasses: Class[] = [

@@ -22,6 +22,7 @@ export default function SubjectsForm() {
             code: '',
             minMarks: 0,
             maxMarks: 100,
+            passingMarks: 33,
             hasPractical: false,
             hasProject: false,
         };
@@ -38,14 +39,13 @@ export default function SubjectsForm() {
         const newSubjects = [...subjects];
         const updatedSubject = { ...newSubjects[index] };
 
-        if (field === 'minMarks' || field === 'maxMarks' || field === 'practicalMinMarks' || field === 'practicalMaxMarks' || field === 'projectMinMarks' || field === 'projectMaxMarks') {
+        if (['minMarks', 'maxMarks', 'passingMarks', 'practicalMinMarks', 'practicalMaxMarks', 'practicalPassingMarks', 'projectMinMarks', 'projectMaxMarks', 'projectPassingMarks'].includes(field)) {
             const numValue = parseInt(value, 10);
             (updatedSubject as any)[field] = isNaN(numValue) ? '' : numValue;
         } else {
             (updatedSubject as any)[field] = value;
         }
 
-        // Mutually exclusive logic for hasPractical and hasProject
         if (field === 'hasPractical' && value === true) {
             updatedSubject.hasProject = false;
         }
@@ -67,89 +67,99 @@ export default function SubjectsForm() {
                 <div className="space-y-4">
                     {subjects.map((subject, index) => (
                         <Card key={index} className="p-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-                                <div className="space-y-2">
+                            <div className="flex justify-between items-start mb-4">
+                                <div className="space-y-2 flex-grow">
                                     <Label htmlFor={`subject-name-${index}`}>Subject Name</Label>
                                     <Input id={`subject-name-${index}`} value={subject.name} onChange={(e) => handleSubjectChange(index, 'name', e.target.value)} placeholder="e.g. Mathematics" />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor={`subject-category-${index}`}>Category</Label>
-                                    <Select value={subject.category} onValueChange={(value) => handleSubjectChange(index, 'category', value)}>
-                                        <SelectTrigger id={`subject-category-${index}`}>
-                                            <SelectValue placeholder="Select category" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Core">Core</SelectItem>
-                                            <SelectItem value="Language">Language</SelectItem>
-                                            <SelectItem value="Vocational">Vocational</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                 <div className="space-y-2">
-                                    <Label htmlFor={`subject-subcategory-${index}`}>Sub Category</Label>
-                                    <Select value={subject.subCategory} onValueChange={(value) => handleSubjectChange(index, 'subCategory', value)}>
-                                        <SelectTrigger id={`subject-subcategory-${index}`}>
-                                            <SelectValue placeholder="Select sub-category" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Standard">Standard</SelectItem>
-                                            <SelectItem value="Basic">Basic</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor={`subject-code-${index}`}>Subject Code</Label>
-                                    <Input id={`subject-code-${index}`} value={subject.code} onChange={(e) => handleSubjectChange(index, 'code', e.target.value)} placeholder="e.g. M-101" />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor={`min-marks-${index}`}>Min Marks (Pass)</Label>
-                                    <Input id={`min-marks-${index}`} type="number" value={subject.minMarks} onChange={(e) => handleSubjectChange(index, 'minMarks', e.target.value)} placeholder="e.g. 33" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor={`max-marks-${index}`}>Max Marks</Label>
-                                    <Input id={`max-marks-${index}`} type="number" value={subject.maxMarks} onChange={(e) => handleSubjectChange(index, 'maxMarks', e.target.value)} placeholder="e.g. 100" />
-                                </div>
-                                
-                                <div className="flex items-center space-x-4 pt-6">
-                                    <div className="flex items-center space-x-2">
-                                        <Checkbox id={`practical-check-${index}`} checked={subject.hasPractical} onCheckedChange={(checked) => handleSubjectChange(index, 'hasPractical', !!checked)}/>
-                                        <Label htmlFor={`practical-check-${index}`}>Has Practical</Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <Checkbox id={`project-check-${index}`} checked={subject.hasProject} onCheckedChange={(checked) => handleSubjectChange(index, 'hasProject', !!checked)}/>
-                                        <Label htmlFor={`project-check-${index}`}>Has Project</Label>
-                                    </div>
-                                </div>
-                                
-                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => handleDeleteSubject(index)}>
+                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive ml-4" onClick={() => handleDeleteSubject(index)}>
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {/* Column 1: General */}
+                                <div className="space-y-4 border-r pr-6">
+                                    <h4 className="font-medium text-sm text-muted-foreground">General</h4>
+                                    <div className="space-y-2">
+                                        <Label htmlFor={`subject-category-${index}`}>Category</Label>
+                                        <Select value={subject.category} onValueChange={(value) => handleSubjectChange(index, 'category', value)}>
+                                            <SelectTrigger id={`subject-category-${index}`}>
+                                                <SelectValue placeholder="Select category" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="Core">Core</SelectItem>
+                                                <SelectItem value="Language">Language</SelectItem>
+                                                <SelectItem value="Vocational">Vocational</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor={`subject-subcategory-${index}`}>Sub Category</Label>
+                                        <Select value={subject.subCategory} onValueChange={(value) => handleSubjectChange(index, 'subCategory', value)}>
+                                            <SelectTrigger id={`subject-subcategory-${index}`}>
+                                                <SelectValue placeholder="Select sub-category" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="Standard">Standard</SelectItem>
+                                                <SelectItem value="Basic">Basic</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor={`subject-code-${index}`}>Subject Code</Label>
+                                        <Input id={`subject-code-${index}`} value={subject.code} onChange={(e) => handleSubjectChange(index, 'code', e.target.value)} placeholder="e.g. M-101" />
+                                    </div>
+                                </div>
 
-                                {subject.hasPractical && (
-                                    <>
-                                        <div className="space-y-2 lg:col-start-1">
-                                            <Label htmlFor={`practical-min-marks-${index}`}>Practical Min Marks</Label>
-                                            <Input id={`practical-min-marks-${index}`} type="number" value={subject.practicalMinMarks ?? ''} onChange={(e) => handleSubjectChange(index, 'practicalMinMarks', e.target.value)} placeholder="e.g. 10" />
+                                {/* Column 2: Theory */}
+                                <div className="space-y-4 border-r pr-6">
+                                     <h4 className="font-medium text-sm text-muted-foreground">Theory</h4>
+                                     <div className="space-y-2">
+                                        <Label htmlFor={`min-marks-${index}`}>Min Marks</Label>
+                                        <Input id={`min-marks-${index}`} type="number" value={subject.minMarks} onChange={(e) => handleSubjectChange(index, 'minMarks', e.target.value)} placeholder="e.g. 0" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor={`max-marks-${index}`}>Max Marks</Label>
+                                        <Input id={`max-marks-${index}`} type="number" value={subject.maxMarks} onChange={(e) => handleSubjectChange(index, 'maxMarks', e.target.value)} placeholder="e.g. 100" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor={`passing-marks-${index}`}>Passing Marks</Label>
+                                        <Input id={`passing-marks-${index}`} type="number" value={subject.passingMarks} onChange={(e) => handleSubjectChange(index, 'passingMarks', e.target.value)} placeholder="e.g. 33" />
+                                    </div>
+                                </div>
+
+                                {/* Column 3: Practical/Projects */}
+                                <div className="space-y-4">
+                                     <h4 className="font-medium text-sm text-muted-foreground">Practical/Projects</h4>
+                                    <div className="flex items-center space-x-4 pt-2">
+                                        <div className="flex items-center space-x-2">
+                                            <Checkbox id={`practical-check-${index}`} checked={subject.hasPractical} onCheckedChange={(checked) => handleSubjectChange(index, 'hasPractical', !!checked)}/>
+                                            <Label htmlFor={`practical-check-${index}`}>Has Practical</Label>
                                         </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor={`practical-max-marks-${index}`}>Practical Max Marks</Label>
-                                            <Input id={`practical-max-marks-${index}`} type="number" value={subject.practicalMaxMarks ?? ''} onChange={(e) => handleSubjectChange(index, 'practicalMaxMarks', e.target.value)} placeholder="e.g. 25" />
+                                        <div className="flex items-center space-x-2">
+                                            <Checkbox id={`project-check-${index}`} checked={subject.hasProject} onCheckedChange={(checked) => handleSubjectChange(index, 'hasProject', !!checked)}/>
+                                            <Label htmlFor={`project-check-${index}`}>Has Project</Label>
                                         </div>
-                                    </>
-                                )}
-                                {subject.hasProject && (
-                                    <>
-                                        <div className="space-y-2 lg:col-start-1">
-                                            <Label htmlFor={`project-min-marks-${index}`}>Project Min Marks</Label>
-                                            <Input id={`project-min-marks-${index}`} type="number" value={subject.projectMinMarks ?? ''} onChange={(e) => handleSubjectChange(index, 'projectMinMarks', e.target.value)} placeholder="e.g. 10" />
+                                    </div>
+
+                                    {(subject.hasPractical || subject.hasProject) && (
+                                        <div className="space-y-4 pt-2">
+                                            <div className="space-y-2">
+                                                <Label htmlFor={`prac-proj-min-marks-${index}`}>Min Marks</Label>
+                                                <Input id={`prac-proj-min-marks-${index}`} type="number" value={subject.hasPractical ? subject.practicalMinMarks ?? '' : subject.projectMinMarks ?? ''} onChange={(e) => handleSubjectChange(index, subject.hasPractical ? 'practicalMinMarks' : 'projectMinMarks', e.target.value)} placeholder="e.g. 0" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor={`prac-proj-max-marks-${index}`}>Max Marks</Label>
+                                                <Input id={`prac-proj-max-marks-${index}`} type="number" value={subject.hasPractical ? subject.practicalMaxMarks ?? '' : subject.projectMaxMarks ?? ''} onChange={(e) => handleSubjectChange(index, subject.hasPractical ? 'practicalMaxMarks' : 'projectMaxMarks', e.target.value)} placeholder="e.g. 25" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor={`prac-proj-passing-marks-${index}`}>Passing Marks</Label>
+                                                <Input id={`prac-proj-passing-marks-${index}`} type="number" value={subject.hasPractical ? subject.practicalPassingMarks ?? '' : subject.projectPassingMarks ?? ''} onChange={(e) => handleSubjectChange(index, subject.hasPractical ? 'practicalPassingMarks' : 'projectPassingMarks', e.target.value)} placeholder="e.g. 8" />
+                                            </div>
                                         </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor={`project-max-marks-${index}`}>Project Max Marks</Label>
-                                            <Input id={`project-max-marks-${index}`} type="number" value={subject.projectMaxMarks ?? ''} onChange={(e) => handleSubjectChange(index, 'projectMaxMarks', e.target.value)} placeholder="e.g. 25" />
-                                        </div>
-                                    </>
-                                )}
+                                    )}
+                                </div>
                             </div>
                         </Card>
                     ))}

@@ -23,12 +23,15 @@ export interface Student {
     code: string;
     minMarks: number;
     maxMarks: number;
+    passingMarks: number;
     hasPractical: boolean;
     practicalMinMarks?: number;
     practicalMaxMarks?: number;
+    practicalPassingMarks?: number;
     hasProject?: boolean;
     projectMinMarks?: number;
     projectMaxMarks?: number;
+    projectPassingMarks?: number;
   }
   
   export interface Exam {
