@@ -29,6 +29,12 @@
       "description": "A person analyzing charts and graphs on a tablet.",
       "imageUrl": "https://picsum.photos/seed/reports/600/400",
       "imageHint": "data analysis"
+    },
+    {
+      "id": "student-avatar",
+      "description": "A portrait of a student for the report card.",
+      "imageUrl": "https://picsum.photos/seed/avatar1/96/96",
+      "imageHint": "student portrait"
     }
   ]
 }

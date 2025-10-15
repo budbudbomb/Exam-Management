@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Link from 'next/link';
@@ -8,14 +9,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { User, Lock, RefreshCcw, KeyRound, Eye } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function LoginPage() {
-  const [captcha, setCaptcha] = useState('513532');
+  const [captcha, setCaptcha] = useState('');
 
   const refreshCaptcha = () => {
     setCaptcha(Math.random().toString().substring(2, 8));
   };
+  
+  useEffect(() => {
+    refreshCaptcha();
+  }, []);
 
   return (
     <div className="min-h-screen w-full flex flex-col bg-gray-100 dark:bg-gray-900">
@@ -77,7 +82,7 @@ export default function LoginPage() {
         </div>
       </main>
 
-        <footer className="w-full py-4">
+        <footer className="w-full py-4 mt-auto">
             <div className="container mx-auto flex flex-wrap justify-center gap-2 md:gap-4">
                 <Button variant="outline" size="sm">Forgot Password</Button>
                 <Button variant="outline" size="sm">अतिथि शिक्षक पोर्टल</Button>

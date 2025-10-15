@@ -4,6 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Logo } from '@/components/icons/logo';
 import { mockExams } from '@/lib/data';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const studentBioData = {
     name: "Aarav Sharma",
@@ -94,6 +95,7 @@ const ExamMarksTable = ({ examType, marks, percentage }: { examType: string; mar
 
 
 export default function ReportCard() {
+    const studentAvatar = PlaceHolderImages.find(p => p.id === 'student-avatar');
   return (
     <Card className="max-w-4xl mx-auto">
       <CardHeader className="bg-muted/30">
@@ -106,7 +108,7 @@ export default function ReportCard() {
                 </div>
             </div>
             <Avatar className="h-24 w-24">
-                <AvatarImage src="https://i.pravatar.cc/96?u=1" alt={studentBioData.name} />
+                <AvatarImage src={studentAvatar?.imageUrl} alt={studentBioData.name} data-ai-hint={studentAvatar?.imageHint} />
                 <AvatarFallback>{studentBioData.name.substring(0,2)}</AvatarFallback>
             </Avatar>
         </div>
