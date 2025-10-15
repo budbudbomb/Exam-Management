@@ -12,7 +12,7 @@ export default function SankoolDashboardPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <MarksEntryForm />
+          <MarksEntryForm showDiseCode={true} />
         </CardContent>
       </Card>
     </div>

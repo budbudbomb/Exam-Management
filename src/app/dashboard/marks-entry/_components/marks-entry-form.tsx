@@ -20,7 +20,11 @@ type Marks = {
     [subjectId: string]: MarkDetail;
 }
 
-export default function MarksEntryForm() {
+interface MarksEntryFormProps {
+    showDiseCode?: boolean;
+}
+
+export default function MarksEntryForm({ showDiseCode = false }: MarksEntryFormProps) {
     const [selectedClass, setSelectedClass] = useState('');
     const [selectedSection, setSelectedSection] = useState('');
     const [classStudents, setClassStudents] = useState<Student[]>([]);
@@ -88,7 +92,13 @@ export default function MarksEntryForm() {
 
     return (
         <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                {showDiseCode && (
+                    <div className="space-y-2">
+                        <Label>DISE Code</Label>
+                        <Input placeholder="Enter DISE code" />
+                    </div>
+                )}
                 <div className="space-y-2">
                     <Label>Exam Type</Label>
                     <Select>
