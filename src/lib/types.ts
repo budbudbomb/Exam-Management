@@ -25,6 +25,9 @@ export interface Student {
     hasPractical: boolean;
     practicalMinMarks?: number;
     practicalMaxMarks?: number;
+    hasProject?: boolean;
+    projectMinMarks?: number;
+    projectMaxMarks?: number;
   }
   
   export interface Exam {

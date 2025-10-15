@@ -23,6 +23,7 @@ export default function SubjectsForm() {
             minMarks: 0,
             maxMarks: 100,
             hasPractical: false,
+            hasProject: false,
         };
         setSubjects([...subjects, newSubject]);
     };
@@ -35,12 +36,24 @@ export default function SubjectsForm() {
 
     const handleSubjectChange = (index: number, field: keyof Subject, value: any) => {
         const newSubjects = [...subjects];
-        if (field === 'minMarks' || field === 'maxMarks' || field === 'practicalMinMarks' || field === 'practicalMaxMarks') {
+        const updatedSubject = { ...newSubjects[index] };
+
+        if (field === 'minMarks' || field === 'maxMarks' || field === 'practicalMinMarks' || field === 'practicalMaxMarks' || field === 'projectMinMarks' || field === 'projectMaxMarks') {
             const numValue = parseInt(value, 10);
-            (newSubjects[index] as any)[field] = isNaN(numValue) ? '' : numValue;
+            (updatedSubject as any)[field] = isNaN(numValue) ? '' : numValue;
         } else {
-            (newSubjects[index] as any)[field] = value;
+            (updatedSubject as any)[field] = value;
         }
+
+        // Mutually exclusive logic for hasPractical and hasProject
+        if (field === 'hasPractical' && value === true) {
+            updatedSubject.hasProject = false;
+        }
+        if (field === 'hasProject' && value === true) {
+            updatedSubject.hasPractical = false;
+        }
+        
+        newSubjects[index] = updatedSubject;
         setSubjects(newSubjects);
     }
 
@@ -98,9 +111,15 @@ export default function SubjectsForm() {
                                     <Input id={`max-marks-${index}`} type="number" value={subject.maxMarks} onChange={(e) => handleSubjectChange(index, 'maxMarks', e.target.value)} placeholder="e.g. 100" />
                                 </div>
                                 
-                                <div className="flex items-center space-x-2 pt-6">
-                                    <Checkbox id={`practical-check-${index}`} checked={subject.hasPractical} onCheckedChange={(checked) => handleSubjectChange(index, 'hasPractical', !!checked)}/>
-                                    <Label htmlFor={`practical-check-${index}`}>Has Practical</Label>
+                                <div className="flex items-center space-x-4 pt-6">
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox id={`practical-check-${index}`} checked={subject.hasPractical} onCheckedChange={(checked) => handleSubjectChange(index, 'hasPractical', !!checked)}/>
+                                        <Label htmlFor={`practical-check-${index}`}>Has Practical</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox id={`project-check-${index}`} checked={subject.hasProject} onCheckedChange={(checked) => handleSubjectChange(index, 'hasProject', !!checked)}/>
+                                        <Label htmlFor={`project-check-${index}`}>Has Project</Label>
+                                    </div>
                                 </div>
                                 
                                 <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => handleDeleteSubject(index)}>
@@ -109,13 +128,25 @@ export default function SubjectsForm() {
 
                                 {subject.hasPractical && (
                                     <>
-                                        <div className="space-y-2">
+                                        <div className="space-y-2 lg:col-start-1">
                                             <Label htmlFor={`practical-min-marks-${index}`}>Practical Min Marks</Label>
                                             <Input id={`practical-min-marks-${index}`} type="number" value={subject.practicalMinMarks ?? ''} onChange={(e) => handleSubjectChange(index, 'practicalMinMarks', e.target.value)} placeholder="e.g. 10" />
                                         </div>
                                         <div className="space-y-2">
                                             <Label htmlFor={`practical-max-marks-${index}`}>Practical Max Marks</Label>
                                             <Input id={`practical-max-marks-${index}`} type="number" value={subject.practicalMaxMarks ?? ''} onChange={(e) => handleSubjectChange(index, 'practicalMaxMarks', e.target.value)} placeholder="e.g. 25" />
+                                        </div>
+                                    </>
+                                )}
+                                {subject.hasProject && (
+                                    <>
+                                        <div className="space-y-2 lg:col-start-1">
+                                            <Label htmlFor={`project-min-marks-${index}`}>Project Min Marks</Label>
+                                            <Input id={`project-min-marks-${index}`} type="number" value={subject.projectMinMarks ?? ''} onChange={(e) => handleSubjectChange(index, 'projectMinMarks', e.target.value)} placeholder="e.g. 10" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor={`project-max-marks-${index}`}>Project Max Marks</Label>
+                                            <Input id={`project-max-marks-${index}`} type="number" value={subject.projectMaxMarks ?? ''} onChange={(e) => handleSubjectChange(index, 'projectMaxMarks', e.target.value)} placeholder="e.g. 25" />
                                         </div>
                                     </>
                                 )}
