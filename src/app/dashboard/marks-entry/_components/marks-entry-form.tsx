@@ -10,6 +10,7 @@ import { mockClasses, mockStudents, mockSubjects, mockExams } from '@/lib/data';
 import { Student, Subject } from '@/lib/types';
 import { Save } from 'lucide-react';
 import React, { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 type MarkDetail = {
     theory: number | string;
@@ -22,9 +23,10 @@ type Marks = {
 
 interface MarksEntryFormProps {
     showDiseCode?: boolean;
+    userRole?: 'school' | 'prabhari' | 'sankool';
 }
 
-export default function MarksEntryForm({ showDiseCode = false }: MarksEntryFormProps) {
+export default function MarksEntryForm({ showDiseCode = false, userRole = 'school' }: MarksEntryFormProps) {
     const [selectedClass, setSelectedClass] = useState('');
     const [selectedSection, setSelectedSection] = useState('');
     const [classStudents, setClassStudents] = useState<Student[]>([]);
@@ -32,7 +34,9 @@ export default function MarksEntryForm({ showDiseCode = false }: MarksEntryFormP
     const [marks, setMarks] = useState<Marks>({});
     const [showTable, setShowTable] = useState(false);
     const [isMarksModalOpen, setMarksModalOpen] = useState(false);
+    const [isOtpModalOpen, setOtpModalOpen] = useState(false);
     const [selectedStudentForMarks, setSelectedStudentForMarks] = useState<Student | null>(null);
+    const { toast } = useToast();
 
     const handleSearch = () => {
         if (selectedClass && selectedSection) {
@@ -89,6 +93,13 @@ export default function MarksEntryForm({ showDiseCode = false }: MarksEntryFormP
         return 'F';
     }
 
+    const handleOtpSubmit = () => {
+        setOtpModalOpen(false);
+        toast({
+            title: "Success",
+            description: "Marks sent to Sankool for final verification",
+        });
+    }
 
     return (
         <div className="space-y-8">
@@ -148,34 +159,43 @@ export default function MarksEntryForm({ showDiseCode = false }: MarksEntryFormP
             </div>
 
             {showTable && classStudents.length > 0 && (
-                <div className="rounded-md border">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[50px]">S.No</TableHead>
-                                <TableHead>Roll Number</TableHead>
-                                <TableHead>Father's Name</TableHead>
-                                <TableHead>Mother's Name</TableHead>
-                                <TableHead>Samagra ID</TableHead>
-                                <TableHead className="text-right">Marks</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {classStudents.map((student, index) => (
-                                <TableRow key={student.id}>
-                                    <TableCell>{index + 1}</TableCell>
-                                    <TableCell>{student.rollNumber}</TableCell>
-                                    <TableCell>{student.fatherName || 'N/A'}</TableCell>
-                                    <TableCell>{student.motherName || 'N/A'}</TableCell>
-                                    <TableCell>{student.samagraId || 'N/A'}</TableCell>
-                                    <TableCell className="text-right">
-                                        <Button variant="outline" onClick={() => handleOpenMarksModal(student)}>Update</Button>
-                                    </TableCell>
+                <>
+                    <div className="rounded-md border">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="w-[50px]">S.No</TableHead>
+                                    <TableHead>Roll Number</TableHead>
+                                    <TableHead>Father's Name</TableHead>
+                                    <TableHead>Mother's Name</TableHead>
+                                    <TableHead>Samagra ID</TableHead>
+                                    <TableHead className="text-right">Marks</TableHead>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
+                            </TableHeader>
+                            <TableBody>
+                                {classStudents.map((student, index) => (
+                                    <TableRow key={student.id}>
+                                        <TableCell>{index + 1}</TableCell>
+                                        <TableCell>{student.rollNumber}</TableCell>
+                                        <TableCell>{student.fatherName || 'N/A'}</TableCell>
+                                        <TableCell>{student.motherName || 'N/A'}</TableCell>
+                                        <TableCell>{student.samagraId || 'N/A'}</TableCell>
+                                        <TableCell className="text-right">
+                                            <Button variant="outline" onClick={() => handleOpenMarksModal(student)}>
+                                                {userRole === 'school' ? 'Update' : 'Verify'}
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+                    {userRole === 'prabhari' && (
+                        <div className="flex justify-end">
+                            <Button onClick={() => setOtpModalOpen(true)}>Verify & Forward to Sankool</Button>
+                        </div>
+                    )}
+                </>
             )}
 
             {showTable && classStudents.length === 0 && (
@@ -257,6 +277,26 @@ export default function MarksEntryForm({ showDiseCode = false }: MarksEntryFormP
                             <Save className="mr-2 h-4 w-4" />
                             Save Marks for {selectedStudentForMarks?.name}
                         </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={isOtpModalOpen} onOpenChange={setOtpModalOpen}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Enter OTP</DialogTitle>
+                        <DialogDescription>
+                            An OTP has been sent to your registered mobile number/email. Please enter it to verify.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="otp">One-Time Password</Label>
+                            <Input id="otp" type="text" placeholder="Enter OTP" />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button type="submit" onClick={handleOtpSubmit}>Submit</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

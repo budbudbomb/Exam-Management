@@ -12,7 +12,7 @@ export default function ParikshaPrabharDashboardPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <MarksEntryForm />
+          <MarksEntryForm userRole="prabhari" />
         </CardContent>
       </Card>
     </div>

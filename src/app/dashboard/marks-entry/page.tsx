@@ -17,7 +17,7 @@ export default function MarksEntryPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <MarksEntryForm />
+          <MarksEntryForm userRole="school" />
         </CardContent>
       </Card>
     </div>
