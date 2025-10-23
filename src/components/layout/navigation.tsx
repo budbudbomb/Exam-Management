@@ -23,6 +23,7 @@ import {
   School as SchoolIcon,
   User,
   UserCheck,
+  CalendarDays,
 } from 'lucide-react';
 import { Logo } from '../icons/logo';
 import { useState } from 'react';
@@ -52,6 +53,11 @@ const navLinks = [
         href: '/dashboard/student-details-update',
         icon: <User className="h-4 w-4" />,
         label: 'Student Details update',
+      },
+      {
+        href: '/dashboard/exam-schedule',
+        icon: <CalendarDays className="h-4 w-4" />,
+        label: 'Exam Schedule',
       },
       {
         href: '/dashboard/marks-entry',
