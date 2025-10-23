@@ -15,8 +15,8 @@ import { useToast } from '@/hooks/use-toast';
 type MarkDetail = {
     theory: number | string;
     practical: number | string;
-    theoryAttendance: number | string;
-    practicalAttendance: number | string;
+    theoryAttendance: string;
+    practicalAttendance: string;
     grace: number | string;
 };
 
@@ -62,7 +62,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
         // Reset marks for the selected student
         const initialMarks: Marks = {};
         subjects.forEach(subject => {
-            initialMarks[subject.id] = { theory: '', practical: '', theoryAttendance: '', practicalAttendance: '', grace: '' };
+            initialMarks[subject.id] = { theory: '', practical: '', theoryAttendance: 'Present', practicalAttendance: 'Present', grace: '' };
         });
         setMarks(initialMarks);
         setMarksModalOpen(true);
@@ -73,7 +73,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
             ...prevMarks,
             [subjectId]: {
                 ...prevMarks[subjectId],
-                [type]: value === '' ? '' : Number(value)
+                [type]: (type === 'theory' || type === 'practical' || type === 'grace') && value !== '' ? Number(value) : value
             }
         }));
     };
@@ -268,16 +268,32 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                                     <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.theory} onChange={(e) => handleMarkChange(subject.id, 'theory', e.target.value)} />
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.theoryAttendance} onChange={(e) => handleMarkChange(subject.id, 'theoryAttendance', e.target.value)} />
+                                                    <Select value={marks[subject.id]?.theoryAttendance} onValueChange={(value) => handleMarkChange(subject.id, 'theoryAttendance', value)}>
+                                                        <SelectTrigger className="max-w-[120px] mx-auto text-center">
+                                                            <SelectValue placeholder="Select" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="Present">Present</SelectItem>
+                                                            <SelectItem value="Absent">Absent</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
                                                 </TableCell>
                                                 
-                                                <TableCell className="text-center border-l">{subject.practicalMinMarks ?? 10}</TableCell>
-                                                <TableCell className="text-center">{subject.practicalMaxMarks ?? 25}</TableCell>
+                                                <TableCell className="text-center border-l">{subject.practicalMinMarks ?? 'N/A'}</TableCell>
+                                                <TableCell className="text-center">{subject.practicalMaxMarks ?? 'N/A'}</TableCell>
                                                 <TableCell>
-                                                    <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practical} onChange={(e) => handleMarkChange(subject.id, 'practical', e.target.value)} />
+                                                    <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practical} onChange={(e) => handleMarkChange(subject.id, 'practical', e.target.value)} disabled={!subject.hasPractical}/>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practicalAttendance} onChange={(e) => handleMarkChange(subject.id, 'practicalAttendance', e.target.value)} />
+                                                     <Select value={marks[subject.id]?.practicalAttendance} onValueChange={(value) => handleMarkChange(subject.id, 'practicalAttendance', value)} disabled={!subject.hasPractical}>
+                                                        <SelectTrigger className="max-w-[120px] mx-auto text-center">
+                                                            <SelectValue placeholder="Select" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="Present">Present</SelectItem>
+                                                            <SelectItem value="Absent">Absent</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
                                                 </TableCell>
 
                                                 <TableCell className="border-l">
