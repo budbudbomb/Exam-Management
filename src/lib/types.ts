@@ -13,6 +13,8 @@ export interface Student {
     medium: 'English' | 'Hindi' | 'Urdu' | 'Sanskrit';
     photoUrl?: string;
     stream?: 'PCB' | 'PCM' | 'Commerce' | 'Arts' | 'Vocational Courses';
+    schoolUdideCode?: string;
+    scholarNumber?: string;
   }
   
   export interface Subject {
@@ -52,4 +54,3 @@ export interface Student {
       rangeStart: number;
       rangeEnd: number;
   }
-  

@@ -22,6 +22,7 @@ import {
   BookOpen,
   School as SchoolIcon,
   User,
+  UserCheck,
 } from 'lucide-react';
 import { Logo } from '../icons/logo';
 import { useState } from 'react';
@@ -41,6 +42,11 @@ const navLinks = [
         href: '/dashboard/masters',
         icon: <BookOpen className="h-4 w-4" />,
         label: 'Masters',
+      },
+      {
+        href: '/dashboard/student-verification',
+        icon: <UserCheck className="h-4 w-4" />,
+        label: 'Student Verification',
       },
       {
         href: '/dashboard/student-details-update',
