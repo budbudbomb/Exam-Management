@@ -64,21 +64,21 @@ export default function StudentVerificationForm() {
 
             {showTable && classStudents.length > 0 && (
                 <>
-                    <div className="h-[400px] overflow-auto rounded-md border">
+                    <div className="h-[400px] overflow-y-auto rounded-md border">
                         <Table>
-                            <TableHeader className="sticky top-0 bg-card z-10">
+                            <TableHeader>
                                 <TableRow>
-                                    <TableHead>Name</TableHead>
-                                    <TableHead>Samagra ID</TableHead>
-                                    <TableHead>School UDISE</TableHead>
-                                    <TableHead>Class</TableHead>
-                                    <TableHead>Mother's Name</TableHead>
-                                    <TableHead>Father's Name</TableHead>
-                                    <TableHead>DOB</TableHead>
-                                    <TableHead>Category</TableHead>
-                                    <TableHead>Enrollment #</TableHead>
-                                    <TableHead>Scholar #</TableHead>
-                                    <TableHead className="text-center">
+                                    <TableHead className="sticky top-0 bg-card">Name</TableHead>
+                                    <TableHead className="sticky top-0 bg-card">Samagra ID</TableHead>
+                                    <TableHead className="sticky top-0 bg-card">School UDISE</TableHead>
+                                    <TableHead className="sticky top-0 bg-card">Class</TableHead>
+                                    <TableHead className="sticky top-0 bg-card">Mother's Name</TableHead>
+                                    <TableHead className="sticky top-0 bg-card">Father's Name</TableHead>
+                                    <TableHead className="sticky top-0 bg-card">DOB</TableHead>
+                                    <TableHead className="sticky top-0 bg-card">Category</TableHead>
+                                    <TableHead className="sticky top-0 bg-card">Enrollment #</TableHead>
+                                    <TableHead className="sticky top-0 bg-card">Scholar #</TableHead>
+                                    <TableHead className="text-center sticky top-0 bg-card">
                                         <div className="flex items-center justify-center space-x-2">
                                             <Checkbox id="selectAll" onCheckedChange={handleSelectAll} />
                                             <Label htmlFor="selectAll" className="sr-only">Select All</Label>
