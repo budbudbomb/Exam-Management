@@ -64,9 +64,9 @@ export default function StudentVerificationForm() {
 
             {showTable && classStudents.length > 0 && (
                 <>
-                    <div className="relative h-[400px] overflow-auto rounded-md border">
+                    <div className="h-[400px] overflow-auto rounded-md border">
                         <Table>
-                            <TableHeader className="sticky top-0 bg-background z-10">
+                            <TableHeader className="sticky top-0 bg-card z-10">
                                 <TableRow>
                                     <TableHead>Name</TableHead>
                                     <TableHead>Samagra ID</TableHead>
