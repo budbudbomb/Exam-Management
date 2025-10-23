@@ -1,3 +1,4 @@
+
 import {
   Tabs,
   TabsContent,
@@ -6,8 +7,6 @@ import {
 } from '@/components/ui/tabs';
 import SubjectsForm from './_components/subjects-form';
 import ExamsForm from './_components/exams-form';
-import ClassesForm from './_components/classes-form';
-import StudentsTable from './_components/students-table';
 
 
 export default function MastersPage() {
@@ -24,8 +23,6 @@ export default function MastersPage() {
           <TabsList>
             <TabsTrigger value="subjects">Subjects</TabsTrigger>
             <TabsTrigger value="exams">Exams</TabsTrigger>
-            <TabsTrigger value="classes">Classes</TabsTrigger>
-            <TabsTrigger value="students">Students</TabsTrigger>
           </TabsList>
         </div>
         <TabsContent value="subjects" className="space-y-4 mt-0">
@@ -33,12 +30,6 @@ export default function MastersPage() {
         </TabsContent>
         <TabsContent value="exams" className="space-y-4 mt-0">
           <ExamsForm />
-        </TabsContent>
-        <TabsContent value="classes" className="space-y-4 mt-0">
-          <ClassesForm />
-        </TabsContent>
-        <TabsContent value="students" className="space-y-4 mt-0">
-          <StudentsTable />
         </TabsContent>
       </Tabs>
     </div>
