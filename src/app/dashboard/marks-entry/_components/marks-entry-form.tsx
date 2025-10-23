@@ -14,11 +14,11 @@ import { useToast } from '@/hooks/use-toast';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 type MarkDetail = {
-    theory: number | string;
-    practical: number | string;
+    theory: string;
+    practical: string;
     theoryAttendance: string;
     practicalAttendance: string;
-    grace: number | string;
+    grace: string;
 };
 
 type Marks = {
@@ -47,7 +47,7 @@ const mockPreviousMarks = {
     }
 };
 
-const PreviousMarksTable = ({ subjects, marks }: { subjects: Subject[], marks: Marks }) => {
+const PreviousMarksTable = ({ subjects, marks }: { subjects: Subject[], marks: any }) => {
     
     const calculatePercentage = (theory: string | number, practical: string | number, subject: Subject) => {
         const theoryMarks = Number(theory) || 0;
@@ -208,7 +208,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                 )}
                 <div className="space-y-2">
                     <Label>Exam Type</Label>
-                    <Select onValueChange={setSelectedExamType}>
+                    <Select value={selectedExamType} onValueChange={setSelectedExamType}>
                         <SelectTrigger><SelectValue placeholder="Select exam" /></SelectTrigger>
                         <SelectContent>
                             {mockExams.map(exam => (
@@ -314,117 +314,119 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                         </DialogDescription>
                     </DialogHeader>
 
-                    {(selectedExamType === 'Half Yearly' || selectedExamType === 'Annual') && (
-                        <Accordion type="single" collapsible className="w-full">
-                            {selectedExamType === 'Annual' && (
-                                <AccordionItem value="item-2">
-                                    <AccordionTrigger>View Half-Yearly Marks</AccordionTrigger>
+                    <div className="max-h-[calc(100vh-200px)] overflow-y-auto pr-4">
+                        {(selectedExamType === 'Half Yearly' || selectedExamType === 'Annual') && (
+                            <Accordion type="single" collapsible className="w-full">
+                                {selectedExamType === 'Annual' && (
+                                    <AccordionItem value="item-2">
+                                        <AccordionTrigger>View Half-Yearly Marks</AccordionTrigger>
+                                        <AccordionContent>
+                                            <PreviousMarksTable subjects={subjects} marks={mockPreviousMarks.halfYearly} />
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                )}
+                                <AccordionItem value="item-1">
+                                    <AccordionTrigger>View Quarterly Marks</AccordionTrigger>
                                     <AccordionContent>
-                                        <PreviousMarksTable subjects={subjects} marks={mockPreviousMarks.halfYearly} />
+                                    <PreviousMarksTable subjects={subjects} marks={mockPreviousMarks.quarterly} />
                                     </AccordionContent>
                                 </AccordionItem>
-                            )}
-                             <AccordionItem value="item-1">
-                                <AccordionTrigger>View Quarterly Marks</AccordionTrigger>
-                                <AccordionContent>
-                                   <PreviousMarksTable subjects={subjects} marks={mockPreviousMarks.quarterly} />
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-                    )}
+                            </Accordion>
+                        )}
 
 
-                    {selectedStudentForMarks && (
-                        <div className="space-y-4 py-4">
-                             <div className="rounded-md border">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead className="w-[50px]">S.No</TableHead>
-                                            <TableHead>Subject Name</TableHead>
-                                            <TableHead colSpan={4} className="text-center border-l">Theory</TableHead>
-                                            <TableHead colSpan={5} className="text-center border-l">Practical / Project</TableHead>
-                                            <TableHead className="text-center border-l">Grace</TableHead>
-                                            <TableHead className="text-center border-l">Percentage</TableHead>
-                                            <TableHead className="text-center">Grade</TableHead>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableHead></TableHead>
-                                            <TableHead></TableHead>
-                                            <TableHead className="text-center border-l text-xs font-medium">Min</TableHead>
-                                            <TableHead className="text-center text-xs font-medium">Max</TableHead>
-                                            <TableHead className="text-center text-xs font-medium">Enter</TableHead>
-                                            <TableHead className="text-center text-xs font-medium">Attendance</TableHead>
-                                            <TableHead className="text-center border-l text-xs font-medium">Type</TableHead>
-                                            <TableHead className="text-center text-xs font-medium">Min</TableHead>
-                                            <TableHead className="text-center text-xs font-medium">Max</TableHead>
-                                            <TableHead className="text-center text-xs font-medium">Enter</TableHead>
-                                            <TableHead className="text-center text-xs font-medium">Attendance</TableHead>
-                                            <TableHead></TableHead>
-                                            <TableHead></TableHead>
-                                            <TableHead></TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {subjects.map((subject, index) => {
-                                            const percentage = parseFloat(calculatePercentage(marks[subject.id]?.theory || 0, marks[subject.id]?.practical || 0, subject));
-                                            const grade = getGrade(percentage);
-
-                                            return (
-                                            <TableRow key={subject.id}>
-                                                <TableCell>{index + 1}</TableCell>
-                                                <TableCell>{subject.name}</TableCell>
-                                                
-                                                <TableCell className="text-center border-l">{subject.minMarks}</TableCell>
-                                                <TableCell className="text-center">{subject.maxMarks}</TableCell>
-                                                <TableCell>
-                                                    <Input type="text" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.theory} onChange={(e) => handleMarkChange(subject.id, 'theory', e.target.value)} />
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Select value={marks[subject.id]?.theoryAttendance} onValueChange={(value) => handleMarkChange(subject.id, 'theoryAttendance', value)}>
-                                                        <SelectTrigger className="max-w-[120px] mx-auto text-center">
-                                                            <SelectValue placeholder="Select" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="Present">Present</SelectItem>
-                                                            <SelectItem value="Absent">Absent</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                </TableCell>
-                                                
-                                                <TableCell className="text-center border-l font-medium">
-                                                    {subject.hasPractical ? 'Practical' : 'Project'}
-                                                </TableCell>
-                                                <TableCell className="text-center">{subject.hasPractical ? subject.practicalMinMarks : subject.projectMinMarks}</TableCell>
-                                                <TableCell className="text-center">{subject.hasPractical ? subject.practicalMaxMarks : subject.projectMaxMarks}</TableCell>
-                                                <TableCell>
-                                                    <Input type="text" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practical} onChange={(e) => handleMarkChange(subject.id, 'practical', e.target.value)} />
-                                                </TableCell>
-                                                <TableCell>
-                                                     <Select value={marks[subject.id]?.practicalAttendance} onValueChange={(value) => handleMarkChange(subject.id, 'practicalAttendance', value)}>
-                                                        <SelectTrigger className="max-w-[120px] mx-auto text-center">
-                                                            <SelectValue placeholder="Select" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="Present">Present</SelectItem>
-                                                            <SelectItem value="Absent">Absent</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                </TableCell>
-
-                                                <TableCell className="border-l">
-                                                    <Input type="text" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.grace} onChange={(e) => handleMarkChange(subject.id, 'grace', e.target.value)} />
-                                                </TableCell>
-
-                                                <TableCell className="text-center border-l font-medium">{percentage.toFixed(2)}%</TableCell>
-                                                <TableCell className="text-center font-semibold">{grade}</TableCell>
+                        {selectedStudentForMarks && (
+                            <div className="space-y-4 py-4">
+                                <div className="rounded-md border">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead className="w-[50px]">S.No</TableHead>
+                                                <TableHead>Subject Name</TableHead>
+                                                <TableHead colSpan={4} className="text-center border-l">Theory</TableHead>
+                                                <TableHead colSpan={5} className="text-center border-l">Practical / Project</TableHead>
+                                                <TableHead className="text-center border-l">Grace</TableHead>
+                                                <TableHead className="text-center border-l">Percentage</TableHead>
+                                                <TableHead className="text-center">Grade</TableHead>
                                             </TableRow>
-                                        )})}
-                                    </TableBody>
-                                </Table>
+                                            <TableRow>
+                                                <TableHead></TableHead>
+                                                <TableHead></TableHead>
+                                                <TableHead className="text-center border-l text-xs font-medium">Min</TableHead>
+                                                <TableHead className="text-center text-xs font-medium">Max</TableHead>
+                                                <TableHead className="text-center text-xs font-medium">Enter</TableHead>
+                                                <TableHead className="text-center text-xs font-medium">Attendance</TableHead>
+                                                <TableHead className="text-center border-l text-xs font-medium">Type</TableHead>
+                                                <TableHead className="text-center text-xs font-medium">Min</TableHead>
+                                                <TableHead className="text-center text-xs font-medium">Max</TableHead>
+                                                <TableHead className="text-center text-xs font-medium">Enter</TableHead>
+                                                <TableHead className="text-center text-xs font-medium">Attendance</TableHead>
+                                                <TableHead></TableHead>
+                                                <TableHead></TableHead>
+                                                <TableHead></TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {subjects.map((subject, index) => {
+                                                const percentage = parseFloat(calculatePercentage(marks[subject.id]?.theory || '0', marks[subject.id]?.practical || '0', subject));
+                                                const grade = getGrade(percentage);
+
+                                                return (
+                                                <TableRow key={subject.id}>
+                                                    <TableCell>{index + 1}</TableCell>
+                                                    <TableCell>{subject.name}</TableCell>
+                                                    
+                                                    <TableCell className="text-center border-l">{subject.minMarks}</TableCell>
+                                                    <TableCell className="text-center">{subject.maxMarks}</TableCell>
+                                                    <TableCell>
+                                                        <Input type="text" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.theory} onChange={(e) => handleMarkChange(subject.id, 'theory', e.target.value)} />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Select value={marks[subject.id]?.theoryAttendance} onValueChange={(value) => handleMarkChange(subject.id, 'theoryAttendance', value)}>
+                                                            <SelectTrigger className="max-w-[120px] mx-auto text-center">
+                                                                <SelectValue placeholder="Select" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="Present">Present</SelectItem>
+                                                                <SelectItem value="Absent">Absent</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </TableCell>
+                                                    
+                                                    <TableCell className="text-center border-l font-medium">
+                                                        {subject.hasPractical ? 'Practical' : 'Project'}
+                                                    </TableCell>
+                                                    <TableCell className="text-center">{subject.hasPractical ? subject.practicalMinMarks : subject.projectMinMarks}</TableCell>
+                                                    <TableCell className="text-center">{subject.hasPractical ? subject.practicalMaxMarks : subject.projectMaxMarks}</TableCell>
+                                                    <TableCell>
+                                                        <Input type="text" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practical} onChange={(e) => handleMarkChange(subject.id, 'practical', e.target.value)} />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Select value={marks[subject.id]?.practicalAttendance} onValueChange={(value) => handleMarkChange(subject.id, 'practicalAttendance', value)}>
+                                                            <SelectTrigger className="max-w-[120px] mx-auto text-center">
+                                                                <SelectValue placeholder="Select" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="Present">Present</SelectItem>
+                                                                <SelectItem value="Absent">Absent</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </TableCell>
+
+                                                    <TableCell className="border-l">
+                                                        <Input type="text" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.grace} onChange={(e) => handleMarkChange(subject.id, 'grace', e.target.value)} />
+                                                    </TableCell>
+
+                                                    <TableCell className="text-center border-l font-medium">{percentage.toFixed(2)}%</TableCell>
+                                                    <TableCell className="text-center font-semibold">{grade}</TableCell>
+                                                </TableRow>
+                                            )})}
+                                        </TableBody>
+                                    </Table>
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                     <DialogFooter>
                         <Button onClick={() => setMarksModalOpen(false)}>
                             <Save className="mr-2 h-4 w-4" />
