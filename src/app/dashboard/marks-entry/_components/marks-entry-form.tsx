@@ -384,6 +384,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                                 <TableHead className="text-center border-l">Grace</TableHead>
                                                 <TableHead className="text-center border-l">Percentage</TableHead>
                                                 <TableHead className="text-center">Grade</TableHead>
+                                                <TableHead className="text-center border-l">Remark</TableHead>
                                             </TableRow>
                                             <TableRow>
                                                 <TableHead></TableHead>
@@ -396,6 +397,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                                 <TableHead className="text-center text-xs font-medium">Min</TableHead>
                                                 <TableHead className="text-center text-xs font-medium">Max</TableHead>
                                                 <TableHead className="text-center text-xs font-medium">Enter</TableHead>
+                                                <TableHead></TableHead>
                                                 <TableHead></TableHead>
                                                 <TableHead></TableHead>
                                                 <TableHead></TableHead>
@@ -453,6 +455,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                                     </TableCell>
                                                     <TableCell className="text-center border-l font-medium">{percentage.toFixed(2)}%</TableCell>
                                                     <TableCell className="text-center font-semibold">{grade}</TableCell>
+                                                    <TableCell className="text-center border-l"></TableCell>
                                                 </TableRow>
                                             )})}
                                         </TableBody>
@@ -492,5 +495,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
         </div>
     );
 }
+
+    
 
     
