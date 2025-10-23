@@ -238,18 +238,6 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                     </div>
                 )}
                 <div className="space-y-2">
-                    <Label>Medium</Label>
-                    <Select>
-                        <SelectTrigger><SelectValue placeholder="Select medium" /></SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="English">English</SelectItem>
-                            <SelectItem value="Hindi">Hindi</SelectItem>
-                            <SelectItem value="Urdu">Urdu</SelectItem>
-                            <SelectItem value="Sanskrit">Sanskrit</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="space-y-2">
                     <Label>Class & Section</Label>
                     <div className="flex gap-2">
                         <Select onValueChange={setSelectedClass}>
@@ -268,6 +256,18 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                             </SelectContent>
                         </Select>
                     </div>
+                </div>
+                <div className="space-y-2">
+                    <Label>Medium</Label>
+                    <Select>
+                        <SelectTrigger><SelectValue placeholder="Select medium" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="English">English</SelectItem>
+                            <SelectItem value="Hindi">Hindi</SelectItem>
+                            <SelectItem value="Urdu">Urdu</SelectItem>
+                            <SelectItem value="Sanskrit">Sanskrit</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
                  <div className="col-span-full flex justify-end">
                     <Button onClick={handleSearch}>Load Students</Button>
