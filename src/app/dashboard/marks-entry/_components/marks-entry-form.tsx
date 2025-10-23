@@ -289,15 +289,15 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                                 </TableCell>
                                                 
                                                 <TableCell className="text-center border-l font-medium">
-                                                    {subject.hasPractical ? 'Practical' : subject.hasProject ? 'Project' : 'N/A'}
+                                                    {subject.hasPractical ? 'Practical' : 'Project'}
                                                 </TableCell>
-                                                <TableCell className="text-center">{subject.hasPractical ? subject.practicalMinMarks : subject.hasProject ? subject.projectMinMarks : 'N/A'}</TableCell>
-                                                <TableCell className="text-center">{subject.hasPractical ? subject.practicalMaxMarks : subject.hasProject ? subject.projectMaxMarks : 'N/A'}</TableCell>
+                                                <TableCell className="text-center">{subject.hasPractical ? subject.practicalMinMarks : subject.projectMinMarks}</TableCell>
+                                                <TableCell className="text-center">{subject.hasPractical ? subject.practicalMaxMarks : subject.projectMaxMarks}</TableCell>
                                                 <TableCell>
-                                                    <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practical} onChange={(e) => handleMarkChange(subject.id, 'practical', e.target.value)} disabled={!subject.hasPractical && !subject.hasProject}/>
+                                                    <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practical} onChange={(e) => handleMarkChange(subject.id, 'practical', e.target.value)} />
                                                 </TableCell>
                                                 <TableCell>
-                                                     <Select value={marks[subject.id]?.practicalAttendance} onValueChange={(value) => handleMarkChange(subject.id, 'practicalAttendance', value)} disabled={!subject.hasPractical && !subject.hasProject}>
+                                                     <Select value={marks[subject.id]?.practicalAttendance} onValueChange={(value) => handleMarkChange(subject.id, 'practicalAttendance', value)}>
                                                         <SelectTrigger className="max-w-[120px] mx-auto text-center">
                                                             <SelectValue placeholder="Select" />
                                                         </SelectTrigger>
