@@ -9,6 +9,7 @@ import ReportCard from './report-card';
 import { Label } from '@/components/ui/label';
 import { FileDown, Printer } from 'lucide-react';
 import { useState } from 'react';
+import Marksheet from './marksheet';
 
 const reportFormats = [
     { id: 'annual-result', name: 'Annual Result' },
@@ -22,6 +23,23 @@ const reportFormats = [
 export default function SchoolReports() {
     const [selectedReport, setSelectedReport] = useState('annual-result');
     const [showReport, setShowReport] = useState(false);
+
+    const renderReport = () => {
+        switch (selectedReport) {
+            case 'annual-result':
+                return <ReportCard />;
+            case 'marksheet':
+                return <Marksheet />;
+            default:
+                return (
+                    <Card>
+                        <CardContent className="p-6">
+                            <p>The selected report format is not yet available.</p>
+                        </CardContent>
+                    </Card>
+                );
+        }
+    }
 
     return (
         <div className="space-y-4">
@@ -81,14 +99,7 @@ export default function SchoolReports() {
                             <Button variant="outline"><FileDown className="mr-2 h-4 w-4" /> Export for DEO</Button>
                         </div>
                     </div>
-                    {selectedReport === 'annual-result' && <ReportCard />}
-                    {selectedReport !== 'annual-result' && (
-                        <Card>
-                            <CardContent className="p-6">
-                                <p>The selected report format is not yet available.</p>
-                            </CardContent>
-                        </Card>
-                    )}
+                    {renderReport()}
                 </div>
             )}
         </div>
