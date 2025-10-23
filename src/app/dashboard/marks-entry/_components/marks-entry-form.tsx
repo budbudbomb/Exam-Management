@@ -207,17 +207,6 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                     </div>
                 )}
                 <div className="space-y-2">
-                    <Label>Exam Type</Label>
-                    <Select value={selectedExamType} onValueChange={setSelectedExamType}>
-                        <SelectTrigger><SelectValue placeholder="Select exam" /></SelectTrigger>
-                        <SelectContent>
-                            {mockExams.map(exam => (
-                                <SelectItem key={exam.id} value={exam.type}>{exam.type}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="space-y-2">
                     <Label>Medium</Label>
                     <Select>
                         <SelectTrigger><SelectValue placeholder="Select medium" /></SelectTrigger>
@@ -308,13 +297,28 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
             <Dialog open={isMarksModalOpen} onOpenChange={setMarksModalOpen}>
                 <DialogContent className="max-w-7xl">
                     <DialogHeader>
-                        <DialogTitle>Entering Marks for: <span className="text-primary">{selectedStudentForMarks?.name}</span></DialogTitle>
-                        <DialogDescription>
-                            Enter theory and practical marks for each subject. Grades and percentages will be calculated automatically.
-                        </DialogDescription>
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <DialogTitle>Entering Marks for: <span className="text-primary">{selectedStudentForMarks?.name}</span></DialogTitle>
+                                <DialogDescription>
+                                    Enter theory and practical marks for each subject. Grades and percentages will be calculated automatically.
+                                </DialogDescription>
+                            </div>
+                            <div className="space-y-2 w-1/4">
+                                <Label>Exam Type</Label>
+                                <Select value={selectedExamType} onValueChange={setSelectedExamType}>
+                                    <SelectTrigger><SelectValue placeholder="Select exam" /></SelectTrigger>
+                                    <SelectContent>
+                                        {mockExams.map(exam => (
+                                            <SelectItem key={exam.id} value={exam.type}>{exam.type}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
                     </DialogHeader>
 
-                    <div className="max-h-[calc(100vh-200px)] overflow-y-auto pr-4">
+                    <div className="max-h-[calc(100vh-250px)] overflow-y-auto pr-4">
                         {(selectedExamType === 'Half Yearly' || selectedExamType === 'Annual') && (
                             <Accordion type="single" collapsible className="w-full">
                                 {selectedExamType === 'Annual' && (
