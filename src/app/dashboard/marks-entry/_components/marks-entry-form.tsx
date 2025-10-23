@@ -11,6 +11,7 @@ import { Student, Subject } from '@/lib/types';
 import { Save } from 'lucide-react';
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 type MarkDetail = {
     theory: number | string;
@@ -29,9 +30,92 @@ interface MarksEntryFormProps {
     userRole?: 'school' | 'prabhari' | 'sankool';
 }
 
+const mockPreviousMarks = {
+    quarterly: {
+        'S1': { theory: 75, practical: 18, theoryAttendance: 'Present', practicalAttendance: 'Present', grace: 0 },
+        'S2': { theory: 60, practical: 22, theoryAttendance: 'Present', practicalAttendance: 'Present', grace: 0 },
+        'S3': { theory: 80, practical: 15, theoryAttendance: 'Present', practicalAttendance: 'Present', grace: 0 },
+        'S4': { theory: 65, practical: 20, theoryAttendance: 'Present', practicalAttendance: 'Present', grace: 0 },
+        'S5': { theory: 45, practical: 48, theoryAttendance: 'Present', practicalAttendance: 'Present', grace: 0 },
+    },
+    halfYearly: {
+        'S1': { theory: 80, practical: 19, theoryAttendance: 'Present', practicalAttendance: 'Present', grace: 0 },
+        'S2': { theory: 68, practical: 23, theoryAttendance: 'Present', practicalAttendance: 'Present', grace: 0 },
+        'S3': { theory: 85, practical: 18, theoryAttendance: 'Present', practicalAttendance: 'Present', grace: 0 },
+        'S4': { theory: 72, practical: 22, theoryAttendance: 'Present', practicalAttendance: 'Present', grace: 0 },
+        'S5': { theory: 48, practical: 49, theoryAttendance: 'Present', practicalAttendance: 'Present', grace: 0 },
+    }
+};
+
+const PreviousMarksTable = ({ subjects, marks }: { subjects: Subject[], marks: Marks }) => {
+    
+    const calculatePercentage = (theory: string | number, practical: string | number, subject: Subject) => {
+        const theoryMarks = Number(theory) || 0;
+        const practicalMarks = Number(practical) || 0;
+        const totalMarks = theoryMarks + practicalMarks;
+        
+        let maxPracticalOrProjectMarks = 0;
+        if (subject.hasPractical) {
+            maxPracticalOrProjectMarks = subject.practicalMaxMarks || 0;
+        } else if (subject.hasProject) {
+            maxPracticalOrProjectMarks = subject.projectMaxMarks || 0;
+        }
+
+        const maxTotal = subject.maxMarks + maxPracticalOrProjectMarks;
+        if (maxTotal === 0) return '0.00';
+        return ((totalMarks / maxTotal) * 100).toFixed(2);
+    }
+    
+    const getGrade = (percentage: number) => {
+        if (percentage >= 91) return 'A';
+        if (percentage >= 81) return 'B';
+        if (percentage >= 71) return 'C';
+        if (percentage >= 61) return 'D';
+        if (percentage >= 33) return 'E';
+        return 'F';
+    }
+
+    return (
+        <div className="rounded-md border my-4">
+            <Table>
+                <TableHeader>
+                     <TableRow>
+                        <TableHead>Subject</TableHead>
+                        <TableHead className="text-center">Theory</TableHead>
+                        <TableHead className="text-center">Practical/Project</TableHead>
+                        <TableHead className="text-center">Grace</TableHead>
+                        <TableHead className="text-center">Percentage</TableHead>
+                        <TableHead className="text-center">Grade</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {subjects.map((subject) => {
+                        const subjectMarks = marks[subject.id];
+                        const percentage = parseFloat(calculatePercentage(subjectMarks?.theory || 0, subjectMarks?.practical || 0, subject));
+                        const grade = getGrade(percentage);
+
+                        return (
+                            <TableRow key={subject.id}>
+                                <TableCell>{subject.name}</TableCell>
+                                <TableCell className="text-center">{subjectMarks?.theory}</TableCell>
+                                <TableCell className="text-center">{subjectMarks?.practical}</TableCell>
+                                <TableCell className="text-center">{subjectMarks?.grace}</TableCell>
+                                <TableCell className="text-center font-medium">{percentage.toFixed(2)}%</TableCell>
+                                <TableCell className="text-center font-semibold">{grade}</TableCell>
+                            </TableRow>
+                        );
+                    })}
+                </TableBody>
+            </Table>
+        </div>
+    );
+};
+
+
 export default function MarksEntryForm({ showDiseCode = false, userRole = 'school' }: MarksEntryFormProps) {
     const [selectedClass, setSelectedClass] = useState('');
     const [selectedSection, setSelectedSection] = useState('');
+    const [selectedExamType, setSelectedExamType] = useState('');
     const [classStudents, setClassStudents] = useState<Student[]>([]);
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [marks, setMarks] = useState<Marks>({});
@@ -59,7 +143,6 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
 
     const handleOpenMarksModal = (student: Student) => {
         setSelectedStudentForMarks(student);
-        // Reset marks for the selected student
         const initialMarks: Marks = {};
         subjects.forEach(subject => {
             initialMarks[subject.id] = { theory: '', practical: '', theoryAttendance: 'Present', practicalAttendance: 'Present', grace: '' };
@@ -73,7 +156,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
             ...prevMarks,
             [subjectId]: {
                 ...prevMarks[subjectId],
-                [type]: (type === 'theory' || type === 'practical' || type === 'grace') && value !== '' ? Number(value) : value
+                [type]: value
             }
         }));
     };
@@ -125,11 +208,11 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                 )}
                 <div className="space-y-2">
                     <Label>Exam Type</Label>
-                    <Select>
+                    <Select onValueChange={setSelectedExamType}>
                         <SelectTrigger><SelectValue placeholder="Select exam" /></SelectTrigger>
                         <SelectContent>
                             {mockExams.map(exam => (
-                                <SelectItem key={exam.id} value={exam.id}>{exam.type}</SelectItem>
+                                <SelectItem key={exam.id} value={exam.type}>{exam.type}</SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
@@ -230,6 +313,27 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                             Enter theory and practical marks for each subject. Grades and percentages will be calculated automatically.
                         </DialogDescription>
                     </DialogHeader>
+
+                    {(selectedExamType === 'Half Yearly' || selectedExamType === 'Annual') && (
+                        <Accordion type="single" collapsible className="w-full">
+                            {selectedExamType === 'Annual' && (
+                                <AccordionItem value="item-2">
+                                    <AccordionTrigger>View Half-Yearly Marks</AccordionTrigger>
+                                    <AccordionContent>
+                                        <PreviousMarksTable subjects={subjects} marks={mockPreviousMarks.halfYearly} />
+                                    </AccordionContent>
+                                </AccordionItem>
+                            )}
+                             <AccordionItem value="item-1">
+                                <AccordionTrigger>View Quarterly Marks</AccordionTrigger>
+                                <AccordionContent>
+                                   <PreviousMarksTable subjects={subjects} marks={mockPreviousMarks.quarterly} />
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
+                    )}
+
+
                     {selectedStudentForMarks && (
                         <div className="space-y-4 py-4">
                              <div className="rounded-md border">
@@ -352,5 +456,3 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
         </div>
     );
 }
-
-    
