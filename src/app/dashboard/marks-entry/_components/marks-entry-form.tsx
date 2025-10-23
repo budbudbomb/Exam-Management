@@ -78,11 +78,19 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
         }));
     };
     
-    const calculatePercentage = (theory: string | number, practical: string | number, maxTheory: number, maxPractical?: number) => {
+    const calculatePercentage = (theory: string | number, practical: string | number, subject: Subject) => {
         const theoryMarks = Number(theory) || 0;
         const practicalMarks = Number(practical) || 0;
         const totalMarks = theoryMarks + practicalMarks;
-        const maxTotal = maxTheory + (maxPractical || 0);
+        
+        let maxPracticalOrProjectMarks = 0;
+        if (subject.hasPractical) {
+            maxPracticalOrProjectMarks = subject.practicalMaxMarks || 0;
+        } else if (subject.hasProject) {
+            maxPracticalOrProjectMarks = subject.projectMaxMarks || 0;
+        }
+
+        const maxTotal = subject.maxMarks + maxPracticalOrProjectMarks;
         if (maxTotal === 0) return '0.00';
         return ((totalMarks / maxTotal) * 100).toFixed(2);
     }
@@ -231,7 +239,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                             <TableHead className="w-[50px]">S.No</TableHead>
                                             <TableHead>Subject Name</TableHead>
                                             <TableHead colSpan={4} className="text-center border-l">Theory</TableHead>
-                                            <TableHead colSpan={4} className="text-center border-l">Practical</TableHead>
+                                            <TableHead colSpan={5} className="text-center border-l">Practical / Project</TableHead>
                                             <TableHead className="text-center border-l">Grace</TableHead>
                                             <TableHead className="text-center border-l">Percentage</TableHead>
                                             <TableHead className="text-center">Grade</TableHead>
@@ -243,7 +251,8 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                             <TableHead className="text-center text-xs font-medium">Max</TableHead>
                                             <TableHead className="text-center text-xs font-medium">Enter</TableHead>
                                             <TableHead className="text-center text-xs font-medium">Attendance</TableHead>
-                                            <TableHead className="text-center border-l text-xs font-medium">Min</TableHead>
+                                            <TableHead className="text-center border-l text-xs font-medium">Type</TableHead>
+                                            <TableHead className="text-center text-xs font-medium">Min</TableHead>
                                             <TableHead className="text-center text-xs font-medium">Max</TableHead>
                                             <TableHead className="text-center text-xs font-medium">Enter</TableHead>
                                             <TableHead className="text-center text-xs font-medium">Attendance</TableHead>
@@ -254,7 +263,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                     </TableHeader>
                                     <TableBody>
                                         {subjects.map((subject, index) => {
-                                            const percentage = parseFloat(calculatePercentage(marks[subject.id]?.theory || 0, marks[subject.id]?.practical || 0, subject.maxMarks, subject.practicalMaxMarks));
+                                            const percentage = parseFloat(calculatePercentage(marks[subject.id]?.theory || 0, marks[subject.id]?.practical || 0, subject));
                                             const grade = getGrade(percentage);
 
                                             return (
@@ -279,13 +288,16 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                                     </Select>
                                                 </TableCell>
                                                 
-                                                <TableCell className="text-center border-l">{subject.practicalMinMarks ?? 'N/A'}</TableCell>
-                                                <TableCell className="text-center">{subject.practicalMaxMarks ?? 'N/A'}</TableCell>
+                                                <TableCell className="text-center border-l font-medium">
+                                                    {subject.hasPractical ? 'Practical' : subject.hasProject ? 'Project' : 'N/A'}
+                                                </TableCell>
+                                                <TableCell className="text-center">{subject.hasPractical ? subject.practicalMinMarks : subject.hasProject ? subject.projectMinMarks : 'N/A'}</TableCell>
+                                                <TableCell className="text-center">{subject.hasPractical ? subject.practicalMaxMarks : subject.hasProject ? subject.projectMaxMarks : 'N/A'}</TableCell>
                                                 <TableCell>
-                                                    <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practical} onChange={(e) => handleMarkChange(subject.id, 'practical', e.target.value)} disabled={!subject.hasPractical}/>
+                                                    <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practical} onChange={(e) => handleMarkChange(subject.id, 'practical', e.target.value)} disabled={!subject.hasPractical && !subject.hasProject}/>
                                                 </TableCell>
                                                 <TableCell>
-                                                     <Select value={marks[subject.id]?.practicalAttendance} onValueChange={(value) => handleMarkChange(subject.id, 'practicalAttendance', value)} disabled={!subject.hasPractical}>
+                                                     <Select value={marks[subject.id]?.practicalAttendance} onValueChange={(value) => handleMarkChange(subject.id, 'practicalAttendance', value)} disabled={!subject.hasPractical && !subject.hasProject}>
                                                         <SelectTrigger className="max-w-[120px] mx-auto text-center">
                                                             <SelectValue placeholder="Select" />
                                                         </SelectTrigger>
