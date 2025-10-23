@@ -140,14 +140,18 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
             }
         }
     };
-
-    const handleOpenMarksModal = (student: Student) => {
-        setSelectedStudentForMarks(student);
+    
+    const resetMarks = () => {
         const initialMarks: Marks = {};
         subjects.forEach(subject => {
             initialMarks[subject.id] = { theory: '', practical: '', theoryAttendance: 'Present', practicalAttendance: 'Present', grace: '' };
         });
         setMarks(initialMarks);
+    }
+
+    const handleOpenMarksModal = (student: Student) => {
+        setSelectedStudentForMarks(student);
+        resetMarks();
         setMarksModalOpen(true);
     };
     
@@ -196,6 +200,33 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
             });
         }
     }
+    
+    const handleSaveAndNext = () => {
+        if (!selectedStudentForMarks) return;
+
+        // Mock saving the marks
+        console.log(`Saving marks for ${selectedStudentForMarks.name}`, marks);
+        toast({
+            title: `Marks Saved for ${selectedStudentForMarks.name}`,
+            description: "The student's marks have been successfully saved.",
+        });
+
+        const currentIndex = classStudents.findIndex(s => s.id === selectedStudentForMarks.id);
+        const isLastStudent = currentIndex === classStudents.length - 1;
+
+        if (isLastStudent) {
+            setMarksModalOpen(false);
+            toast({
+                title: "All students updated!",
+                description: "You have entered marks for all students in this class.",
+            });
+        } else {
+            const nextStudent = classStudents[currentIndex + 1];
+            setSelectedStudentForMarks(nextStudent);
+            resetMarks();
+        }
+    };
+
 
     return (
         <div className="space-y-8">
@@ -432,9 +463,9 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                         )}
                     </div>
                     <DialogFooter>
-                        <Button onClick={() => setMarksModalOpen(false)}>
+                        <Button onClick={handleSaveAndNext}>
                             <Save className="mr-2 h-4 w-4" />
-                            Save Marks for {selectedStudentForMarks?.name}
+                            Save and Next
                         </Button>
                     </DialogFooter>
                 </DialogContent>
