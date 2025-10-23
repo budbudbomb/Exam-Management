@@ -15,6 +15,9 @@ import { useToast } from '@/hooks/use-toast';
 type MarkDetail = {
     theory: number | string;
     practical: number | string;
+    theoryAttendance: number | string;
+    practicalAttendance: number | string;
+    grace: number | string;
 };
 
 type Marks = {
@@ -59,13 +62,13 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
         // Reset marks for the selected student
         const initialMarks: Marks = {};
         subjects.forEach(subject => {
-            initialMarks[subject.id] = { theory: '', practical: '' };
+            initialMarks[subject.id] = { theory: '', practical: '', theoryAttendance: '', practicalAttendance: '', grace: '' };
         });
         setMarks(initialMarks);
         setMarksModalOpen(true);
     };
     
-    const handleMarkChange = (subjectId: string, type: 'theory' | 'practical', value: string) => {
+    const handleMarkChange = (subjectId: string, type: 'theory' | 'practical' | 'theoryAttendance' | 'practicalAttendance' | 'grace', value: string) => {
         setMarks(prevMarks => ({
             ...prevMarks,
             [subjectId]: {
@@ -212,7 +215,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
             )}
 
             <Dialog open={isMarksModalOpen} onOpenChange={setMarksModalOpen}>
-                <DialogContent className="max-w-4xl">
+                <DialogContent className="max-w-7xl">
                     <DialogHeader>
                         <DialogTitle>Entering Marks for: <span className="text-primary">{selectedStudentForMarks?.name}</span></DialogTitle>
                         <DialogDescription>
@@ -226,23 +229,25 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                     <TableHeader>
                                         <TableRow>
                                             <TableHead className="w-[50px]">S.No</TableHead>
-                                            <TableHead className="w-[100px]">Roll No.</TableHead>
                                             <TableHead>Subject Name</TableHead>
-                                            <TableHead colSpan={3} className="text-center border-l">Theory</TableHead>
-                                            <TableHead colSpan={3} className="text-center border-l">Practical</TableHead>
+                                            <TableHead colSpan={4} className="text-center border-l">Theory</TableHead>
+                                            <TableHead colSpan={4} className="text-center border-l">Practical</TableHead>
+                                            <TableHead className="text-center border-l">Grace</TableHead>
                                             <TableHead className="text-center border-l">Percentage</TableHead>
                                             <TableHead className="text-center">Grade</TableHead>
                                         </TableRow>
                                         <TableRow>
                                             <TableHead></TableHead>
                                             <TableHead></TableHead>
+                                            <TableHead className="text-center border-l text-xs font-medium">Min</TableHead>
+                                            <TableHead className="text-center text-xs font-medium">Max</TableHead>
+                                            <TableHead className="text-center text-xs font-medium">Enter</TableHead>
+                                            <TableHead className="text-center text-xs font-medium">Attendance</TableHead>
+                                            <TableHead className="text-center border-l text-xs font-medium">Min</TableHead>
+                                            <TableHead className="text-center text-xs font-medium">Max</TableHead>
+                                            <TableHead className="text-center text-xs font-medium">Enter</TableHead>
+                                            <TableHead className="text-center text-xs font-medium">Attendance</TableHead>
                                             <TableHead></TableHead>
-                                            <TableHead className="text-center border-l text-xs font-medium">Min</TableHead>
-                                            <TableHead className="text-center text-xs font-medium">Max</TableHead>
-                                            <TableHead className="text-center text-xs font-medium">Enter</TableHead>
-                                            <TableHead className="text-center border-l text-xs font-medium">Min</TableHead>
-                                            <TableHead className="text-center text-xs font-medium">Max</TableHead>
-                                            <TableHead className="text-center text-xs font-medium">Enter</TableHead>
                                             <TableHead></TableHead>
                                             <TableHead></TableHead>
                                         </TableRow>
@@ -255,7 +260,6 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                             return (
                                             <TableRow key={subject.id}>
                                                 <TableCell>{index + 1}</TableCell>
-                                                <TableCell>{selectedStudentForMarks.rollNumber}</TableCell>
                                                 <TableCell>{subject.name}</TableCell>
                                                 
                                                 <TableCell className="text-center border-l">{subject.minMarks}</TableCell>
@@ -263,11 +267,21 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                                 <TableCell>
                                                     <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.theory} onChange={(e) => handleMarkChange(subject.id, 'theory', e.target.value)} />
                                                 </TableCell>
+                                                <TableCell>
+                                                    <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.theoryAttendance} onChange={(e) => handleMarkChange(subject.id, 'theoryAttendance', e.target.value)} />
+                                                </TableCell>
                                                 
                                                 <TableCell className="text-center border-l">{subject.practicalMinMarks ?? 10}</TableCell>
                                                 <TableCell className="text-center">{subject.practicalMaxMarks ?? 25}</TableCell>
                                                 <TableCell>
                                                     <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practical} onChange={(e) => handleMarkChange(subject.id, 'practical', e.target.value)} />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practicalAttendance} onChange={(e) => handleMarkChange(subject.id, 'practicalAttendance', e.target.value)} />
+                                                </TableCell>
+
+                                                <TableCell className="border-l">
+                                                    <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.grace} onChange={(e) => handleMarkChange(subject.id, 'grace', e.target.value)} />
                                                 </TableCell>
 
                                                 <TableCell className="text-center border-l font-medium">{percentage.toFixed(2)}%</TableCell>
