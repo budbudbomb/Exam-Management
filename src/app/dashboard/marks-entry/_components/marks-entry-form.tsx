@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -379,7 +380,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                                 <TableHead className="w-[50px]">S.No</TableHead>
                                                 <TableHead>Subject Name</TableHead>
                                                 <TableHead colSpan={4} className="text-center border-l">Theory</TableHead>
-                                                <TableHead colSpan={5} className="text-center border-l">Practical / Project</TableHead>
+                                                <TableHead colSpan={4} className="text-center border-l">Practical / Project</TableHead>
                                                 <TableHead className="text-center border-l">Grace</TableHead>
                                                 <TableHead className="text-center border-l">Percentage</TableHead>
                                                 <TableHead className="text-center">Grade</TableHead>
@@ -387,15 +388,14 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                             <TableRow>
                                                 <TableHead></TableHead>
                                                 <TableHead></TableHead>
-                                                <TableHead className="text-center border-l text-xs font-medium">Min</TableHead>
-                                                <TableHead className="text-center text-xs font-medium">Max</TableHead>
-                                                <TableHead className="text-center text-xs font-medium">Enter</TableHead>
-                                                <TableHead className="text-center text-xs font-medium">Attendance</TableHead>
-                                                <TableHead className="text-center border-l text-xs font-medium">Type</TableHead>
+                                                <TableHead className="text-center border-l text-xs font-medium">Attendance</TableHead>
                                                 <TableHead className="text-center text-xs font-medium">Min</TableHead>
                                                 <TableHead className="text-center text-xs font-medium">Max</TableHead>
                                                 <TableHead className="text-center text-xs font-medium">Enter</TableHead>
-                                                <TableHead className="text-center text-xs font-medium">Attendance</TableHead>
+                                                <TableHead className="text-center border-l text-xs font-medium">Attendance</TableHead>
+                                                <TableHead className="text-center text-xs font-medium">Min</TableHead>
+                                                <TableHead className="text-center text-xs font-medium">Max</TableHead>
+                                                <TableHead className="text-center text-xs font-medium">Enter</TableHead>
                                                 <TableHead></TableHead>
                                                 <TableHead></TableHead>
                                                 <TableHead></TableHead>
@@ -411,12 +411,8 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                                     <TableCell>{index + 1}</TableCell>
                                                     <TableCell>{subject.name}</TableCell>
                                                     
-                                                    <TableCell className="text-center border-l">{subject.minMarks}</TableCell>
-                                                    <TableCell className="text-center">{subject.maxMarks}</TableCell>
-                                                    <TableCell>
-                                                        <Input type="text" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.theory} onChange={(e) => handleMarkChange(subject.id, 'theory', e.target.value)} />
-                                                    </TableCell>
-                                                    <TableCell>
+                                                    {/* Theory Section */}
+                                                    <TableCell className="border-l">
                                                         <Select value={marks[subject.id]?.theoryAttendance} onValueChange={(value) => handleMarkChange(subject.id, 'theoryAttendance', value)}>
                                                             <SelectTrigger className="max-w-[120px] mx-auto text-center">
                                                                 <SelectValue placeholder="Select" />
@@ -427,16 +423,14 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                                             </SelectContent>
                                                         </Select>
                                                     </TableCell>
+                                                    <TableCell className="text-center">{subject.minMarks}</TableCell>
+                                                    <TableCell className="text-center">{subject.maxMarks}</TableCell>
+                                                    <TableCell>
+                                                        <Input type="text" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.theory} onChange={(e) => handleMarkChange(subject.id, 'theory', e.target.value)} />
+                                                    </TableCell>
                                                     
-                                                    <TableCell className="text-center border-l font-medium">
-                                                        {subject.hasPractical ? 'Practical' : 'Project'}
-                                                    </TableCell>
-                                                    <TableCell className="text-center">{subject.hasPractical ? subject.practicalMinMarks : subject.projectMinMarks}</TableCell>
-                                                    <TableCell className="text-center">{subject.hasPractical ? subject.practicalMaxMarks : subject.projectMaxMarks}</TableCell>
-                                                    <TableCell>
-                                                        <Input type="text" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practical} onChange={(e) => handleMarkChange(subject.id, 'practical', e.target.value)} />
-                                                    </TableCell>
-                                                    <TableCell>
+                                                    {/* Practical/Project Section */}
+                                                    <TableCell className="border-l">
                                                         <Select value={marks[subject.id]?.practicalAttendance} onValueChange={(value) => handleMarkChange(subject.id, 'practicalAttendance', value)}>
                                                             <SelectTrigger className="max-w-[120px] mx-auto text-center">
                                                                 <SelectValue placeholder="Select" />
@@ -447,11 +441,16 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                                             </SelectContent>
                                                         </Select>
                                                     </TableCell>
-
+                                                    <TableCell className="text-center">{subject.hasPractical ? subject.practicalMinMarks : subject.projectMinMarks}</TableCell>
+                                                    <TableCell className="text-center">{subject.hasPractical ? subject.practicalMaxMarks : subject.projectMaxMarks}</TableCell>
+                                                    <TableCell>
+                                                        <Input type="text" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practical} onChange={(e) => handleMarkChange(subject.id, 'practical', e.target.value)} />
+                                                    </TableCell>
+                                                   
+                                                    {/* Grace and Final Marks */}
                                                     <TableCell className="border-l">
                                                         <Input type="text" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.grace} onChange={(e) => handleMarkChange(subject.id, 'grace', e.target.value)} />
                                                     </TableCell>
-
                                                     <TableCell className="text-center border-l font-medium">{percentage.toFixed(2)}%</TableCell>
                                                     <TableCell className="text-center font-semibold">{grade}</TableCell>
                                                 </TableRow>
@@ -493,3 +492,5 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
         </div>
     );
 }
+
+    
