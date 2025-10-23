@@ -178,7 +178,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className="w-[50px]">S.No</TableHead>
-                                    <TableHead>Roll Number</TableHead>
+                                    <TableHead>Student Name</TableHead>
                                     <TableHead>Father's Name</TableHead>
                                     <TableHead>Mother's Name</TableHead>
                                     <TableHead>Samagra ID</TableHead>
@@ -189,7 +189,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                 {classStudents.map((student, index) => (
                                     <TableRow key={student.id}>
                                         <TableCell>{index + 1}</TableCell>
-                                        <TableCell>{student.rollNumber}</TableCell>
+                                        <TableCell>{student.name}</TableCell>
                                         <TableCell>{student.fatherName || 'N/A'}</TableCell>
                                         <TableCell>{student.motherName || 'N/A'}</TableCell>
                                         <TableCell>{student.samagraId || 'N/A'}</TableCell>
@@ -274,7 +274,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                                 <TableCell className="text-center border-l">{subject.minMarks}</TableCell>
                                                 <TableCell className="text-center">{subject.maxMarks}</TableCell>
                                                 <TableCell>
-                                                    <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.theory} onChange={(e) => handleMarkChange(subject.id, 'theory', e.target.value)} />
+                                                    <Input type="text" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.theory} onChange={(e) => handleMarkChange(subject.id, 'theory', e.target.value)} />
                                                 </TableCell>
                                                 <TableCell>
                                                     <Select value={marks[subject.id]?.theoryAttendance} onValueChange={(value) => handleMarkChange(subject.id, 'theoryAttendance', value)}>
@@ -294,7 +294,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                                 <TableCell className="text-center">{subject.hasPractical ? subject.practicalMinMarks : subject.projectMinMarks}</TableCell>
                                                 <TableCell className="text-center">{subject.hasPractical ? subject.practicalMaxMarks : subject.projectMaxMarks}</TableCell>
                                                 <TableCell>
-                                                    <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practical} onChange={(e) => handleMarkChange(subject.id, 'practical', e.target.value)} />
+                                                    <Input type="text" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practical} onChange={(e) => handleMarkChange(subject.id, 'practical', e.target.value)} />
                                                 </TableCell>
                                                 <TableCell>
                                                      <Select value={marks[subject.id]?.practicalAttendance} onValueChange={(value) => handleMarkChange(subject.id, 'practicalAttendance', value)}>
@@ -309,7 +309,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                                 </TableCell>
 
                                                 <TableCell className="border-l">
-                                                    <Input type="number" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.grace} onChange={(e) => handleMarkChange(subject.id, 'grace', e.target.value)} />
+                                                    <Input type="text" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.grace} onChange={(e) => handleMarkChange(subject.id, 'grace', e.target.value)} />
                                                 </TableCell>
 
                                                 <TableCell className="text-center border-l font-medium">{percentage.toFixed(2)}%</TableCell>
@@ -352,3 +352,5 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
         </div>
     );
 }
+
+    
