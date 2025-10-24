@@ -515,15 +515,20 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                         </TableBody>
                                         <TableFooter>
                                             <TableRow className="bg-muted/50 font-semibold">
-                                                <TableCell colSpan={10} className="text-left">Overall Summary</TableCell>
-                                                <TableCell className="text-center">{overallSummary.totalMarksObtained} / {overallSummary.maxTotalMarks}</TableCell>
-                                                <TableCell className="text-center">{overallSummary.overallPercentage.toFixed(2)}%</TableCell>
-                                                <TableCell className="text-center">{overallSummary.overallGrade}</TableCell>
-                                                <TableCell className="text-center">{overallSummary.result}</TableCell>
+                                                <TableCell colSpan={14} className="text-left">
+                                                    <div className='flex gap-4'>
+                                                        <span>Overall Summary:</span>
+                                                        <span>{overallSummary.totalMarksObtained} / {overallSummary.maxTotalMarks}</span>
+                                                        <span>({overallSummary.overallPercentage.toFixed(2)}%)</span>
+                                                        <span>Grade: {overallSummary.overallGrade}</span>
+                                                        <span>Result: {overallSummary.result}</span>
+                                                    </div>
+                                                </TableCell>
                                             </TableRow>
-                                             <TableRow className="bg-muted/50 font-semibold">
-                                                <TableCell colSpan={13} className="text-left">Division</TableCell>
-                                                <TableCell className="text-center">{overallSummary.division}</TableCell>
+                                            <TableRow className="bg-muted/50 font-semibold">
+                                                <TableCell colSpan={14} className="text-left">
+                                                    Division: {overallSummary.division}
+                                                </TableCell>
                                             </TableRow>
                                         </TableFooter>
                                     </Table>
