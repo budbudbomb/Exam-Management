@@ -196,43 +196,59 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
         let totalMarksObtained = 0;
         let maxTotalMarks = 0;
         let isFail = false;
+        let allMarksEntered = true;
 
         subjects.forEach(subject => {
             const subjectMarks = marks[subject.id];
             if (subjectMarks) {
-                const theory = Number(subjectMarks.theory) || 0;
-                const practical = Number(subjectMarks.practical) || 0;
-                const grace = Number(subjectMarks.grace) || 0;
-                totalMarksObtained += theory + practical + grace;
+                const theory = Number(subjectMarks.theory);
+                const practical = Number(subjectMarks.practical);
+                
+                if (subjectMarks.theory === '') {
+                    allMarksEntered = false;
+                }
+                if ((subject.hasPractical || subject.hasProject) && subjectMarks.practical === '') {
+                    allMarksEntered = false;
+                }
+
+                totalMarksObtained += (Number.isNaN(theory) ? 0 : theory) + (Number.isNaN(practical) ? 0 : practical) + (Number(subjectMarks.grace) || 0);
 
                 let maxPracticalOrProject = 0;
                 if(subject.hasPractical) maxPracticalOrProject = subject.practicalMaxMarks || 0;
                 else if (subject.hasProject) maxPracticalOrProject = subject.projectMaxMarks || 0;
                 maxTotalMarks += subject.maxMarks + maxPracticalOrProject;
                 
-                // Check fail condition
-                const passingMarks = subject.passingMarks;
-                if (theory < passingMarks) {
-                    isFail = true;
+                if (allMarksEntered) {
+                    const passingMarks = subject.passingMarks;
+                    if (theory < passingMarks) {
+                        isFail = true;
+                    }
+                    if(subject.hasPractical && practical < (subject.practicalPassingMarks || 0)) {
+                        isFail = true;
+                    }
+                    if(subject.hasProject && practical < (subject.projectPassingMarks || 0)) {
+                        isFail = true;
+                    }
                 }
-                if(subject.hasPractical && practical < (subject.practicalPassingMarks || 0)) {
-                    isFail = true;
-                }
-                if(subject.hasProject && practical < (subject.projectPassingMarks || 0)) {
-                    isFail = true;
-                }
+            } else {
+                allMarksEntered = false;
             }
         });
         
         const overallPercentage = maxTotalMarks > 0 ? (totalMarksObtained / maxTotalMarks) * 100 : 0;
-        const overallGrade = getGrade(overallPercentage);
-        const result = isFail ? 'FAIL' : 'PASS';
         
+        let overallGrade = '';
+        let result = '';
         let division = '-';
-        if (result === 'PASS') {
-            if (overallPercentage >= 60) division = 'First Division';
-            else if (overallPercentage >= 45) division = 'Second Division';
-            else if (overallPercentage >= 33) division = 'Third Division';
+
+        if (allMarksEntered) {
+            overallGrade = getGrade(overallPercentage);
+            result = isFail ? 'FAIL' : 'PASS';
+            if (result === 'PASS') {
+                if (overallPercentage >= 60) division = 'First Division';
+                else if (overallPercentage >= 45) division = 'Second Division';
+                else if (overallPercentage >= 33) division = 'Third Division';
+            }
         }
 
         return {
@@ -241,7 +257,8 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
             overallPercentage,
             overallGrade,
             result,
-            division
+            division,
+            allMarksEntered
         }
 
     }, [marks, subjects]);
@@ -520,8 +537,12 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                                         <span>Overall Summary:</span>
                                                         <span>{overallSummary.totalMarksObtained} / {overallSummary.maxTotalMarks}</span>
                                                         <span>({overallSummary.overallPercentage.toFixed(2)}%)</span>
-                                                        <span>Grade: {overallSummary.overallGrade}</span>
-                                                        <span>Result: {overallSummary.result}</span>
+                                                         {overallSummary.allMarksEntered && (
+                                                            <>
+                                                                <span>Grade: {overallSummary.overallGrade}</span>
+                                                                <span>Result: {overallSummary.result}</span>
+                                                            </>
+                                                        )}
                                                     </div>
                                                 </TableCell>
                                             </TableRow>
@@ -567,7 +588,3 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
         </div>
     );
 }
-
-    
-
-    
