@@ -104,7 +104,7 @@ export default function Navigation() {
                 defaultValue={link.subLinks.some(sub => pathname.startsWith(sub.href)) ? "item-1" : undefined}
               >
                 <AccordionItem value="item-1" className="border-b-0">
-                  <AccordionTrigger className="flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-primary-foreground transition-all hover:bg-sidebar/80 hover:text-sidebar-accent-foreground hover:no-underline [&[data-state=open]]:bg-sidebar/80 [&[data-state=open]]:text-sidebar-accent-foreground [&[data-state=open]>svg:last-child]:-rotate-90">
+                  <AccordionTrigger className="flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-primary-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground hover:no-underline [&[data-state=open]]:bg-sidebar [&[data-state=open]]:text-sidebar-accent-foreground [&[data-state=open]>svg:last-child]:-rotate-90">
                     {link.icon}
                     {link.label}
                   </AccordionTrigger>
@@ -115,8 +115,8 @@ export default function Navigation() {
                           key={subLink.href}
                           href={subLink.href}
                           className={cn(
-                            'flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar/80 hover:text-sidebar-accent-foreground',
-                            pathname.startsWith(subLink.href) && 'bg-sidebar/80 text-sidebar-accent-foreground'
+                            'flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground',
+                            pathname.startsWith(subLink.href) && 'bg-sidebar text-sidebar-accent-foreground'
                           )}
                         >
                           {subLink.icon}
@@ -132,8 +132,8 @@ export default function Navigation() {
                 key={link.href}
                 href={link.href!}
                 className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar/80 hover:text-sidebar-accent-foreground',
-                  pathname === link.href && 'bg-sidebar/80 text-sidebar-accent-foreground'
+                  'flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground',
+                  pathname === link.href && 'bg-sidebar text-sidebar-accent-foreground'
                 )}
               >
                 {link.icon}
