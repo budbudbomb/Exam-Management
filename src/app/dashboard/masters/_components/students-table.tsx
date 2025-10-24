@@ -85,6 +85,7 @@ export default function StudentsTable() {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="2025-2026">2025-2026</SelectItem>
+                                <SelectItem value="2024-2025">2024-2025</SelectItem>
                                 <SelectItem value="2023-2024">2023-2024</SelectItem>
                             </SelectContent>
                         </Select>
