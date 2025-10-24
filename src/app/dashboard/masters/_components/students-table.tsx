@@ -23,8 +23,9 @@ import { Student } from '@/lib/types';
 
 export default function StudentsTable() {
     const [students, setStudents] = useState<Student[]>(mockStudents);
-    const [filteredStudents, setFilteredStudents] = useState<Student[]>(mockStudents);
+    const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
     const [selectedClassId, setSelectedClassId] = useState<string>('');
+    const [selectedYear, setSelectedYear] = useState<string>('');
     const [showTable, setShowTable] = useState(false);
     const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -37,7 +38,7 @@ export default function StudentsTable() {
             setShowTable(true);
         } else {
             setFilteredStudents(students);
-            setShowTable(true);
+            setShowTable(false);
         }
     };
     
@@ -75,8 +76,19 @@ export default function StudentsTable() {
     return (
         <Card>
             <CardContent className="pt-6">
-                <div className="flex items-end gap-4 mb-4">
-                    <div className="space-y-2 flex-1">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
+                    <div className="space-y-2">
+                        <Label>Academic Year</Label>
+                        <Select onValueChange={setSelectedYear} value={selectedYear}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select year" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="2023-2024">2023-2024</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
                         <Label>Filter by Class</Label>
                         <Select onValueChange={setSelectedClassId} value={selectedClassId}>
                             <SelectTrigger>
@@ -89,7 +101,7 @@ export default function StudentsTable() {
                             </SelectContent>
                         </Select>
                     </div>
-                     <Button onClick={handleSearch} disabled={!selectedClassId}>
+                     <Button onClick={handleSearch} disabled={!selectedClassId || !selectedYear}>
                         <Search className="mr-2 h-4 w-4" /> Search
                      </Button>
                 </div>
