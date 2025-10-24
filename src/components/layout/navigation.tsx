@@ -47,7 +47,7 @@ const navLinks = [
       {
         href: '/dashboard/student-details-update',
         icon: <User className="h-4 w-4" />,
-        label: 'Student Details update',
+        label: 'Update Students Details',
       },
        {
         href: '/dashboard/view-exam-schedule',

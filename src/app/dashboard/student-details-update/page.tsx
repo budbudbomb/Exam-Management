@@ -12,7 +12,7 @@ export default function StudentDetailsUpdatePage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight font-headline">Student Details Update</h1>
+        <h1 className="text-3xl font-bold tracking-tight font-headline">Update Students Details</h1>
         <p className="text-muted-foreground">
           Find and update student profile information.
         </p>

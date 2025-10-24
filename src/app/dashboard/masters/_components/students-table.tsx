@@ -61,17 +61,17 @@ export default function StudentsTable() {
         setSelectedStudent(null);
     }
 
-    const classOptions = Array.from(new Set(mockStudents.map(s => s.class))).sort((a,b) => Number(a) - Number(b));
+    const sortedClasses = [...mockClasses].sort((a, b) => {
+        const aNum = parseInt(a.name.split(' ')[1]);
+        const bNum = parseInt(b.name.split(' ')[1]);
+        return aNum - bNum;
+    });
 
 
     return (
         <Card>
             <CardHeader>
-                <div className="flex justify-between items-start">
-                    <div>
-                        <CardTitle>Student Master</CardTitle>
-                        <CardDescription>Manage student profiles, including their class, section, and personal details.</CardDescription>
-                    </div>
+                <div className="flex justify-end items-start">
                     <div className="text-xl font-bold text-muted-foreground">Academic Year 2024-2025</div>
                 </div>
             </CardHeader>
@@ -84,8 +84,8 @@ export default function StudentsTable() {
                                 <SelectValue placeholder="Select a class" />
                             </SelectTrigger>
                             <SelectContent>
-                                {classOptions.map(cls => (
-                                    <SelectItem key={cls} value={cls}>Class {cls}</SelectItem>
+                                {sortedClasses.map(cls => (
+                                    <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
