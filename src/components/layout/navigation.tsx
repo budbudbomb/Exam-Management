@@ -49,6 +49,11 @@ const navLinks = [
         icon: <User className="h-4 w-4" />,
         label: 'Student Details update',
       },
+       {
+        href: '/dashboard/view-exam-schedule',
+        icon: <CalendarDays className="h-4 w-4" />,
+        label: 'View Exam Schedule',
+      },
       {
         href: '/dashboard/marks-entry',
         icon: <ClipboardEdit className="h-4 w-4" />,

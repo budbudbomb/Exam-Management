@@ -14,9 +14,10 @@ import React, { useState } from 'react';
 interface ExistingSchedulesProps {
     schedules: ExamSchedule[];
     onDeleteSchedule: (id: string) => void;
+    isReadOnly?: boolean;
 }
 
-export default function ExistingSchedules({ schedules, onDeleteSchedule }: ExistingSchedulesProps) {
+export default function ExistingSchedules({ schedules, onDeleteSchedule, isReadOnly = false }: ExistingSchedulesProps) {
     const [selectedClass, setSelectedClass] = useState('');
 
     const filteredSchedules = selectedClass ? schedules.filter(s => s.classId === selectedClass) : [];
@@ -58,14 +59,16 @@ export default function ExistingSchedules({ schedules, onDeleteSchedule }: Exist
                                      <CardTitle className="text-lg">
                                         Schedule for {mockClasses.find(c => c.id === schedule.classId)?.name} - {schedule.examType}
                                      </CardTitle>
-                                     <div className="flex items-center gap-2">
-                                        <Button variant="outline" size="icon">
-                                            <Pencil className="h-4 w-4" />
-                                        </Button>
-                                         <Button variant="destructive" size="icon" onClick={() => onDeleteSchedule(schedule.id)}>
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                     </div>
+                                     {!isReadOnly && (
+                                        <div className="flex items-center gap-2">
+                                            <Button variant="outline" size="icon">
+                                                <Pencil className="h-4 w-4" />
+                                            </Button>
+                                            <Button variant="destructive" size="icon" onClick={() => onDeleteSchedule(schedule.id)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                     )}
                                 </CardHeader>
                                 <CardContent className="p-0">
                                     <Table>
