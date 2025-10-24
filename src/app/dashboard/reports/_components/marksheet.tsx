@@ -87,28 +87,28 @@ export default function Marksheet() {
                 <div className="border-b-2 border-black">
                     <Table className="text-xs">
                         <TableHeader>
-                            <TableRow className="border-b-2 border-black">
-                                <TableHead rowSpan={2} className="border-r border-black align-middle text-center w-[5%]">S.No.</TableHead>
-                                <TableHead rowSpan={2} className="border-r border-black align-middle text-center w-[10%]">SUB CODE</TableHead>
-                                <TableHead rowSpan={2} className="border-r-2 border-black align-middle text-center w-[20%]">SUBJECT</TableHead>
-                                <TableHead colSpan={2} className="border-r-2 border-black align-middle text-center">MAXIMUM MARKS</TableHead>
-                                <TableHead colSpan={2} className="border-r-2 border-black align-middle text-center">MINIMUM MARKS</TableHead>
-                                <TableHead colSpan={2} className="border-r-2 border-black align-middle text-center">ANNUAL OBTAINED MARKS</TableHead>
-                                <TableHead rowSpan={2} className="border-r-2 border-black align-middle text-center">5% WEIGHTAGE OF QUARTERLY EXAM</TableHead>
-                                <TableHead rowSpan={2} className="border-r-2 border-black align-middle text-center">5% WEIGHTAGE OF HALF YEARLY EXAM</TableHead>
-                                <TableHead colSpan={2} className="border-r-2 border-black align-middle text-center">TOTAL (IN ROUND)</TableHead>
-                                <TableHead rowSpan={2} className="border-r-2 border-black align-middle text-center">GRAND TOTAL</TableHead>
-                                <TableHead rowSpan={2} className="align-middle text-center">REMARK</TableHead>
+                            <TableRow className="border-b-2 border-black bg-orange-500 text-white hover:bg-orange-500/90">
+                                <TableHead rowSpan={2} className="border-r border-black align-middle text-center w-[5%] text-white">S.No.</TableHead>
+                                <TableHead rowSpan={2} className="border-r border-black align-middle text-center w-[10%] text-white">SUB CODE</TableHead>
+                                <TableHead rowSpan={2} className="border-r-2 border-black align-middle text-center w-[20%] text-white">SUBJECT</TableHead>
+                                <TableHead colSpan={2} className="border-r-2 border-black align-middle text-center text-white">MAXIMUM MARKS</TableHead>
+                                <TableHead colSpan={2} className="border-r-2 border-black align-middle text-center text-white">MINIMUM MARKS</TableHead>
+                                <TableHead colSpan={2} className="border-r-2 border-black align-middle text-center text-white">ANNUAL OBTAINED MARKS</TableHead>
+                                <TableHead rowSpan={2} className="border-r-2 border-black align-middle text-center text-white">5% WEIGHTAGE OF QUARTERLY EXAM</TableHead>
+                                <TableHead rowSpan={2} className="border-r-2 border-black align-middle text-center text-white">5% WEIGHTAGE OF HALF YEARLY EXAM</TableHead>
+                                <TableHead colSpan={2} className="border-r-2 border-black align-middle text-center text-white">TOTAL (IN ROUND)</TableHead>
+                                <TableHead rowSpan={2} className="border-r-2 border-black align-middle text-center text-white">GRAND TOTAL</TableHead>
+                                <TableHead rowSpan={2} className="align-middle text-center text-white">REMARK</TableHead>
                             </TableRow>
-                             <TableRow className="border-b-2 border-black">
-                                <TableHead className="border-r border-black text-center">TH</TableHead>
-                                <TableHead className="border-r-2 border-black text-center">PR</TableHead>
-                                <TableHead className="border-r border-black text-center">TH</TableHead>
-                                <TableHead className="border-r-2 border-black text-center">PR</TableHead>
-                                <TableHead className="border-r border-black text-center">THEORY</TableHead>
-                                <TableHead className="border-r-2 border-black text-center">PRACTICAL</TableHead>
-                                <TableHead className="border-r border-black text-center">TH</TableHead>
-                                <TableHead className="border-r-2 border-black text-center">PR</TableHead>
+                             <TableRow className="border-b-2 border-black bg-orange-500 text-white hover:bg-orange-500/90">
+                                <TableHead className="border-r border-black text-center text-white">TH</TableHead>
+                                <TableHead className="border-r-2 border-black text-center text-white">PR</TableHead>
+                                <TableHead className="border-r border-black text-center text-white">TH</TableHead>
+                                <TableHead className="border-r-2 border-black text-center text-white">PR</TableHead>
+                                <TableHead className="border-r border-black text-center text-white">THEORY</TableHead>
+                                <TableHead className="border-r-2 border-black text-center text-white">PRACTICAL</TableHead>
+                                <TableHead className="border-r border-black text-center text-white">TH</TableHead>
+                                <TableHead className="border-r-2 border-black text-center text-white">PR</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>

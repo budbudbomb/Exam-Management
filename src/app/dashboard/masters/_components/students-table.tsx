@@ -34,10 +34,10 @@ export default function StudentsTable() {
         if (selectedClassId) {
             const selectedClass = mockClasses.find(c => c.id === selectedClassId);
             const className = selectedClass ? selectedClass.name.split(' ')[1] : '';
-            setFilteredStudents(students.filter(student => student.class === className));
+            setFilteredStudents(mockStudents.filter(student => student.class === className));
             setShowTable(true);
         } else {
-            setFilteredStudents(students);
+            setFilteredStudents([]);
             setShowTable(false);
         }
     };
@@ -112,14 +112,14 @@ export default function StudentsTable() {
                     <div className="rounded-md border">
                         <Table>
                             <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[50px]">S.no</TableHead>
-                                    <TableHead>Student Name</TableHead>
-                                    <TableHead>Samagra ID</TableHead>
-                                    <TableHead>Father Name</TableHead>
-                                    <TableHead>Mother Name</TableHead>
-                                    <TableHead>Enrollment No</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
+                                <TableRow className="bg-orange-500 text-white hover:bg-orange-500/90">
+                                    <TableHead className="w-[50px] text-white">S.no</TableHead>
+                                    <TableHead className="text-white">Student Name</TableHead>
+                                    <TableHead className="text-white">Samagra ID</TableHead>
+                                    <TableHead className="text-white">Father Name</TableHead>
+                                    <TableHead className="text-white">Mother Name</TableHead>
+                                    <TableHead className="text-white">Enrollment No</TableHead>
+                                    <TableHead className="text-right text-white">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>

@@ -71,10 +71,10 @@ export default function DashboardPage() {
           <CardContent>
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Activity</TableHead>
-                  <TableHead className="text-right">Time</TableHead>
+                <TableRow className="bg-orange-500 text-white hover:bg-orange-500/90">
+                  <TableHead className="text-white">User</TableHead>
+                  <TableHead className="text-white">Activity</TableHead>
+                  <TableHead className="text-right text-white">Time</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

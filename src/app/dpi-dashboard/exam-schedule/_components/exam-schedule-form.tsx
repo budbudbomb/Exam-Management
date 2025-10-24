@@ -154,11 +154,11 @@ export default function ExamScheduleForm({ onAddSchedule }: ExamScheduleFormProp
           <div className="max-h-[60vh] overflow-y-auto pr-4">
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[40%]">Subject</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Start Time</TableHead>
-                  <TableHead>End Time</TableHead>
+                <TableRow className="bg-orange-500 text-white hover:bg-orange-500/90">
+                  <TableHead className="w-[40%] text-white">Subject</TableHead>
+                  <TableHead className="text-white">Date</TableHead>
+                  <TableHead className="text-white">Start Time</TableHead>
+                  <TableHead className="text-white">End Time</TableHead>
                   <TableHead className="w-[50px]"></TableHead>
                 </TableRow>
               </TableHeader>

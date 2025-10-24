@@ -67,13 +67,13 @@ const ExamMarksTable = ({ examType, marks, percentage }: { examType: string; mar
         <div className="border rounded-md">
             <Table>
                 <TableHeader>
-                    <TableRow>
-                        <TableHead>Subject</TableHead>
-                        <TableHead>Code</TableHead>
-                        <TableHead className="text-center">Theory</TableHead>
-                        <TableHead className="text-center">Practical</TableHead>
-                        <TableHead className="text-center">Total Marks</TableHead>
-                        <TableHead className="text-center">Grade</TableHead>
+                    <TableRow className="bg-orange-500 text-white hover:bg-orange-500/90">
+                        <TableHead className="text-white">Subject</TableHead>
+                        <TableHead className="text-white">Code</TableHead>
+                        <TableHead className="text-center text-white">Theory</TableHead>
+                        <TableHead className="text-center text-white">Practical</TableHead>
+                        <TableHead className="text-center text-white">Total Marks</TableHead>
+                        <TableHead className="text-center text-white">Grade</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>

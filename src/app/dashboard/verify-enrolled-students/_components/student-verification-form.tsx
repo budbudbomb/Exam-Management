@@ -76,19 +76,19 @@ export default function StudentVerificationForm() {
                     <div className="h-[400px] overflow-y-auto rounded-md border">
                         <Table>
                             <TableHeader>
-                                <TableRow>
-                                    <TableHead className="text-center sticky top-0 bg-card">Verify</TableHead>
-                                    <TableHead className="sticky top-0 bg-card">Name</TableHead>
-                                    <TableHead className="sticky top-0 bg-card">Gender</TableHead>
-                                    <TableHead className="sticky top-0 bg-card">Samagra ID</TableHead>
-                                    <TableHead className="sticky top-0 bg-card">School UDISE</TableHead>
-                                    <TableHead className="sticky top-0 bg-card">Class</TableHead>
-                                    <TableHead className="sticky top-0 bg-card">Mother's Name</TableHead>
-                                    <TableHead className="sticky top-0 bg-card">Father's Name</TableHead>
-                                    <TableHead className="sticky top-0 bg-card">DOB</TableHead>
-                                    <TableHead className="sticky top-0 bg-card">Category</TableHead>
-                                    <TableHead className="sticky top-0 bg-card">Enrollment #</TableHead>
-                                    <TableHead className="sticky top-0 bg-card">Scholar #</TableHead>
+                                <TableRow className="bg-orange-500 text-white hover:bg-orange-500/90">
+                                    <TableHead className="text-center sticky top-0 bg-orange-500 text-white">Verify</TableHead>
+                                    <TableHead className="sticky top-0 bg-orange-500 text-white">Name</TableHead>
+                                    <TableHead className="sticky top-0 bg-orange-500 text-white">Gender</TableHead>
+                                    <TableHead className="sticky top-0 bg-orange-500 text-white">Samagra ID</TableHead>
+                                    <TableHead className="sticky top-0 bg-orange-500 text-white">School UDISE</TableHead>
+                                    <TableHead className="sticky top-0 bg-orange-500 text-white">Class</TableHead>
+                                    <TableHead className="sticky top-0 bg-orange-500 text-white">Mother's Name</TableHead>
+                                    <TableHead className="sticky top-0 bg-orange-500 text-white">Father's Name</TableHead>
+                                    <TableHead className="sticky top-0 bg-orange-500 text-white">DOB</TableHead>
+                                    <TableHead className="sticky top-0 bg-orange-500 text-white">Category</TableHead>
+                                    <TableHead className="sticky top-0 bg-orange-500 text-white">Enrollment #</TableHead>
+                                    <TableHead className="sticky top-0 bg-orange-500 text-white">Scholar #</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>

@@ -80,13 +80,13 @@ const PreviousMarksTable = ({ subjects, marks }: { subjects: Subject[], marks: a
         <div className="rounded-md border my-4">
             <Table>
                 <TableHeader>
-                     <TableRow>
-                        <TableHead>Subject</TableHead>
-                        <TableHead className="text-center">Theory</TableHead>
-                        <TableHead className="text-center">Practical/Project</TableHead>
-                        <TableHead className="text-center">Grace</TableHead>
-                        <TableHead className="text-center">Percentage</TableHead>
-                        <TableHead className="text-center">Grade</TableHead>
+                     <TableRow className="bg-orange-500 text-white hover:bg-orange-500/90">
+                        <TableHead className="text-white">Subject</TableHead>
+                        <TableHead className="text-center text-white">Theory</TableHead>
+                        <TableHead className="text-center text-white">Practical/Project</TableHead>
+                        <TableHead className="text-center text-white">Grace</TableHead>
+                        <TableHead className="text-center text-white">Percentage</TableHead>
+                        <TableHead className="text-center text-white">Grade</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -357,13 +357,13 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                     <div className="rounded-md border">
                         <Table>
                             <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[50px]">S.No</TableHead>
-                                    <TableHead>Student Name</TableHead>
-                                    <TableHead>Father's Name</TableHead>
-                                    <TableHead>Mother's Name</TableHead>
-                                    <TableHead>Samagra ID</TableHead>
-                                    <TableHead className="text-right">Marks</TableHead>
+                                <TableRow className="bg-orange-500 text-white hover:bg-orange-500/90">
+                                    <TableHead className="w-[50px] text-white">S.No</TableHead>
+                                    <TableHead className="text-white">Student Name</TableHead>
+                                    <TableHead className="text-white">Father's Name</TableHead>
+                                    <TableHead className="text-white">Mother's Name</TableHead>
+                                    <TableHead className="text-white">Samagra ID</TableHead>
+                                    <TableHead className="text-right text-white">Marks</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -453,31 +453,31 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                 <div className="rounded-md border">
                                     <Table>
                                         <TableHeader>
-                                            <TableRow>
-                                                <TableHead className="w-[50px]">S.No</TableHead>
-                                                <TableHead>Subject Name</TableHead>
-                                                <TableHead colSpan={4} className="text-center border-l">Theory</TableHead>
-                                                <TableHead colSpan={4} className="text-center border-l">Practical / Project</TableHead>
-                                                <TableHead className="text-center border-l">Grace</TableHead>
-                                                <TableHead className="text-center border-l">Percentage</TableHead>
-                                                <TableHead className="text-center">Grade</TableHead>
-                                                <TableHead className="text-center border-l">Remark</TableHead>
+                                            <TableRow className="bg-orange-500 text-white hover:bg-orange-500/90">
+                                                <TableHead className="w-[50px] text-white">S.No</TableHead>
+                                                <TableHead className="text-white">Subject Name</TableHead>
+                                                <TableHead colSpan={4} className="text-center border-l text-white">Theory</TableHead>
+                                                <TableHead colSpan={4} className="text-center border-l text-white">Practical / Project</TableHead>
+                                                <TableHead className="text-center border-l text-white">Grace</TableHead>
+                                                <TableHead className="text-center border-l text-white">Percentage</TableHead>
+                                                <TableHead className="text-center text-white">Grade</TableHead>
+                                                <TableHead className="text-center border-l text-white">Remark</TableHead>
                                             </TableRow>
-                                            <TableRow>
-                                                <TableHead></TableHead>
-                                                <TableHead></TableHead>
-                                                <TableHead className="text-center border-l text-xs font-medium">Attendance</TableHead>
-                                                <TableHead className="text-center text-xs font-medium">Min</TableHead>
-                                                <TableHead className="text-center text-xs font-medium">Max</TableHead>
-                                                <TableHead className="text-center text-xs font-medium">Enter</TableHead>
-                                                <TableHead className="text-center border-l text-xs font-medium">Attendance</TableHead>
-                                                <TableHead className="text-center text-xs font-medium">Min</TableHead>
-                                                <TableHead className="text-center text-xs font-medium">Max</TableHead>
-                                                <TableHead className="text-center text-xs font-medium">Enter</TableHead>
-                                                <TableHead></TableHead>
-                                                <TableHead></TableHead>
-                                                <TableHead></TableHead>
-                                                <TableHead></TableHead>
+                                            <TableRow className="bg-orange-500 text-white hover:bg-orange-500/90">
+                                                <TableHead className="text-white"></TableHead>
+                                                <TableHead className="text-white"></TableHead>
+                                                <TableHead className="text-center border-l text-xs font-medium text-white">Attendance</TableHead>
+                                                <TableHead className="text-center text-xs font-medium text-white">Min</TableHead>
+                                                <TableHead className="text-center text-xs font-medium text-white">Max</TableHead>
+                                                <TableHead className="text-center text-xs font-medium text-white">Enter</TableHead>
+                                                <TableHead className="text-center border-l text-xs font-medium text-white">Attendance</TableHead>
+                                                <TableHead className="text-center text-xs font-medium text-white">Min</TableHead>
+                                                <TableHead className="text-center text-xs font-medium text-white">Max</TableHead>
+                                                <TableHead className="text-center text-xs font-medium text-white">Enter</TableHead>
+                                                <TableHead className="text-white"></TableHead>
+                                                <TableHead className="text-white"></TableHead>
+                                                <TableHead className="text-white"></TableHead>
+                                                <TableHead className="text-white"></TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
