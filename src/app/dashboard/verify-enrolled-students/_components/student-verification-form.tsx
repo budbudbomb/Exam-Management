@@ -77,6 +77,7 @@ export default function StudentVerificationForm() {
                                         </div>
                                     </TableHead>
                                     <TableHead className="sticky top-0 bg-card">Name</TableHead>
+                                    <TableHead className="sticky top-0 bg-card">Gender</TableHead>
                                     <TableHead className="sticky top-0 bg-card">Samagra ID</TableHead>
                                     <TableHead className="sticky top-0 bg-card">School UDISE</TableHead>
                                     <TableHead className="sticky top-0 bg-card">Class</TableHead>
@@ -95,6 +96,7 @@ export default function StudentVerificationForm() {
                                             <Checkbox defaultChecked={true} />
                                         </TableCell>
                                         <TableCell className="font-medium">{student.name}</TableCell>
+                                        <TableCell>{student.gender}</TableCell>
                                         <TableCell>{student.samagraId}</TableCell>
                                         <TableCell>{student.schoolUdideCode}</TableCell>
                                         <TableCell>{student.class}</TableCell>

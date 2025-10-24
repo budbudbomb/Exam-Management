@@ -5,6 +5,7 @@ export interface Student {
     motherName?: string;
     dob?: string;
     category?: 'SC' | 'ST' | 'OBC' | 'General';
+    gender?: 'Male' | 'Female' | 'Other';
     samagraId?: string;
     enrollmentNumber?: string;
     rollNumber: string;
