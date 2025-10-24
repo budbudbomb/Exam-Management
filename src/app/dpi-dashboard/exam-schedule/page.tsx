@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import ExamScheduleForm from './_components/exam-schedule-form';
+import ExistingSchedules from './_components/existing-schedules';
 
 export default function ExamSchedulePage() {
   return (
@@ -26,6 +27,8 @@ export default function ExamSchedulePage() {
             <ExamScheduleForm />
         </CardContent>
       </Card>
+
+      <ExistingSchedules />
     </div>
   );
 }

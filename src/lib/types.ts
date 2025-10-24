@@ -59,3 +59,15 @@ export interface Student {
     abbreviation: string;
     description: string;
   }
+
+  export interface ExamSchedule {
+    id: string;
+    classId: string;
+    examType: string;
+    details: {
+      subjectId: string;
+      date: string;
+      startTime: string;
+      endTime: string;
+    }[];
+  }

@@ -1,4 +1,4 @@
-import type { Student, Subject, Class, Exam, Grade, Remark } from './types';
+import type { Student, Subject, Class, Exam, Grade, Remark, ExamSchedule } from './types';
 
 export const mockStudents: Student[] = [
   { id: '1', name: 'Aarav Sharma', rollNumber: '10A-01', class: '10', section: 'A', medium: 'English', fatherName: 'Suresh Sharma', motherName: 'Sunita Sharma', dob: '15-04-2008', category: 'General', samagraId: '123456789', enrollmentNumber: 'ENR-2024-12345', photoUrl: 'https://i.pravatar.cc/96?u=1', schoolUdideCode: 'SCH001', scholarNumber: 'SN001' },
@@ -48,4 +48,36 @@ export const mockRemarks: Remark[] = [
     { abbreviation: 'GRACE', description: 'Passed with grace marks' },
     { abbreviation: 'FAIL', description: 'Failed' },
     { abbreviation: 'SUPP', description: 'Supplementary' },
+];
+
+export const mockSchedules: ExamSchedule[] = [
+    {
+        id: 'SCHED1',
+        classId: 'C1',
+        examType: 'Quarterly',
+        details: [
+            { subjectId: 'S1', date: '2024-07-15', startTime: '09:00', endTime: '12:00' },
+            { subjectId: 'S2', date: '2024-07-17', startTime: '09:00', endTime: '12:00' },
+            { subjectId: 'S3', date: '2024-07-19', startTime: '09:00', endTime: '12:00' },
+        ]
+    },
+    {
+        id: 'SCHED2',
+        classId: 'C1',
+        examType: 'Half Yearly',
+        details: [
+            { subjectId: 'S1', date: '2024-12-10', startTime: '09:00', endTime: '12:00' },
+            { subjectId: 'S2', date: '2024-12-12', startTime: '09:00', endTime: '12:00' },
+            { subjectId: 'S3', date: '2024-12-14', startTime: '09:00', endTime: '12:00' },
+        ]
+    },
+    {
+        id: 'SCHED3',
+        classId: 'C2',
+        examType: 'Annual',
+        details: [
+            { subjectId: 'S1', date: '2025-03-05', startTime: '09:00', endTime: '12:00' },
+            { subjectId: 'S2', date: '2025-03-07', startTime: '09:00', endTime: '12:00' },
+        ]
+    }
 ];
