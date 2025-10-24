@@ -113,7 +113,7 @@ const PreviousMarksTable = ({ subjects, marks }: { subjects: Subject[], marks: a
 };
 
 
-export default function MarksEntryForm({ showDiseCode = false, userRole = 'school' }: MarksEntryFormProps) {
+export default function MarksEntryForm({ showDiseCode = false, userRole = 'school' | 'prabhari' | 'sankool' }: MarksEntryFormProps) {
     const [selectedClass, setSelectedClass] = useState('');
     const [selectedSection, setSelectedSection] = useState('');
     const [selectedExamType, setSelectedExamType] = useState('');
@@ -347,7 +347,9 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                         </SelectContent>
                     </Select>
                 </div>
-                <Button onClick={handleSearch}>Load Students</Button>
+                <div className="ml-auto">
+                    <Button onClick={handleSearch}>Load Students</Button>
+                </div>
             </div>
 
             {showTable && classStudents.length > 0 && (
@@ -593,4 +595,5 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
     );
 }
 
+    
     
