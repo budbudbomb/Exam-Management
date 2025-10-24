@@ -10,13 +10,7 @@ export default function VerifyEnrolledStudentsPage() {
       </p>
       
       <Card>
-        <CardHeader>
-          <CardTitle>Verify Student Details</CardTitle>
-          <CardDescription>
-            Select the academic year and class to load the student list. Review the details and use the checkbox to verify each student.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
             <StudentVerificationForm />
         </CardContent>
       </Card>
