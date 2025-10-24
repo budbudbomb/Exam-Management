@@ -111,7 +111,13 @@ export default function StudentVerificationForm() {
                             </TableBody>
                         </Table>
                     </div>
-                     <div className="flex justify-end">
+                     <div className="flex flex-col items-start gap-4 mt-4">
+                        <div className="flex items-center space-x-2">
+                            <Checkbox id="declaration" />
+                            <Label htmlFor="declaration" className="text-sm font-normal text-muted-foreground">
+                                I hereby declare that I've verified the student's details and they are correct and latest.
+                            </Label>
+                        </div>
                         <Button>Save Verified Students</Button>
                     </div>
                 </>
