@@ -115,7 +115,7 @@ export default function Navigation() {
                           key={subLink.href}
                           href={subLink.href}
                           className={cn(
-                            'flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground',
+                            'flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground',
                             pathname.startsWith(subLink.href) && 'bg-sidebar text-sidebar-accent-foreground'
                           )}
                         >
@@ -132,7 +132,7 @@ export default function Navigation() {
                 key={link.href}
                 href={link.href!}
                 className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground',
+                  'flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground',
                   pathname === link.href && 'bg-sidebar text-sidebar-accent-foreground'
                 )}
               >
