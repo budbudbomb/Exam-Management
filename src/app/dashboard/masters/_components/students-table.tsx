@@ -205,13 +205,14 @@ export default function StudentsTable() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="photo">Photo URL</Label>
-                                <Input 
-                                    id="photo"
-                                    value={selectedStudent?.photoUrl || ''} 
-                                    onChange={(e) => setSelectedStudent(prev => prev ? {...prev, photoUrl: e.target.value} : null)}
-                                    placeholder="https://example.com/photo.jpg"
-                                />
+                                <Label htmlFor="photo">Photo</Label>
+                                <div className="flex items-center gap-4">
+                                    <img src={selectedStudent?.photoUrl || 'https://placehold.co/96x96'} alt={selectedStudent?.name} className="w-24 h-24 rounded-md object-cover" />
+                                    <Button variant="outline">
+                                        <Upload className="mr-2 h-4 w-4" />
+                                        Upload
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                         <DialogFooter>
