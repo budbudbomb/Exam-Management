@@ -299,6 +299,12 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
         }
     };
 
+    const sortedClasses = [...mockClasses].sort((a, b) => {
+        const aNum = parseInt(a.name.split(' ')[1]);
+        const bNum = parseInt(b.name.split(' ')[1]);
+        return aNum - bNum;
+    });
+
 
     return (
         <div className="space-y-8">
@@ -315,7 +321,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                         <Select onValueChange={setSelectedClass}>
                             <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
                             <SelectContent>
-                                {mockClasses.map(cls => (
+                                {sortedClasses.map(cls => (
                                     <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
                                 ))}
                             </SelectContent>
@@ -532,7 +538,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                         </TableBody>
                                         <TableFooter>
                                             <TableRow className="bg-muted/50 font-semibold">
-                                                <TableCell colSpan={14} className="text-left">
+                                                 <TableCell colSpan={14} className="text-left">
                                                     <div className='flex gap-4'>
                                                         <span>Overall Summary:</span>
                                                         <span>{overallSummary.totalMarksObtained} / {overallSummary.maxTotalMarks}</span>

@@ -25,6 +25,12 @@ export default function ExistingSchedules({ schedules, onDeleteSchedule, isReadO
     const getSubjectName = (id: string) => {
         return mockSubjects.find(s => s.id === id)?.name || 'Unknown Subject';
     }
+    
+    const sortedClasses = [...mockClasses].sort((a, b) => {
+      const aNum = parseInt(a.name.split(' ')[1]);
+      const bNum = parseInt(b.name.split(' ')[1]);
+      return aNum - bNum;
+    });
 
     return (
         <Card>
@@ -41,7 +47,7 @@ export default function ExistingSchedules({ schedules, onDeleteSchedule, isReadO
                                 <SelectValue placeholder="Select class" />
                             </SelectTrigger>
                             <SelectContent>
-                                {mockClasses.map((cls) => (
+                                {sortedClasses.map((cls) => (
                                     <SelectItem key={cls.id} value={cls.id}>
                                         {cls.name}
                                     </SelectItem>

@@ -96,6 +96,12 @@ export default function ExamScheduleForm({ onAddSchedule }: ExamScheduleFormProp
   }
 
   const classSubjects = mockClasses.find(c => c.id === selectedClass)?.subjects || mockSubjects;
+  
+  const sortedClasses = [...mockClasses].sort((a, b) => {
+      const aNum = parseInt(a.name.split(' ')[1]);
+      const bNum = parseInt(b.name.split(' ')[1]);
+      return aNum - bNum;
+  });
 
   return (
     <div className="space-y-4">
@@ -122,7 +128,7 @@ export default function ExamScheduleForm({ onAddSchedule }: ExamScheduleFormProp
               <SelectValue placeholder="Select class" />
             </SelectTrigger>
             <SelectContent>
-              {mockClasses.map((cls) => (
+              {sortedClasses.map((cls) => (
                 <SelectItem key={cls.id} value={cls.id}>
                   {cls.name}
                 </SelectItem>
