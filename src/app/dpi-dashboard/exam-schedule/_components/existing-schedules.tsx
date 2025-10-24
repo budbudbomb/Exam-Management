@@ -34,11 +34,7 @@ export default function ExistingSchedules({ schedules, onDeleteSchedule, isReadO
 
     return (
         <Card>
-            <CardHeader>
-                <CardTitle>View Existing Schedules</CardTitle>
-                <CardDescription>Select a class to view its saved exam schedules.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                     <div className="space-y-2">
                         <Label>Class</Label>
