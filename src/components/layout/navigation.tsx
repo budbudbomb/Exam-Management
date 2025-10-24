@@ -93,7 +93,7 @@ export default function Navigation() {
         {currentDate}
       </div>
       <div className="flex-1 bg-sidebar-accent">
-        <nav className="grid items-start px-2 text-sm font-medium lg:px-4 py-4 gap-2">
+        <nav className="grid items-start px-2 text-sm font-medium lg:px-4 py-4 gap-1">
           {navLinks.map((link) =>
             link.isAccordion && link.subLinks ? (
               <Accordion
