@@ -208,13 +208,9 @@ export default function StudentsTable() {
                             <div className="space-y-2">
                                 <Label htmlFor="photo">Photo</Label>
                                 <div className="flex items-center gap-4">
-                                     {selectedStudent?.photoUrl ? (
-                                        <img src={selectedStudent.photoUrl} alt={selectedStudent.name} className="w-24 h-24 rounded-md object-cover" />
-                                    ) : (
-                                        <div className="w-24 h-24 rounded-md border border-dashed flex items-center justify-center bg-muted">
-                                            <UserIcon className="w-12 h-12 text-muted-foreground" />
-                                        </div>
-                                    )}
+                                    <div className="w-24 h-24 rounded-md border border-dashed flex items-center justify-center bg-muted">
+                                        <UserIcon className="w-12 h-12 text-muted-foreground" />
+                                    </div>
                                     <Button variant="outline">
                                         <Upload className="mr-2 h-4 w-4" />
                                         Upload
