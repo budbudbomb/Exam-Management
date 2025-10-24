@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -24,14 +24,16 @@ import { Student } from '@/lib/types';
 export default function StudentsTable() {
     const [students, setStudents] = useState<Student[]>(mockStudents);
     const [filteredStudents, setFilteredStudents] = useState<Student[]>(mockStudents);
-    const [selectedClass, setSelectedClass] = useState<string>('');
+    const [selectedClassId, setSelectedClassId] = useState<string>('');
     const [showTable, setShowTable] = useState(false);
     const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
 
     const handleSearch = () => {
-        if (selectedClass) {
-            setFilteredStudents(students.filter(student => student.class === selectedClass));
+        if (selectedClassId) {
+            const selectedClass = mockClasses.find(c => c.id === selectedClassId);
+            const className = selectedClass ? selectedClass.name.split(' ')[1] : '';
+            setFilteredStudents(students.filter(student => student.class === className));
             setShowTable(true);
         } else {
             setFilteredStudents(students);
@@ -51,8 +53,10 @@ export default function StudentsTable() {
         setStudents(newStudents);
         
         // Re-filter students in case the updated student affects the filtered list
-        if (showTable && selectedClass) {
-            setFilteredStudents(newStudents.filter(student => student.class === selectedClass));
+        if (showTable && selectedClassId) {
+            const selectedClass = mockClasses.find(c => c.id === selectedClassId);
+            const className = selectedClass ? selectedClass.name.split(' ')[1] : '';
+            setFilteredStudents(newStudents.filter(student => student.class === className));
         } else if (showTable) {
             setFilteredStudents(newStudents);
         }
@@ -70,16 +74,11 @@ export default function StudentsTable() {
 
     return (
         <Card>
-            <CardHeader>
-                <div className="flex justify-end items-start">
-                    <div className="text-xl font-bold text-muted-foreground">Academic Year 2024-2025</div>
-                </div>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
                 <div className="flex items-end gap-4 mb-4">
                     <div className="space-y-2 flex-1">
                         <Label>Filter by Class</Label>
-                        <Select onValueChange={setSelectedClass} value={selectedClass}>
+                        <Select onValueChange={setSelectedClassId} value={selectedClassId}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a class" />
                             </SelectTrigger>
@@ -90,7 +89,7 @@ export default function StudentsTable() {
                             </SelectContent>
                         </Select>
                     </div>
-                     <Button onClick={handleSearch} disabled={!selectedClass}>
+                     <Button onClick={handleSearch} disabled={!selectedClassId}>
                         <Search className="mr-2 h-4 w-4" /> Search
                      </Button>
                 </div>
@@ -130,7 +129,7 @@ export default function StudentsTable() {
                 
                 {showTable && filteredStudents.length === 0 && (
                     <div className="text-center py-8 text-muted-foreground">
-                        No students found for Class {selectedClass}.
+                        No students found for the selected class.
                     </div>
                 )}
 
@@ -160,7 +159,7 @@ export default function StudentsTable() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            {selectedClass === '11' && (
+                            {selectedStudent?.class === '11' && (
                                 <div className="space-y-2">
                                     <Label htmlFor="stream">Stream</Label>
                                     <Select 
