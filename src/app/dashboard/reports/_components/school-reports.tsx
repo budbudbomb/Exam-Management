@@ -50,13 +50,7 @@ export default function SchoolReports() {
     return (
         <div className="space-y-4">
             <Card>
-                <CardHeader>
-                    <CardTitle>Generate School Reports</CardTitle>
-                    <CardDescription>
-                        Select the report format, class, and student to generate a report.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 pt-6">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                         <div className="space-y-2 md:col-span-1">
                             <Label>Report Format</Label>
