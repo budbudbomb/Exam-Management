@@ -45,9 +45,9 @@ const navLinks = [
         label: 'Masters',
       },
       {
-        href: '/dashboard/student-verification',
+        href: '/dashboard/verify-enrolled-students',
         icon: <UserCheck className="h-4 w-4" />,
-        label: 'Student Verification',
+        label: 'Verify Enrolled Students',
       },
       {
         href: '/dashboard/student-details-update',
