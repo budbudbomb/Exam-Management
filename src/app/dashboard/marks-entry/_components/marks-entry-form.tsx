@@ -347,9 +347,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                         </SelectContent>
                     </Select>
                 </div>
-                 <div className="col-span-full flex justify-end">
-                    <Button onClick={handleSearch}>Load Students</Button>
-                </div>
+                <Button onClick={handleSearch}>Load Students</Button>
             </div>
 
             {showTable && classStudents.length > 0 && (
@@ -594,3 +592,5 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
         </div>
     );
 }
+
+    
