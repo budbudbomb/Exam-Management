@@ -347,7 +347,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                         </SelectContent>
                     </Select>
                 </div>
-                <div className="ml-auto">
+                <div className="col-span-full md:col-span-1 flex justify-end">
                     <Button onClick={handleSearch}>Load Students</Button>
                 </div>
             </div>
@@ -596,4 +596,6 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
 }
 
     
+    
+
     
