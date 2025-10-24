@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/tabs';
 import SubjectsForm from './_components/subjects-form';
 import ExamsForm from './_components/exams-form';
+import GradesForm from './_components/grades-form';
 
 
 export default function MastersPage() {
@@ -23,6 +24,7 @@ export default function MastersPage() {
           <TabsList>
             <TabsTrigger value="subjects">Subjects</TabsTrigger>
             <TabsTrigger value="exams">Exams</TabsTrigger>
+            <TabsTrigger value="grades">Grades</TabsTrigger>
           </TabsList>
         </div>
         <TabsContent value="subjects" className="space-y-4 mt-0">
@@ -30,6 +32,9 @@ export default function MastersPage() {
         </TabsContent>
         <TabsContent value="exams" className="space-y-4 mt-0">
           <ExamsForm />
+        </TabsContent>
+        <TabsContent value="grades" className="space-y-4 mt-0">
+          <GradesForm />
         </TabsContent>
       </Tabs>
     </div>
