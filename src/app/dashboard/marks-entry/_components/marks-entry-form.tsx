@@ -515,14 +515,14 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                         </TableBody>
                                         <TableFooter>
                                             <TableRow className="bg-muted/50 font-semibold">
-                                                <TableCell colSpan={10} className="text-right">Overall Summary</TableCell>
+                                                <TableCell colSpan={10} className="text-left">Overall Summary</TableCell>
                                                 <TableCell className="text-center">{overallSummary.totalMarksObtained} / {overallSummary.maxTotalMarks}</TableCell>
                                                 <TableCell className="text-center">{overallSummary.overallPercentage.toFixed(2)}%</TableCell>
                                                 <TableCell className="text-center">{overallSummary.overallGrade}</TableCell>
                                                 <TableCell className="text-center">{overallSummary.result}</TableCell>
                                             </TableRow>
                                              <TableRow className="bg-muted/50 font-semibold">
-                                                <TableCell colSpan={13} className="text-right">Division</TableCell>
+                                                <TableCell colSpan={13} className="text-left">Division</TableCell>
                                                 <TableCell className="text-center">{overallSummary.division}</TableCell>
                                             </TableRow>
                                         </TableFooter>
