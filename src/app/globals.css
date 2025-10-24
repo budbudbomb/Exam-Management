@@ -29,13 +29,13 @@
     --btn-start: 262 80% 55%;
     --btn-end: 290 80% 50%;
     
-    --sidebar-background: 8 74% 50%;
+    --sidebar-background: 24 95% 53%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 210 40% 98%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 214 90% 52%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 8 74% 40%;
+    --sidebar-border: 24 95% 43%;
     --sidebar-ring: 212.7 26.8% 83.9%;
   }
 
@@ -60,13 +60,13 @@
     --input: 220 10% 25%;
     --ring: 220 80% 50%;
     
-    --sidebar-background: 8 74% 50%;
+    --sidebar-background: 24 95% 53%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 210 40% 98%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 214 90% 52%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 8 74% 40%;
+    --sidebar-border: 24 95% 43%;
     --sidebar-ring: 212.7 26.8% 83.9%;
   }
 }
