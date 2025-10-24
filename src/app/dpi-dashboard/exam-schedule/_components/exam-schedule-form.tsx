@@ -34,6 +34,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { ExamSchedule } from '@/lib/types';
 
 type ScheduleRow = {
   id: number;
@@ -43,7 +44,11 @@ type ScheduleRow = {
   endTime: string;
 };
 
-export default function ExamScheduleForm() {
+interface ExamScheduleFormProps {
+    onAddSchedule: (schedule: ExamSchedule) => void;
+}
+
+export default function ExamScheduleForm({ onAddSchedule }: ExamScheduleFormProps) {
   const [selectedExamType, setSelectedExamType] = useState('');
   const [selectedClass, setSelectedClass] = useState('');
   const [isModalOpen, setModalOpen] = useState(false);
@@ -69,6 +74,25 @@ export default function ExamScheduleForm() {
 
   const handleScheduleChange = (id: number, field: keyof Omit<ScheduleRow, 'id'>, value: any) => {
       setScheduleRows(scheduleRows.map(row => row.id === id ? { ...row, [field]: value } : row));
+  }
+  
+  const handleSaveSchedule = () => {
+    const newSchedule: ExamSchedule = {
+        id: `SCHED${Date.now()}`,
+        classId: selectedClass,
+        examType: selectedExamType,
+        details: scheduleRows
+            .filter(row => row.subjectId && row.date)
+            .map(row => ({
+                subjectId: row.subjectId,
+                date: format(row.date!, 'yyyy-MM-dd'),
+                startTime: row.startTime,
+                endTime: row.endTime,
+            })),
+    };
+
+    onAddSchedule(newSchedule);
+    setModalOpen(false);
   }
 
   const classSubjects = mockClasses.find(c => c.id === selectedClass)?.subjects || mockSubjects;
@@ -196,7 +220,7 @@ export default function ExamScheduleForm() {
             </Button>
           </div>
           <DialogFooter>
-            <Button onClick={() => setModalOpen(false)}>Save Schedule</Button>
+            <Button onClick={handleSaveSchedule}>Save Schedule</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

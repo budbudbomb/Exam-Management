@@ -1,4 +1,6 @@
 
+'use client';
+
 import {
   Card,
   CardContent,
@@ -8,8 +10,21 @@ import {
 } from '@/components/ui/card';
 import ExamScheduleForm from './_components/exam-schedule-form';
 import ExistingSchedules from './_components/existing-schedules';
+import React, { useState } from 'react';
+import { ExamSchedule } from '@/lib/types';
+import { mockSchedules } from '@/lib/data';
 
 export default function ExamSchedulePage() {
+  const [schedules, setSchedules] = useState<ExamSchedule[]>(mockSchedules);
+
+  const handleAddSchedule = (newSchedule: ExamSchedule) => {
+    setSchedules(prevSchedules => [...prevSchedules, newSchedule]);
+  }
+
+  const handleDeleteSchedule = (id: string) => {
+    setSchedules(schedules.filter(s => s.id !== id));
+  }
+
   return (
     <div className="space-y-4">
       <div>
@@ -24,11 +39,11 @@ export default function ExamSchedulePage() {
             <CardDescription>Select an exam type and class to create or modify a schedule.</CardDescription>
         </CardHeader>
         <CardContent>
-            <ExamScheduleForm />
+            <ExamScheduleForm onAddSchedule={handleAddSchedule} />
         </CardContent>
       </Card>
 
-      <ExistingSchedules />
+      <ExistingSchedules schedules={schedules} onDeleteSchedule={handleDeleteSchedule} />
     </div>
   );
 }

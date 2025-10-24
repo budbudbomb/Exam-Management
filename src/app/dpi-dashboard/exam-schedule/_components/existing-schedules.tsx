@@ -6,22 +6,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { mockSchedules, mockClasses, mockSubjects } from '@/lib/data';
+import { mockClasses, mockSubjects } from '@/lib/data';
+import { ExamSchedule } from '@/lib/types';
 import { Pencil, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 
-export default function ExistingSchedules() {
+interface ExistingSchedulesProps {
+    schedules: ExamSchedule[];
+    onDeleteSchedule: (id: string) => void;
+}
+
+export default function ExistingSchedules({ schedules, onDeleteSchedule }: ExistingSchedulesProps) {
     const [selectedClass, setSelectedClass] = useState('');
-    const [schedules, setSchedules] = useState(mockSchedules);
 
     const filteredSchedules = selectedClass ? schedules.filter(s => s.classId === selectedClass) : [];
 
     const getSubjectName = (id: string) => {
         return mockSubjects.find(s => s.id === id)?.name || 'Unknown Subject';
-    }
-    
-    const handleDeleteSchedule = (id: string) => {
-        setSchedules(schedules.filter(s => s.id !== id));
     }
 
     return (
@@ -61,7 +62,7 @@ export default function ExistingSchedules() {
                                         <Button variant="outline" size="icon">
                                             <Pencil className="h-4 w-4" />
                                         </Button>
-                                         <Button variant="destructive" size="icon" onClick={() => handleDeleteSchedule(schedule.id)}>
+                                         <Button variant="destructive" size="icon" onClick={() => onDeleteSchedule(schedule.id)}>
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                      </div>
