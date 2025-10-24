@@ -16,6 +16,7 @@ export default function StudentVerificationForm() {
     const [selectedClass, setSelectedClass] = useState('');
     const [classStudents, setClassStudents] = useState<Student[]>([]);
     const [showTable, setShowTable] = useState(false);
+    const [isDeclared, setIsDeclared] = useState(false);
 
     const handleSearch = () => {
         if (selectedYear && selectedClass) {
@@ -113,12 +114,12 @@ export default function StudentVerificationForm() {
                     </div>
                      <div className="flex flex-col items-start gap-4 mt-4">
                         <div className="flex items-center space-x-2">
-                            <Checkbox id="declaration" />
+                            <Checkbox id="declaration" onCheckedChange={(checked) => setIsDeclared(!!checked)} />
                             <Label htmlFor="declaration" className="text-sm font-normal text-muted-foreground">
                                 I hereby declare that I've verified the student's details and they are correct and latest.
                             </Label>
                         </div>
-                        <Button>Save Verified Students</Button>
+                        <Button disabled={!isDeclared}>Save Verified Students</Button>
                     </div>
                 </>
             )}
