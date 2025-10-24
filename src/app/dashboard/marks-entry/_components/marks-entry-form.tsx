@@ -308,7 +308,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
 
     return (
         <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div className="flex items-end gap-4">
                 {showDiseCode && (
                     <div className="space-y-2">
                         <Label>DISE Code</Label>
@@ -347,7 +347,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                         </SelectContent>
                     </Select>
                 </div>
-                <div className="col-span-full md:col-span-1 flex justify-end">
+                <div className="ml-auto">
                     <Button onClick={handleSearch}>Load Students</Button>
                 </div>
             </div>
@@ -596,6 +596,8 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
 }
 
     
+    
+
     
 
     
