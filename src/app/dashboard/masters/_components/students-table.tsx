@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -15,7 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { mockStudents } from '@/lib/data';
-import { FilePlus2, Search, Upload } from 'lucide-react';
+import { FilePlus2, Search, Upload, User as UserIcon } from 'lucide-react';
 import React, { useState } from 'react';
 import { Student } from '@/lib/types';
 
@@ -207,7 +208,13 @@ export default function StudentsTable() {
                             <div className="space-y-2">
                                 <Label htmlFor="photo">Photo</Label>
                                 <div className="flex items-center gap-4">
-                                    <img src={selectedStudent?.photoUrl || 'https://placehold.co/96x96'} alt={selectedStudent?.name} className="w-24 h-24 rounded-md object-cover" />
+                                     {selectedStudent?.photoUrl ? (
+                                        <img src={selectedStudent.photoUrl} alt={selectedStudent.name} className="w-24 h-24 rounded-md object-cover" />
+                                    ) : (
+                                        <div className="w-24 h-24 rounded-md border border-dashed flex items-center justify-center bg-muted">
+                                            <UserIcon className="w-12 h-12 text-muted-foreground" />
+                                        </div>
+                                    )}
                                     <Button variant="outline">
                                         <Upload className="mr-2 h-4 w-4" />
                                         Upload
