@@ -12,7 +12,7 @@ import { useState } from 'react';
 
 const navLinks = [
   {
-    href: '/dashboard/masters',
+    href: '/dpi-dashboard/masters',
     icon: <BookOpen className="h-4 w-4" />,
     label: 'Masters',
   },
