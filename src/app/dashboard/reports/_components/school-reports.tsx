@@ -41,6 +41,12 @@ export default function SchoolReports() {
         }
     }
 
+    const sortedClasses = [...mockClasses].sort((a, b) => {
+        const aNum = parseInt(a.name.split(' ')[1]);
+        const bNum = parseInt(b.name.split(' ')[1]);
+        return aNum - bNum;
+    });
+
     return (
         <div className="space-y-4">
             <Card>
@@ -68,7 +74,7 @@ export default function SchoolReports() {
                             <Select>
                                 <SelectTrigger><SelectValue placeholder="Select class" /></SelectTrigger>
                                 <SelectContent>
-                                    {mockClasses.map(cls => (
+                                    {sortedClasses.map(cls => (
                                         <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
                                     ))}
                                 </SelectContent>

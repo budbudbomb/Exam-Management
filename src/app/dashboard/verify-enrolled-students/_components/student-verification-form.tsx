@@ -35,6 +35,12 @@ export default function StudentVerificationForm() {
         console.log(`All students selected: ${checked}`);
     }
 
+    const sortedClasses = [...mockClasses].sort((a, b) => {
+        const aNum = parseInt(a.name.split(' ')[1]);
+        const bNum = parseInt(b.name.split(' ')[1]);
+        return aNum - bNum;
+    });
+
     return (
         <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
@@ -53,7 +59,7 @@ export default function StudentVerificationForm() {
                     <Select onValueChange={setSelectedClass}>
                         <SelectTrigger><SelectValue placeholder="Select class" /></SelectTrigger>
                         <SelectContent>
-                            {mockClasses.map(cls => (
+                            {sortedClasses.map(cls => (
                                 <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
                             ))}
                         </SelectContent>
