@@ -50,11 +50,6 @@ const navLinks = [
         label: 'Student Details update',
       },
       {
-        href: '/dashboard/exam-schedule',
-        icon: <CalendarDays className="h-4 w-4" />,
-        label: 'Exam Schedule',
-      },
-      {
         href: '/dashboard/marks-entry',
         icon: <ClipboardEdit className="h-4 w-4" />,
         label: 'Marks Entry',

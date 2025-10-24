@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
   BookOpen,
+  CalendarDays,
   GraduationCap
 } from 'lucide-react';
 import { Logo } from '@/components/icons/logo';
@@ -27,6 +28,11 @@ const navLinks = [
         href: '/dpi-dashboard/masters',
         icon: <BookOpen className="h-4 w-4" />,
         label: 'Masters',
+      },
+      {
+        href: '/dpi-dashboard/exam-schedule',
+        icon: <CalendarDays className="h-4 w-4" />,
+        label: 'Exam Schedule',
       },
     ],
   },
