@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -68,6 +69,13 @@ export default function StudentVerificationForm() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
+                                    <TableHead className="text-center sticky top-0 bg-card">
+                                        <div className="flex items-center justify-center space-x-2">
+                                            <Checkbox id="selectAll" onCheckedChange={handleSelectAll} />
+                                            <Label htmlFor="selectAll" className="sr-only">Select All</Label>
+                                            <span>Verify All</span>
+                                        </div>
+                                    </TableHead>
                                     <TableHead className="sticky top-0 bg-card">Name</TableHead>
                                     <TableHead className="sticky top-0 bg-card">Samagra ID</TableHead>
                                     <TableHead className="sticky top-0 bg-card">School UDISE</TableHead>
@@ -78,18 +86,14 @@ export default function StudentVerificationForm() {
                                     <TableHead className="sticky top-0 bg-card">Category</TableHead>
                                     <TableHead className="sticky top-0 bg-card">Enrollment #</TableHead>
                                     <TableHead className="sticky top-0 bg-card">Scholar #</TableHead>
-                                    <TableHead className="text-center sticky top-0 bg-card">
-                                        <div className="flex items-center justify-center space-x-2">
-                                            <Checkbox id="selectAll" onCheckedChange={handleSelectAll} />
-                                            <Label htmlFor="selectAll" className="sr-only">Select All</Label>
-                                            <span>Verify All</span>
-                                        </div>
-                                    </TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {classStudents.map((student) => (
                                     <TableRow key={student.id}>
+                                        <TableCell className="text-center">
+                                            <Checkbox defaultChecked={true} />
+                                        </TableCell>
                                         <TableCell className="font-medium">{student.name}</TableCell>
                                         <TableCell>{student.samagraId}</TableCell>
                                         <TableCell>{student.schoolUdideCode}</TableCell>
@@ -100,9 +104,6 @@ export default function StudentVerificationForm() {
                                         <TableCell>{student.category}</TableCell>
                                         <TableCell>{student.enrollmentNumber}</TableCell>
                                         <TableCell>{student.scholarNumber}</TableCell>
-                                        <TableCell className="text-center">
-                                            <Checkbox defaultChecked={true} />
-                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
