@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { mockStudents } from '@/lib/data';
+import { mockStudents, mockClasses } from '@/lib/data';
 import { FilePlus2, Search, Upload, User as UserIcon } from 'lucide-react';
 import React, { useState } from 'react';
 import { Student } from '@/lib/types';
