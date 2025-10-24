@@ -5,12 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { mockClasses, mockStudents, mockSubjects, mockExams } from '@/lib/data';
 import { Student, Subject } from '@/lib/types';
 import { Save } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
@@ -191,6 +191,60 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
         if (percentage >= 33) return 'E';
         return 'F';
     }
+
+    const overallSummary = useMemo(() => {
+        let totalMarksObtained = 0;
+        let maxTotalMarks = 0;
+        let isFail = false;
+
+        subjects.forEach(subject => {
+            const subjectMarks = marks[subject.id];
+            if (subjectMarks) {
+                const theory = Number(subjectMarks.theory) || 0;
+                const practical = Number(subjectMarks.practical) || 0;
+                const grace = Number(subjectMarks.grace) || 0;
+                totalMarksObtained += theory + practical + grace;
+
+                let maxPracticalOrProject = 0;
+                if(subject.hasPractical) maxPracticalOrProject = subject.practicalMaxMarks || 0;
+                else if (subject.hasProject) maxPracticalOrProject = subject.projectMaxMarks || 0;
+                maxTotalMarks += subject.maxMarks + maxPracticalOrProject;
+                
+                // Check fail condition
+                const passingMarks = subject.passingMarks;
+                if (theory < passingMarks) {
+                    isFail = true;
+                }
+                if(subject.hasPractical && practical < (subject.practicalPassingMarks || 0)) {
+                    isFail = true;
+                }
+                if(subject.hasProject && practical < (subject.projectPassingMarks || 0)) {
+                    isFail = true;
+                }
+            }
+        });
+        
+        const overallPercentage = maxTotalMarks > 0 ? (totalMarksObtained / maxTotalMarks) * 100 : 0;
+        const overallGrade = getGrade(overallPercentage);
+        const result = isFail ? 'FAIL' : 'PASS';
+        
+        let division = '-';
+        if (result === 'PASS') {
+            if (overallPercentage >= 60) division = 'First Division';
+            else if (overallPercentage >= 45) division = 'Second Division';
+            else if (overallPercentage >= 33) division = 'Third Division';
+        }
+
+        return {
+            totalMarksObtained,
+            maxTotalMarks,
+            overallPercentage,
+            overallGrade,
+            result,
+            division
+        }
+
+    }, [marks, subjects]);
 
     const handleOtpSubmit = () => {
         setOtpModalOpen(false);
@@ -459,6 +513,19 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                                 </TableRow>
                                             )})}
                                         </TableBody>
+                                        <TableFooter>
+                                            <TableRow className="bg-muted/50 font-semibold">
+                                                <TableCell colSpan={10} className="text-right">Overall Summary</TableCell>
+                                                <TableCell className="text-center">{overallSummary.totalMarksObtained} / {overallSummary.maxTotalMarks}</TableCell>
+                                                <TableCell className="text-center">{overallSummary.overallPercentage.toFixed(2)}%</TableCell>
+                                                <TableCell className="text-center">{overallSummary.overallGrade}</TableCell>
+                                                <TableCell className="text-center">{overallSummary.result}</TableCell>
+                                            </TableRow>
+                                             <TableRow className="bg-muted/50 font-semibold">
+                                                <TableCell colSpan={13} className="text-right">Division</TableCell>
+                                                <TableCell className="text-center">{overallSummary.division}</TableCell>
+                                            </TableRow>
+                                        </TableFooter>
                                     </Table>
                                 </div>
                             </div>
