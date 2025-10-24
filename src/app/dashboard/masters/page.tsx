@@ -8,6 +8,7 @@ import {
 import SubjectsForm from './_components/subjects-form';
 import ExamsForm from './_components/exams-form';
 import GradesForm from './_components/grades-form';
+import RemarksForm from './_components/remarks-form';
 
 
 export default function MastersPage() {
@@ -25,6 +26,7 @@ export default function MastersPage() {
             <TabsTrigger value="subjects">Subjects</TabsTrigger>
             <TabsTrigger value="exams">Exams</TabsTrigger>
             <TabsTrigger value="grades">Grades</TabsTrigger>
+            <TabsTrigger value="remarks">Remarks</TabsTrigger>
           </TabsList>
         </div>
         <TabsContent value="subjects" className="space-y-4 mt-0">
@@ -35,6 +37,9 @@ export default function MastersPage() {
         </TabsContent>
         <TabsContent value="grades" className="space-y-4 mt-0">
           <GradesForm />
+        </TabsContent>
+        <TabsContent value="remarks" className="space-y-4 mt-0">
+          <RemarksForm />
         </TabsContent>
       </Tabs>
     </div>

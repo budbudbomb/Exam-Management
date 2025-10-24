@@ -54,3 +54,8 @@ export interface Student {
       rangeStart: number;
       rangeEnd: number;
   }
+
+  export interface Remark {
+    abbreviation: string;
+    description: string;
+  }

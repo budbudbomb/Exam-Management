@@ -1,4 +1,4 @@
-import type { Student, Subject, Class, Exam, Grade } from './types';
+import type { Student, Subject, Class, Exam, Grade, Remark } from './types';
 
 export const mockStudents: Student[] = [
   { id: '1', name: 'Aarav Sharma', rollNumber: '10A-01', class: '10', section: 'A', medium: 'English', fatherName: 'Suresh Sharma', motherName: 'Sunita Sharma', dob: '15-04-2008', category: 'General', samagraId: '123456789', enrollmentNumber: 'ENR-2024-12345', photoUrl: 'https://i.pravatar.cc/96?u=1', schoolUdideCode: 'SCH001', scholarNumber: 'SN001' },
@@ -42,3 +42,10 @@ export const mockGrades: Grade[] = [
     { grade: 'E', rangeStart: 33, rangeEnd: 60 },
     { grade: 'F', rangeStart: 0, rangeEnd: 32 },
 ]
+
+export const mockRemarks: Remark[] = [
+    { abbreviation: 'DISTN', description: 'Distinction' },
+    { abbreviation: 'GRACE', description: 'Passed with grace marks' },
+    { abbreviation: 'FAIL', description: 'Failed' },
+    { abbreviation: 'SUPP', description: 'Supplementary' },
+];
