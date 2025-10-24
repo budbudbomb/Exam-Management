@@ -5,6 +5,9 @@ import {
   ClipboardEdit,
   FileText,
   Users,
+  UserCheck,
+  User,
+  CalendarDays,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -96,6 +99,24 @@ export default function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
+            <Link href="/dashboard/verify-enrolled-students" className="w-full">
+                <Button className="w-full justify-start" variant="outline">
+                    <UserCheck className="mr-2 h-4 w-4" />
+                    Verify Enrolled Students
+                </Button>
+            </Link>
+             <Link href="/dashboard/student-details-update" className="w-full">
+                <Button className="w-full justify-start" variant="outline">
+                    <User className="mr-2 h-4 w-4" />
+                    Update Students Details
+                </Button>
+            </Link>
+             <Link href="/dashboard/view-exam-schedule" className="w-full">
+                <Button className="w-full justify-start" variant="outline">
+                    <CalendarDays className="mr-2 h-4 w-4" />
+                    View Exam Schedule
+                </Button>
+            </Link>
             <Link href="/dashboard/marks-entry" className="w-full">
                 <Button className="w-full justify-start" variant="outline">
                     <ClipboardEdit className="mr-2 h-4 w-4" />
@@ -106,12 +127,6 @@ export default function DashboardPage() {
                 <Button className="w-full justify-start" variant="outline">
                     <FileText className="mr-2 h-4 w-4" />
                     Generate Report Cards
-                </Button>
-            </Link>
-            <Link href="/dashboard/masters" className="w-full">
-                <Button className="w-full justify-start" variant="outline">
-                    <BookOpen className="mr-2 h-4 w-4" />
-                    Configure Masters
                 </Button>
             </Link>
           </CardContent>
