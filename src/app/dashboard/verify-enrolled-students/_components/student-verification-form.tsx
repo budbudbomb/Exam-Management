@@ -70,13 +70,7 @@ export default function StudentVerificationForm() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="text-center sticky top-0 bg-card">
-                                        <div className="flex items-center justify-center space-x-2">
-                                            <Checkbox id="selectAll" onCheckedChange={handleSelectAll} />
-                                            <Label htmlFor="selectAll" className="sr-only">Select All</Label>
-                                            <span>Verify All</span>
-                                        </div>
-                                    </TableHead>
+                                    <TableHead className="text-center sticky top-0 bg-card">Verify</TableHead>
                                     <TableHead className="sticky top-0 bg-card">Name</TableHead>
                                     <TableHead className="sticky top-0 bg-card">Gender</TableHead>
                                     <TableHead className="sticky top-0 bg-card">Samagra ID</TableHead>
