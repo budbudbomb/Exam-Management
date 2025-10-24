@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -84,6 +84,7 @@ export default function StudentsTable() {
                                 <SelectValue placeholder="Select year" />
                             </SelectTrigger>
                             <SelectContent>
+                                <SelectItem value="2025-2026">2025-2026</SelectItem>
                                 <SelectItem value="2023-2024">2023-2024</SelectItem>
                             </SelectContent>
                         </Select>
