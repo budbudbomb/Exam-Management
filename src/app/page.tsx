@@ -95,7 +95,9 @@ export default function LoginPage() {
                           <Link href="/sankool-dashboard" className="cursor-pointer">Sankool</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>DEO</DropdownMenuItem>
-                        <DropdownMenuItem>DPI</DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/dpi-dashboard" className="cursor-pointer">DPI</Link>
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
 

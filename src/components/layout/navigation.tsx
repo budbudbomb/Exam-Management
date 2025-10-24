@@ -40,11 +40,6 @@ const navLinks = [
     icon: <GraduationCap className="h-4 w-4" />,
     subLinks: [
       {
-        href: '/dashboard/masters',
-        icon: <BookOpen className="h-4 w-4" />,
-        label: 'Masters',
-      },
-      {
         href: '/dashboard/verify-enrolled-students',
         icon: <UserCheck className="h-4 w-4" />,
         label: 'Verify Enrolled Students',
