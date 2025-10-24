@@ -10,13 +10,7 @@ export default function MarksEntryPage() {
       </p>
       
       <Card>
-        <CardHeader>
-          <CardTitle>Enter Student Marks</CardTitle>
-          <CardDescription>
-            Use the filters below to find the correct list of students and begin entering their theory and practical marks.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <MarksEntryForm userRole="school" />
         </CardContent>
       </Card>
