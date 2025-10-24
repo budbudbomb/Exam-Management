@@ -73,7 +73,7 @@ export default function DpiNavigation() {
                 defaultValue={link.subLinks.some(sub => pathname.startsWith(sub.href)) ? "item-1" : undefined}
               >
                 <AccordionItem value="item-1" className="border-b-0">
-                  <AccordionTrigger className="flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-primary-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground hover:no-underline [&[data-state=open]]:bg-sidebar [&[data-state=open]]:text-sidebar-accent-foreground [&[data-state=open]>svg:last-child]:-rotate-90">
+                  <AccordionTrigger className="flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-primary-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground hover:no-underline [&[data-state=open]]:bg-sidebar [&[data-state=open]]:text-sidebar-accent-foreground [&[data-state=open]>svg:last-child]:-rotate-90">
                     {link.icon}
                     {link.label}
                   </AccordionTrigger>
