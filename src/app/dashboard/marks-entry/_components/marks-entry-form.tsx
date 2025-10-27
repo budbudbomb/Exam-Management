@@ -502,7 +502,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                                             </SelectContent>
                                                         </Select>
                                                     </TableCell>
-                                                    <TableCell className="text-center">{subject.minMarks}</TableCell>
+                                                    <TableCell className="text-center">{Math.round(subject.maxMarks * 0.33)}</TableCell>
                                                     <TableCell className="text-center">{subject.maxMarks}</TableCell>
                                                     <TableCell>
                                                         <Input type="text" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.theory} onChange={(e) => handleMarkChange(subject.id, 'theory', e.target.value)} />
@@ -510,7 +510,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                                     
                                                     {/* Practical/Project Section */}
                                                     <TableCell className="border-l">
-                                                        <Select value={marks[subject.id]?.practicalAttendance} onValueChange={(value) => handleMarkChange(subject.id, 'practicalAttendance', value)}>
+                                                        <Select value={marks[subject.id]?.practicalAttendance} onValueChange={(value) => handleMarkChange(subject.id, 'practicalAttendance', value)} disabled={!subject.hasPractical && !subject.hasProject}>
                                                             <SelectTrigger className="max-w-[120px] mx-auto text-center">
                                                                 <SelectValue placeholder="Select" />
                                                             </SelectTrigger>
@@ -520,10 +520,10 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
                                                             </SelectContent>
                                                         </Select>
                                                     </TableCell>
-                                                    <TableCell className="text-center">{subject.hasPractical ? subject.practicalMinMarks : subject.projectMinMarks}</TableCell>
-                                                    <TableCell className="text-center">{subject.hasPractical ? subject.practicalMaxMarks : subject.projectMaxMarks}</TableCell>
+                                                    <TableCell className="text-center">{subject.hasPractical ? Math.round((subject.practicalMaxMarks || 0) * 0.33) : subject.hasProject ? Math.round((subject.projectMaxMarks || 0) * 0.33) : ''}</TableCell>
+                                                    <TableCell className="text-center">{subject.hasPractical ? subject.practicalMaxMarks : subject.hasProject ? subject.projectMaxMarks : ''}</TableCell>
                                                     <TableCell>
-                                                        <Input type="text" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practical} onChange={(e) => handleMarkChange(subject.id, 'practical', e.target.value)} />
+                                                        <Input type="text" placeholder="--" className="max-w-[100px] mx-auto text-center" value={marks[subject.id]?.practical} onChange={(e) => handleMarkChange(subject.id, 'practical', e.target.value)} disabled={!subject.hasPractical && !subject.hasProject} />
                                                     </TableCell>
                                                    
                                                     {/* Grace and Final Marks */}
@@ -596,6 +596,8 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
 }
 
     
+    
+
     
 
     
