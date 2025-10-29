@@ -9,147 +9,157 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import {
   Gauge,
-  Book,
-  Users,
-  ClipboardEdit,
-  FileText,
-  Bot,
   GraduationCap,
-  BookOpen,
-  School as SchoolIcon,
-  User,
   UserCheck,
   CalendarDays,
+  ClipboardEdit,
+  FileText,
+  User,
 } from 'lucide-react';
 import { Logo } from '../icons/logo';
-import { useState } from 'react';
 
 const navLinks = [
   {
-    href: '/dashboard',
-    icon: <Gauge className="h-4 w-4" />,
-    label: 'Dashboard',
-  },
-  {
-    isAccordion: true,
-    label: 'Exam Management',
-    icon: <GraduationCap className="h-4 w-4" />,
-    subLinks: [
+    label: 'Main Menu',
+    isHeading: true,
+    items: [
       {
-        href: '/dashboard/verify-enrolled-students',
-        icon: <UserCheck className="h-4 w-4" />,
-        label: 'Verify Enrolled Students',
+        href: '/dashboard',
+        icon: <Gauge className="h-4 w-4" />,
+        label: 'Dashboard',
       },
       {
-        href: '/dashboard/student-details-update',
-        icon: <User className="h-4 w-4" />,
-        label: 'Update Students Details',
+        isAccordion: true,
+        label: 'Exam Management',
+        icon: <GraduationCap className="h-4 w-4" />,
+        subLinks: [
+          {
+            href: '/dashboard/verify-enrolled-students',
+            icon: <UserCheck className="h-4 w-4" />,
+            label: 'Verify Enrolled Students',
+          },
+          {
+            href: '/dashboard/student-details-update',
+            icon: <User className="h-4 w-4" />,
+            label: 'Update Students Details',
+          },
+          {
+            href: '/dashboard/view-exam-schedule',
+            icon: <CalendarDays className="h-4 w-4" />,
+            label: 'View Exam Schedule',
+          },
+          {
+            href: '/dashboard/marks-entry',
+            icon: <ClipboardEdit className="h-4 w-4" />,
+            label: 'Marks Entry',
+          },
+          {
+            href: '/dashboard/reports',
+            icon: <FileText className="h-4 w-4" />,
+            label: 'Report Cards',
+          },
+        ],
       },
-       {
-        href: '/dashboard/view-exam-schedule',
-        icon: <CalendarDays className="h-4 w-4" />,
-        label: 'View Exam Schedule',
-      },
-      {
-        href: '/dashboard/marks-entry',
-        icon: <ClipboardEdit className="h-4 w-4" />,
-        label: 'Marks Entry',
-      },
-      {
-        href: '/dashboard/reports',
-        icon: <FileText className="h-4 w-4" />,
-        label: 'Report Cards',
-      },
-    ],
-  },
+    ]
+  }
 ];
 
 export default function Navigation() {
   const pathname = usePathname();
-  const [currentDate] = useState(new Date().toLocaleDateString('en-GB', {
-    weekday: 'long',
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric'
-  }));
 
-
-  return (
-    <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
-      <div className="flex h-[88px] items-center bg-sidebar px-4 lg:px-6 flex-col justify-center border-b border-sidebar-border">
-         <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-sidebar-primary-foreground">
-          <Logo className="h-10 w-10 text-white" />
-          <div className='flex flex-col'>
-            <span className="text-sm">Madhya Pradesh</span>
-            <span className="text-xl font-bold">Education Portal 3.0</span>
+  const renderNav = (items: any[]) => {
+    return items.map((link) => {
+      if (link.isHeading) {
+        return (
+          <div key={link.label} className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            {link.label}
           </div>
-        </Link>
-      </div>
-      <div className="h-8 bg-white text-orange-500 flex items-center justify-center text-sm font-semibold border-b border-sidebar-border">
-        {currentDate}
-      </div>
-      <div className="flex-1 bg-sidebar-accent">
-        <nav className="grid items-start px-2 text-sm font-medium lg:px-4 py-4 gap-1">
-          {navLinks.map((link) =>
-            link.isAccordion && link.subLinks ? (
-              <Accordion
-                type="single"
-                collapsible
-                className="w-full"
-                key={link.label}
-                defaultValue={link.subLinks.some(sub => pathname.startsWith(sub.href)) ? "item-1" : undefined}
-              >
-                <AccordionItem value="item-1" className="border-b-0">
-                  <AccordionTrigger className="flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-primary-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground hover:no-underline [&[data-state=open]]:bg-sidebar [&[data-state=open]]:text-sidebar-accent-foreground [&[data-state=open]>svg:last-child]:-rotate-90">
-                    {link.icon}
-                    {link.label}
-                  </AccordionTrigger>
-                  <AccordionContent className="pl-8 pt-2">
-                    <nav className="grid gap-1">
-                      {link.subLinks.map((subLink) => (
-                        <Link
-                          key={subLink.href}
-                          href={subLink.href}
-                          className={cn(
-                            'flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground',
-                            pathname.startsWith(subLink.href) && 'bg-sidebar text-sidebar-accent-foreground'
-                          )}
-                        >
-                          {subLink.icon}
-                          {subLink.label}
-                        </Link>
-                      ))}
-                    </nav>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            ) : (
-              <Link
-                key={link.href}
-                href={link.href!}
-                className={cn(
-                  'flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground',
-                  pathname === link.href && 'bg-sidebar text-sidebar-accent-foreground'
+        )
+      }
+      
+      if (link.isAccordion && link.subLinks) {
+        return (
+          <Accordion
+            type="single"
+            collapsible
+            className="w-full"
+            key={link.label}
+            defaultValue={link.subLinks.some((sub: { href: string; }) => pathname.startsWith(sub.href)) ? link.label : undefined}
+          >
+            <AccordionItem value={link.label} className="border-b-0">
+              <AccordionTrigger 
+                className={cn("flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:no-underline",
+                  link.subLinks.some((sub: { href: string; }) => pathname.startsWith(sub.href)) && "bg-sidebar-accent text-sidebar-accent-foreground"
                 )}
               >
                 {link.icon}
                 {link.label}
-              </Link>
-            )
+              </AccordionTrigger>
+              <AccordionContent className="ml-4 border-l border-border pl-4">
+                <nav className="grid gap-1 py-1">
+                  {link.subLinks.map((subLink: { href: string, icon: React.ReactNode, label: string }) => (
+                    <Link
+                      key={subLink.href}
+                      href={subLink.href}
+                      className={cn(
+                        'flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                        pathname.startsWith(subLink.href) && 'bg-sidebar-accent text-sidebar-accent-foreground'
+                      )}
+                    >
+                      {subLink.icon}
+                      {subLink.label}
+                    </Link>
+                  ))}
+                </nav>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        );
+      }
+      
+      return (
+        <Link
+          key={link.href}
+          href={link.href!}
+          className={cn(
+            'flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+            pathname === link.href && 'bg-sidebar-accent text-sidebar-accent-foreground'
           )}
+        >
+          {link.icon}
+          {link.label}
+        </Link>
+      );
+    });
+  }
+
+  return (
+    <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
+      <div className="flex h-16 items-center px-4 lg:px-6 border-b border-sidebar-border">
+         <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-sidebar-primary-foreground">
+          <Logo className="h-8 w-8 text-primary" />
+          <span className="text-lg font-bold">EduReport Pro</span>
+        </Link>
+      </div>
+      
+      <div className="flex-1">
+        <nav className="grid items-start px-2 text-sm font-medium lg:px-4 py-4 gap-1">
+          {navLinks.map((section) => (
+             <div key={section.label} className="space-y-1">
+              {section.isHeading && (
+                <h2 className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  {section.label}
+                </h2>
+              )}
+              {renderNav(section.items)}
+            </div>
+          ))}
         </nav>
       </div>
-      <div className="mt-auto p-4 bg-sidebar-accent">
-          <div className="flex items-center gap-2">
-            <select className="w-full bg-sidebar text-sidebar-foreground text-sm rounded-md border-0 p-2 focus:ring-0">
-              <option>English</option>
-              <option>Hindi</option>
-            </select>
-          </div>
+       <div className="mt-auto p-4">
         </div>
     </div>
   );
