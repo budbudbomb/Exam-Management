@@ -24,7 +24,7 @@ import {
 import { Logo } from '../icons/logo';
 import { Button } from '../ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu';
-import { useSidebar, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarMenuSub, SidebarMenuSubButton, SidebarGroup, SidebarGroupLabel, SidebarGroupContent } from '../ui/sidebar';
+import { useSidebar, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarMenuSub, SidebarMenuSubButton, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarMenuSubItem } from '../ui/sidebar';
 
 const navLinks = [
   {
@@ -117,7 +117,7 @@ export default function Navigation() {
                                 >
                                     <div className="flex items-center gap-3">
                                         {link.icon}
-                                        {state === 'expanded' && <span>{link.label}</span>}
+                                        {state === 'expanded' && <span className="flex-grow text-left">{link.label}</span>}
                                     </div>
                                     {state === 'expanded' && <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />}
                                 </SidebarMenuButton>
