@@ -115,13 +115,11 @@ export default function Navigation() {
                                     isActive={link.subLinks.some(sub => isLinkActive(sub.href))}
                                     tooltip={link.tooltip}
                                 >
-                                  <>
-                                    <div className="flex flex-grow items-center gap-3">
-                                        {link.icon}
-                                        {state === 'expanded' && <span className="text-left">{link.label}</span>}
-                                    </div>
-                                    {state === 'expanded' && <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />}
-                                  </>
+                                  <div className="flex flex-grow items-center gap-3">
+                                      {link.icon}
+                                      {state === 'expanded' && <span className="text-left">{link.label}</span>}
+                                  </div>
+                                  {state === 'expanded' && <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />}
                                 </SidebarMenuButton>
                             </AccordionTrigger>
                           </SidebarMenuItem>
