@@ -128,9 +128,11 @@ export default function Navigation() {
                               {link.subLinks.map((subLink, subLinkIndex) => (
                                 <SidebarMenuSubItem key={subLinkIndex}>
                                   <Link href={subLink.href}>
-                                    <SidebarMenuSubButton isActive={isLinkActive(subLink.href)}>
-                                      {subLink.icon}
-                                      {state === 'expanded' && <span>{subLink.label}</span>}
+                                    <SidebarMenuSubButton asChild isActive={isLinkActive(subLink.href)}>
+                                      <span>
+                                        {subLink.icon}
+                                        {state === 'expanded' && <span>{subLink.label}</span>}
+                                      </span>
                                     </SidebarMenuSubButton>
                                   </Link>
                                 </SidebarMenuSubItem>
