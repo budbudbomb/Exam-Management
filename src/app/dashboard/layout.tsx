@@ -13,7 +13,7 @@ export default function DashboardLayout({
       <Sidebar collapsible="icon">
         <Navigation />
       </Sidebar>
-      <div className="flex-1 md:p-4">
+      <div className="flex-1">
         <SidebarInset>
           <div className="flex flex-col min-h-screen">
             <Header />
