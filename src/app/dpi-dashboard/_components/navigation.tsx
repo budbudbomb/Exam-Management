@@ -12,6 +12,7 @@ import {
   Bookmark,
   Library,
   LogOut,
+  CircleUser,
 } from 'lucide-react';
 import { Logo } from '@/components/icons/logo';
 import {
@@ -21,6 +22,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const navLinks = [
     {
@@ -179,12 +181,27 @@ export default function DpiNavigation() {
         </nav>
       </div>
       <div className="mt-auto p-4 border-t border-sidebar-border">
-        <Link href="/">
-          <Button variant="ghost" className="w-full justify-start">
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </Button>
-        </Link>
+         <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              >
+                <CircleUser className="mr-2 h-5 w-5" />
+                My Account
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="mb-2 w-56">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem>Support</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/">Logout</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
       </div>
     </div>
   );
