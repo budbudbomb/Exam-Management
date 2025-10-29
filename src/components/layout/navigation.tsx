@@ -9,7 +9,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { cn } from '@/lib/utils';
 import {
   Gauge,
   GraduationCap,
@@ -20,6 +19,7 @@ import {
   User,
   LogOut,
   CircleUser,
+  ChevronDown,
 } from 'lucide-react';
 import { Logo } from '../icons/logo';
 import { Button } from '../ui/button';
@@ -127,7 +127,7 @@ export default function Navigation() {
                             <SidebarMenuSub>
                               {link.subLinks.map((subLink, subLinkIndex) => (
                                 <SidebarMenuSubItem key={subLinkIndex}>
-                                  <Link href={subLink.href} legacyBehavior>
+                                  <Link href={subLink.href}>
                                     <SidebarMenuSubButton isActive={isLinkActive(subLink.href)}>
                                       {subLink.icon}
                                       {state === 'expanded' && <span>{subLink.label}</span>}
@@ -146,10 +146,10 @@ export default function Navigation() {
                     <SidebarMenuItem key={linkIndex}>
                       <Link href={link.href!} passHref>
                         <SidebarMenuButton asChild isActive={isLinkActive(link.href!)} tooltip={link.tooltip} className="rounded-full">
-                          <a>
+                           <a>
                             {link.icon}
                             {state === 'expanded' && <span>{link.label}</span>}
-                          </a>
+                           </a>
                         </SidebarMenuButton>
                       </Link>
                     </SidebarMenuItem>
@@ -186,7 +186,3 @@ export default function Navigation() {
     </div>
   );
 }
-
-const ChevronDown = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m6 9 6 6 6-6"/></svg>
-)
