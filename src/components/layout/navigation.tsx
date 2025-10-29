@@ -127,7 +127,7 @@ export default function Navigation() {
                             <SidebarMenuSub>
                               {link.subLinks.map((subLink, subLinkIndex) => (
                                 <SidebarMenuSubItem key={subLinkIndex}>
-                                  <Link href={subLink.href} passHref>
+                                  <Link href={subLink.href} passHref legacyBehavior>
                                     <SidebarMenuSubButton asChild isActive={isLinkActive(subLink.href)}>
                                       <a>
                                         {subLink.icon}
