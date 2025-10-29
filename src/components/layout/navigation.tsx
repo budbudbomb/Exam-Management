@@ -95,21 +95,21 @@ export default function Navigation() {
           >
             <AccordionItem value={link.label} className="border-b-0">
               <AccordionTrigger 
-                className={cn("flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:no-underline",
+                className={cn("flex items-center gap-3 rounded-full px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:no-underline",
                   link.subLinks.some((sub: { href: string; }) => pathname.startsWith(sub.href)) && "bg-sidebar-accent text-sidebar-accent-foreground"
                 )}
               >
                 {link.icon}
                 {link.label}
               </AccordionTrigger>
-              <AccordionContent className="pl-0">
+              <AccordionContent className="ml-4 border-l border-border pl-4">
                 <nav className="grid gap-1 py-1">
                   {link.subLinks.map((subLink: { href: string, icon: React.ReactNode, label: string }) => (
                     <Link
                       key={subLink.href}
                       href={subLink.href}
                       className={cn(
-                        'flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                        'flex items-center gap-3 rounded-full px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
                         pathname.startsWith(subLink.href) && 'bg-sidebar-accent text-sidebar-accent-foreground'
                       )}
                     >
@@ -129,7 +129,7 @@ export default function Navigation() {
           key={link.href}
           href={link.href!}
           className={cn(
-            'flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+            'flex items-center gap-3 rounded-full px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
             pathname === link.href && 'bg-sidebar-accent text-sidebar-accent-foreground'
           )}
         >
@@ -168,7 +168,7 @@ export default function Navigation() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-full"
               >
                 <CircleUser className="mr-2 h-5 w-5" />
                 My Account
