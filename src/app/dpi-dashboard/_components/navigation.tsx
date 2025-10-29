@@ -2,12 +2,15 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
   BookOpen,
   CalendarDays,
-  GraduationCap
+  GraduationCap,
+  ListChecks,
+  BookMark,
+  Library,
 } from 'lucide-react';
 import { Logo } from '@/components/icons/logo';
 import { useState } from 'react';
@@ -18,8 +21,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 
-const navLinks = [
-  {
+const examManagementLinks = {
     isAccordion: true,
     label: 'Exam Management',
     icon: <GraduationCap className="h-4 w-4" />,
@@ -35,17 +37,67 @@ const navLinks = [
         label: 'Exam Schedule',
       },
     ],
-  },
-];
+};
+
+const mastersLinks = {
+    isAccordion: true,
+    label: 'Masters',
+    icon: <Library className="h-4 w-4" />,
+    subLinks: [
+      {
+        href: '/dpi-dashboard/masters?tab=subjects',
+        icon: <BookOpen className="h-4 w-4" />,
+        label: 'Subjects',
+      },
+      {
+        href: '/dpi-dashboard/masters?tab=exams',
+        icon: <ListChecks className="h-4 w-4" />,
+        label: 'Exams',
+      },
+      {
+        href: '/dpi-dashboard/masters?tab=grades',
+        icon: <GraduationCap className="h-4 w-4" />,
+        label: 'Grades',
+      },
+      {
+        href: '/dpi-dashboard/masters?tab=remarks',
+        icon: <BookMark className="h-4 w-4" />,
+        label: 'Remarks',
+      },
+    ],
+};
+
+const navLinks = [examManagementLinks, mastersLinks];
 
 export default function DpiNavigation() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const tab = searchParams.get('tab');
+  
   const [currentDate] = useState(new Date().toLocaleDateString('en-GB', {
     weekday: 'long',
     day: '2-digit',
     month: 'long',
     year: 'numeric'
   }));
+
+  const isLinkActive = (href: string) => {
+    const [basePath, params] = href.split('?');
+    if (pathname !== basePath) {
+      return false;
+    }
+    if (params) {
+      const urlParams = new URLSearchParams(params);
+      const tabParam = urlParams.get('tab');
+      return tab === tabParam;
+    }
+    // If we are on /dpi-dashboard/masters and there is no tab, we can default to subjects being active.
+    if(pathname === '/dpi-dashboard/masters' && !tab) {
+        return href.includes('subjects');
+    }
+    
+    return !params;
+  };
 
   return (
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
@@ -70,9 +122,9 @@ export default function DpiNavigation() {
                 collapsible
                 className="w-full"
                 key={link.label}
-                defaultValue={link.subLinks.some(sub => pathname.startsWith(sub.href)) ? "item-1" : undefined}
+                defaultValue={link.subLinks.some(sub => isLinkActive(sub.href)) ? link.label : undefined}
               >
-                <AccordionItem value="item-1" className="border-b-0">
+                <AccordionItem value={link.label} className="border-b-0">
                   <AccordionTrigger className="flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-primary-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground hover:no-underline [&[data-state=open]]:bg-sidebar [&[data-state=open]]:text-sidebar-accent-foreground [&[data-state=open]>svg:last-child]:-rotate-90">
                     {link.icon}
                     {link.label}
@@ -85,7 +137,7 @@ export default function DpiNavigation() {
                           href={subLink.href}
                           className={cn(
                             'flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground',
-                            pathname.startsWith(subLink.href) && 'bg-sidebar text-sidebar-accent-foreground'
+                            isLinkActive(subLink.href) && 'bg-sidebar text-sidebar-accent-foreground'
                           )}
                         >
                           {subLink.icon}

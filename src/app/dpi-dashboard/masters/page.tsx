@@ -1,4 +1,5 @@
 
+'use client';
 import {
   Tabs,
   TabsContent,
@@ -9,9 +10,13 @@ import SubjectsForm from './_components/subjects-form';
 import ExamsForm from './_components/exams-form';
 import GradesForm from './_components/grades-form';
 import RemarksForm from './_components/remarks-form';
+import { useSearchParams } from 'next/navigation';
 
 
 export default function MastersPage() {
+  const searchParams = useSearchParams();
+  const tab = searchParams.get('tab') || 'subjects';
+  
   return (
     <div className="space-y-4">
       <div>
@@ -20,7 +25,7 @@ export default function MastersPage() {
           Configure the core entities of the school management system.
         </p>
       </div>
-      <Tabs defaultValue="subjects" className="space-y-4">
+      <Tabs defaultValue={tab} value={tab} className="space-y-4">
         <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm -mx-6 px-6 py-2 border-b">
           <TabsList>
             <TabsTrigger value="subjects">Subjects</TabsTrigger>
