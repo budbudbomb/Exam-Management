@@ -146,11 +146,13 @@ export default function Navigation() {
                   
                   return (
                     <SidebarMenuItem key={linkIndex}>
-                      <Link href={link.href!} passHref>
+                      <Link href={link.href!} passHref legacyBehavior>
                         <SidebarMenuButton asChild isActive={isLinkActive(link.href!)} tooltip={link.tooltip} className="rounded-full">
                            <a>
-                            {link.icon}
-                            {state === 'expanded' && <span>{link.label}</span>}
+                            <div className="flex flex-grow items-center gap-3">
+                              {link.icon}
+                              {state === 'expanded' && <span>{link.label}</span>}
+                            </div>
                            </a>
                         </SidebarMenuButton>
                       </Link>
