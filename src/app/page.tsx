@@ -15,9 +15,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [captcha, setCaptcha] = useState('');
+  const [selectedRole, setSelectedRole] = useState('');
+  const router = useRouter();
+
 
   const refreshCaptcha = () => {
     setCaptcha(Math.random().toString().substring(2, 8));
@@ -26,6 +31,16 @@ export default function LoginPage() {
   useEffect(() => {
     refreshCaptcha();
   }, []);
+
+  const handleLogin = () => {
+    if (!selectedRole) {
+      // Maybe show a toast or an alert
+      console.error("Please select a role");
+      return;
+    }
+    const path = `/${selectedRole}`;
+    router.push(path);
+  };
 
   return (
     <div className="min-h-screen w-full flex flex-col bg-gray-100 dark:bg-gray-900">
@@ -47,10 +62,21 @@ export default function LoginPage() {
 
                 <form className="space-y-6">
                     <div className="space-y-2">
-                        <Label htmlFor="username">User Name</Label>
+                        <Label htmlFor="username">User Role</Label>
                         <div className="relative">
                             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                            <Input id="username" type="text" placeholder="User Name" className="pl-10" required />
+                             <Select onValueChange={setSelectedRole}>
+                                <SelectTrigger className="pl-10">
+                                    <SelectValue placeholder="Select a role" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="dashboard">School</SelectItem>
+                                    <SelectItem value="pariksha-prabhar-dashboard">Pariksha Prabhari</SelectItem>
+                                    <SelectItem value="sankool-dashboard">Sankool</SelectItem>
+                                    <SelectItem value="deo-dashboard">DEO</SelectItem>
+                                    <SelectItem value="dpi-dashboard">DPI</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
                     <div className="space-y-2">
@@ -76,30 +102,10 @@ export default function LoginPage() {
                         <Input id="captcha-input" type="text" placeholder="Enter Captcha" required />
                     </div>
 
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button className="w-full text-white bg-gradient-to-r from-btn-start to-btn-end hover:from-btn-start/90 hover:to-btn-end/90 font-semibold">
-                          <KeyRound className="mr-2 h-4 w-4" />
-                          Login As
-                          <ChevronDown className="ml-2 h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-full max-w-sm">
-                        <DropdownMenuItem asChild>
-                          <Link href="/dashboard" className="cursor-pointer">School</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link href="/pariksha-prabhar-dashboard" className="cursor-pointer">Pariksha Prabhari</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link href="/sankool-dashboard" className="cursor-pointer">Sankool</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>DEO</DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link href="/dpi-dashboard" className="cursor-pointer">DPI</Link>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Button type="button" onClick={handleLogin} className="w-full text-white bg-gradient-to-r from-btn-start to-btn-end hover:from-btn-start/90 hover:to-btn-end/90 font-semibold">
+                      <KeyRound className="mr-2 h-4 w-4" />
+                      Login
+                    </Button>
 
                 </form>
             </div>
@@ -107,14 +113,6 @@ export default function LoginPage() {
       </main>
 
         <footer className="w-full py-4 mt-auto">
-            <div className="container mx-auto flex flex-wrap justify-center gap-2 md:gap-4">
-                <Button variant="outline" size="sm">Forgot Password</Button>
-                <Button variant="outline" size="sm">अतिथि शिक्षक पोर्टल</Button>
-                <Button variant="outline" size="sm">प्रोजेक्ट अतिथि शिक्षक पोर्टल</Button>
-                <Button variant="outline" size="sm">हमारे-शिक्षक ऐप</Button>
-                <Button variant="outline" size="sm">चाइल्ड ट्रैकिंग ऐप</Button>
-                <Button variant="outline" size="sm">FAQ</Button>
-            </div>
              <p className="text-center text-sm text-gray-500 mt-4">पोर्टल से संबंधित समस्या के लिए आप help</p>
         </footer>
     </div>
