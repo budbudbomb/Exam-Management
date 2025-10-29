@@ -111,17 +111,15 @@ export default function Navigation() {
                           <SidebarMenuItem>
                             <AccordionTrigger asChild>
                                 <SidebarMenuButton 
-                                    className="w-full justify-between"
+                                    className="w-full justify-between rounded-full"
                                     isActive={link.subLinks.some(sub => isLinkActive(sub.href))}
                                     tooltip={link.tooltip}
                                 >
-                                  <>
                                     <div className="flex flex-grow items-center gap-3">
                                         {link.icon}
                                         {state === 'expanded' && <span className="text-left">{link.label}</span>}
                                     </div>
                                     {state === 'expanded' && <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />}
-                                  </>
                                 </SidebarMenuButton>
                             </AccordionTrigger>
                           </SidebarMenuItem>
@@ -129,12 +127,10 @@ export default function Navigation() {
                             <SidebarMenuSub>
                               {link.subLinks.map((subLink, subLinkIndex) => (
                                 <SidebarMenuSubItem key={subLinkIndex}>
-                                  <Link href={subLink.href} legacyBehavior passHref>
-                                    <SidebarMenuSubButton asChild isActive={isLinkActive(subLink.href)}>
-                                      <a>
-                                        {subLink.icon}
-                                        {state === 'expanded' && <span>{subLink.label}</span>}
-                                      </a>
+                                  <Link href={subLink.href} legacyBehavior>
+                                    <SidebarMenuSubButton isActive={isLinkActive(subLink.href)}>
+                                      {subLink.icon}
+                                      {state === 'expanded' && <span>{subLink.label}</span>}
                                     </SidebarMenuSubButton>
                                   </Link>
                                 </SidebarMenuSubItem>
@@ -149,7 +145,7 @@ export default function Navigation() {
                   return (
                     <SidebarMenuItem key={linkIndex}>
                       <Link href={link.href!} passHref>
-                        <SidebarMenuButton asChild isActive={isLinkActive(link.href!)} tooltip={link.tooltip}>
+                        <SidebarMenuButton asChild isActive={isLinkActive(link.href!)} tooltip={link.tooltip} className="rounded-full">
                           <a>
                             {link.icon}
                             {state === 'expanded' && <span>{link.label}</span>}
@@ -194,4 +190,3 @@ export default function Navigation() {
 const ChevronDown = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m6 9 6 6 6-6"/></svg>
 )
-
