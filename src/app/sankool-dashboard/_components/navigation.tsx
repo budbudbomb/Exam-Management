@@ -50,7 +50,7 @@ export default function SankoolNavigation() {
                     key={link.href}
                     href={link.href}
                     className={cn(
-                        'flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                        'flex items-center gap-3 rounded-full px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
                         pathname === link.href && 'bg-sidebar-accent text-sidebar-accent-foreground'
                     )}
                     >
@@ -67,7 +67,7 @@ export default function SankoolNavigation() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-full"
               >
                 <CircleUser className="mr-2 h-5 w-5" />
                 My Account

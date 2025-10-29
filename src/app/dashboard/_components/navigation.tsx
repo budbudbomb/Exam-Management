@@ -2,106 +2,77 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import {
-  BookOpen,
-  CalendarDays,
-  GraduationCap,
-  ListChecks,
-  Bookmark,
-  Library,
-  LogOut,
-  CircleUser,
-} from 'lucide-react';
-import { Logo } from '@/components/icons/logo';
+import { usePathname } from 'next/navigation';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { cn } from '@/lib/utils';
+import {
+  Gauge,
+  GraduationCap,
+  UserCheck,
+  CalendarDays,
+  ClipboardEdit,
+  FileText,
+  User,
+  LogOut,
+  CircleUser,
+} from 'lucide-react';
+import { Logo } from '@/components/icons/logo';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const navLinks = [
-    {
+  {
     label: 'Main Menu',
     isHeading: true,
     items: [
-        {
-            isAccordion: true,
-            label: 'Exam Management',
-            icon: <GraduationCap className="h-4 w-4" />,
-            subLinks: [
-            {
-                isAccordion: true,
-                label: 'Masters',
-                icon: <Library className="h-4 w-4" />,
-                subLinks: [
-                {
-                    href: '/dpi-dashboard/masters?tab=subjects',
-                    icon: <BookOpen className="h-4 w-4" />,
-                    label: 'Subjects',
-                },
-                {
-                    href: '/dpi-dashboard/masters?tab=exams',
-                    icon: <ListChecks className="h-4 w-4" />,
-                    label: 'Exams',
-                },
-                {
-                    href: '/dpi-dashboard/masters?tab=grades',
-                    icon: <GraduationCap className="h-4 w-4" />,
-                    label: 'Grades',
-                },
-                {
-                    href: '/dpi-dashboard/masters?tab=remarks',
-                    icon: <Bookmark className="h-4 w-4" />,
-                    label: 'Remarks',
-                },
-                ],
-            },
-            {
-                href: '/dpi-dashboard/exam-schedule',
-                icon: <CalendarDays className="h-4 w-4" />,
-                label: 'Exam Schedule',
-            },
-            ],
-        },
-    ]}
+      {
+        href: '/dashboard',
+        icon: <Gauge className="h-4 w-4" />,
+        label: 'Dashboard',
+      },
+      {
+        isAccordion: true,
+        label: 'Exam Management',
+        icon: <GraduationCap className="h-4 w-4" />,
+        subLinks: [
+          {
+            href: '/dashboard/verify-enrolled-students',
+            icon: <UserCheck className="h-4 w-4" />,
+            label: 'Verify Enrolled Students',
+          },
+          {
+            href: '/dashboard/student-details-update',
+            icon: <User className="h-4 w-4" />,
+            label: 'Update Students Details',
+          },
+          {
+            href: '/dashboard/view-exam-schedule',
+            icon: <CalendarDays className="h-4 w-4" />,
+            label: 'View Exam Schedule',
+          },
+          {
+            href: '/dashboard/marks-entry',
+            icon: <ClipboardEdit className="h-4 w-4" />,
+            label: 'Marks Entry',
+          },
+          {
+            href: '/dashboard/reports',
+            icon: <FileText className="h-4 w-4" />,
+            label: 'Report Cards',
+          },
+        ],
+      },
+    ]
+  }
 ];
 
-
-export default function DpiNavigation() {
+export default function Navigation() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const tab = searchParams.get('tab');
-
-  const isLinkActive = (href: string) => {
-    const [basePath, params] = href.split('?');
-    if (pathname !== basePath) {
-      return false;
-    }
-    if (params) {
-      const urlParams = new URLSearchParams(params);
-      const tabParam = urlParams.get('tab');
-      return tab === tabParam;
-    }
-    if(pathname === '/dpi-dashboard/masters' && !tab) {
-        return href.includes('subjects');
-    }
-    
-    return !params;
-  };
-  
-  const isParentActive = (links: any[]): boolean => {
-    return links.some(link => {
-      if (link.subLinks) {
-        return isParentActive(link.subLinks);
-      }
-      return link.href && isLinkActive(link.href);
-    });
-  }
 
   const renderNav = (items: any[]) => {
     return items.map((link) => {
@@ -120,12 +91,12 @@ export default function DpiNavigation() {
             collapsible
             className="w-full"
             key={link.label}
-            defaultValue={isParentActive(link.subLinks) ? link.label : undefined}
+            defaultValue={link.subLinks.some((sub: { href: string; }) => pathname.startsWith(sub.href)) ? link.label : undefined}
           >
             <AccordionItem value={link.label} className="border-b-0">
               <AccordionTrigger 
                 className={cn("flex items-center gap-3 rounded-full px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:no-underline",
-                  isParentActive(link.subLinks) && "bg-sidebar-accent text-sidebar-accent-foreground"
+                  link.subLinks.some((sub: { href: string; }) => pathname.startsWith(sub.href)) && "bg-sidebar-accent text-sidebar-accent-foreground"
                 )}
               >
                 {link.icon}
@@ -133,7 +104,19 @@ export default function DpiNavigation() {
               </AccordionTrigger>
               <AccordionContent className="ml-4 border-l border-border pl-4">
                 <nav className="grid gap-1 py-1">
-                  {renderNav(link.subLinks)}
+                  {link.subLinks.map((subLink: { href: string, icon: React.ReactNode, label: string }) => (
+                    <Link
+                      key={subLink.href}
+                      href={subLink.href}
+                      className={cn(
+                        'flex items-center gap-3 rounded-full px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                        pathname.startsWith(subLink.href) && 'bg-sidebar-accent text-sidebar-accent-foreground'
+                      )}
+                    >
+                      {subLink.icon}
+                      {subLink.label}
+                    </Link>
+                  ))}
                 </nav>
               </AccordionContent>
             </AccordionItem>
@@ -147,7 +130,7 @@ export default function DpiNavigation() {
           href={link.href!}
           className={cn(
             'flex items-center gap-3 rounded-full px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-            isLinkActive(link.href) && 'bg-sidebar-accent text-sidebar-accent-foreground'
+            pathname === link.href && 'bg-sidebar-accent text-sidebar-accent-foreground'
           )}
         >
           {link.icon}
@@ -160,12 +143,12 @@ export default function DpiNavigation() {
   return (
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
       <div className="flex h-16 items-center px-4 lg:px-6 border-b border-sidebar-border">
-         <Link href="/dpi-dashboard" className="flex items-center gap-2 font-semibold text-sidebar-primary-foreground">
+         <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-sidebar-primary-foreground">
           <Logo className="h-8 w-8 text-primary" />
-           <span className="text-lg font-bold">EduReport Pro (DPI)</span>
+          <span className="text-lg font-bold">EduReport Pro</span>
         </Link>
       </div>
-
+      
       <div className="flex-1 overflow-y-auto">
         <nav className="grid items-start px-2 text-sm font-medium lg:px-4 py-4 gap-1">
           {navLinks.map((section) => (
@@ -180,8 +163,8 @@ export default function DpiNavigation() {
           ))}
         </nav>
       </div>
-      <div className="mt-auto p-4 border-t border-sidebar-border">
-         <DropdownMenu>
+       <div className="mt-auto p-4 border-t border-sidebar-border">
+        <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
@@ -197,12 +180,12 @@ export default function DpiNavigation() {
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
+               <DropdownMenuItem asChild>
                 <Link href="/">Logout</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-      </div>
+        </div>
     </div>
   );
 }
