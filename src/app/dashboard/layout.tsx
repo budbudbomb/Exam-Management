@@ -1,3 +1,4 @@
+
 import Header from '@/components/layout/header';
 import Navigation from '@/components/layout/navigation';
 import { SidebarProvider, Sidebar, SidebarInset } from '@/components/ui/sidebar';
@@ -9,7 +10,7 @@ export default function DashboardLayout({
 }) {
   return (
     <SidebarProvider>
-      <Sidebar>
+      <Sidebar collapsible="icon">
         <Navigation />
       </Sidebar>
       <div className="flex-1 md:p-4">
