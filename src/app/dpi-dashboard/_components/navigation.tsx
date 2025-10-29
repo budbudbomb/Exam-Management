@@ -107,36 +107,37 @@ export default function DpiNavigation() {
     });
   }
 
-  const renderNav = (items: any[]) => {
+  const renderNav = (items: any[], level = 0) => {
     return items.map((link, index) => {
       if (link.isAccordion && link.subLinks) {
+        const defaultOpenValue = isParentActive(link.subLinks) ? `item-${level}-${index}` : undefined;
         return (
           <Accordion
             type="single"
             collapsible
             className="w-full"
-            key={index}
-            defaultValue={isParentActive(link.subLinks) ? `item-${index}` : undefined}
+            key={`${level}-${index}`}
+            defaultValue={defaultOpenValue}
           >
-            <AccordionItem value={`item-${index}`} className="border-b-0">
-              <SidebarMenuItem>
+            <AccordionItem value={`item-${level}-${index}`} className="border-b-0">
                 <AccordionTrigger asChild>
                     <SidebarMenuButton 
                         className="w-full justify-between"
                         isActive={isParentActive(link.subLinks)}
                         tooltip={link.tooltip}
                     >
-                        <div className="flex items-center gap-3">
-                            {link.icon}
-                            {state === 'expanded' && <span>{link.label}</span>}
-                        </div>
-                        {state === 'expanded' && <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />}
+                        <>
+                          <div className="flex flex-grow items-center gap-3">
+                              {link.icon}
+                              {state === 'expanded' && <span className="text-left">{link.label}</span>}
+                          </div>
+                          {state === 'expanded' && <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />}
+                        </>
                     </SidebarMenuButton>
                 </AccordionTrigger>
-              </SidebarMenuItem>
               <AccordionContent className="p-0">
                 <SidebarMenuSub>
-                  {renderNav(link.subLinks)}
+                  {renderNav(link.subLinks, level + 1)}
                 </SidebarMenuSub>
               </AccordionContent>
             </AccordionItem>
@@ -145,14 +146,16 @@ export default function DpiNavigation() {
       }
       
       return (
-        <SidebarMenuSubItem key={index}>
-            <Link href={link.href!} passHref>
-                <SidebarMenuSubButton isActive={isLinkActive(link.href!)}>
-                    {link.icon}
-                    {state === 'expanded' && <span>{link.label}</span>}
+        <li key={index}>
+            <Link href={link.href!} passHref legacyBehavior>
+                <SidebarMenuSubButton asChild isActive={isLinkActive(link.href!)}>
+                    <a>
+                        {link.icon}
+                        {state === 'expanded' && <span>{link.label}</span>}
+                    </a>
                 </SidebarMenuSubButton>
             </Link>
-        </SidebarMenuSubItem>
+        </li>
       );
     });
   }
@@ -174,7 +177,7 @@ export default function DpiNavigation() {
                   <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
                 )}
                 <SidebarGroupContent>
-                  {renderNav(section.items)}
+                  <ul className="flex w-full min-w-0 flex-col gap-1">{renderNav(section.items)}</ul>
                 </SidebarGroupContent>
             </SidebarGroup>
           ))}
