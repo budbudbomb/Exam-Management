@@ -17,11 +17,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 
 export default function LoginPage() {
   const [captcha, setCaptcha] = useState('');
   const [selectedRole, setSelectedRole] = useState('');
   const router = useRouter();
+  const { toast } = useToast();
 
 
   const refreshCaptcha = () => {
@@ -34,8 +36,11 @@ export default function LoginPage() {
 
   const handleLogin = () => {
     if (!selectedRole) {
-      // Maybe show a toast or an alert
-      console.error("Please select a role");
+      toast({
+        variant: 'destructive',
+        title: 'Role Not Selected',
+        description: 'Please select a role to log in.',
+      });
       return;
     }
     const path = `/${selectedRole}`;
