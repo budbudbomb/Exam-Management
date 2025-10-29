@@ -71,7 +71,7 @@ export default function LoginPage() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="dashboard">School</SelectItem>
-                                    <SelectItem value="pariksha-prabhar-dashboard">Pariksha Prabhari</SelectItem>
+                                    <SelectItem value="pariksha-prabhar-dashboard">Exam Incharge</SelectItem>
                                     <SelectItem value="sankool-dashboard">Sankool</SelectItem>
                                     <SelectItem value="deo-dashboard">DEO</SelectItem>
                                     <SelectItem value="dpi-dashboard">DPI</SelectItem>

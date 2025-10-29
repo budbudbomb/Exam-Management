@@ -23,7 +23,7 @@ export default function ParikshaPrabharHeader() {
       <div className="md:hidden">
         <SidebarTrigger />
       </div>
-      <div className="text-xl font-semibold">Pariksha Prabhari Dashboard</div>
+      <div className="text-xl font-semibold">Exam Incharge Dashboard</div>
 
       <div className="relative ml-auto flex-1 md:grow-0">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
