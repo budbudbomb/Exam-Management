@@ -127,12 +127,10 @@ export default function Navigation() {
                             <SidebarMenuSub>
                               {link.subLinks.map((subLink, subLinkIndex) => (
                                 <SidebarMenuSubItem key={subLinkIndex}>
-                                  <Link href={subLink.href} legacyBehavior>
-                                    <SidebarMenuSubButton asChild isActive={isLinkActive(subLink.href)}>
-                                      <a>
-                                        {subLink.icon}
-                                        {state === 'expanded' && <span>{subLink.label}</span>}
-                                      </a>
+                                  <Link href={subLink.href} asChild>
+                                    <SidebarMenuSubButton isActive={isLinkActive(subLink.href)}>
+                                      {subLink.icon}
+                                      {state === 'expanded' && <span>{subLink.label}</span>}
                                     </SidebarMenuSubButton>
                                   </Link>
                                 </SidebarMenuSubItem>
@@ -146,12 +144,10 @@ export default function Navigation() {
                   
                   return (
                     <SidebarMenuItem key={linkIndex}>
-                      <Link href={link.href!} passHref>
-                        <SidebarMenuButton asChild isActive={isLinkActive(link.href!)} tooltip={link.tooltip} className="rounded-full">
-                           <a>
-                            {link.icon}
-                            {state === 'expanded' && <span>{link.label}</span>}
-                           </a>
+                      <Link href={link.href!} asChild>
+                        <SidebarMenuButton isActive={isLinkActive(link.href!)} tooltip={link.tooltip} className="rounded-full">
+                           {link.icon}
+                           {state === 'expanded' && <span>{link.label}</span>}
                         </SidebarMenuButton>
                       </Link>
                     </SidebarMenuItem>
