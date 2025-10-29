@@ -33,39 +33,39 @@ const navLinks = [
     items: [
       {
         href: '/dashboard',
-        icon: <Gauge className="h-4 w-4" />,
+        icon: <Gauge />,
         label: 'Dashboard',
         tooltip: 'Dashboard',
       },
       {
         isAccordion: true,
         label: 'Exam Management',
-        icon: <GraduationCap className="h-4 w-4" />,
+        icon: <GraduationCap />,
         tooltip: 'Exam Management',
         subLinks: [
           {
             href: '/dashboard/verify-enrolled-students',
-            icon: <UserCheck className="h-4 w-4" />,
+            icon: <UserCheck />,
             label: 'Verify Enrolled Students',
           },
           {
             href: '/dashboard/student-details-update',
-            icon: <User className="h-4 w-4" />,
+            icon: <User />,
             label: 'Update Students Details',
           },
           {
             href: '/dashboard/view-exam-schedule',
-            icon: <CalendarDays className="h-4 w-4" />,
+            icon: <CalendarDays />,
             label: 'View Exam Schedule',
           },
           {
             href: '/dashboard/marks-entry',
-            icon: <ClipboardEdit className="h-4 w-4" />,
+            icon: <ClipboardEdit />,
             label: 'Marks Entry',
           },
           {
             href: '/dashboard/reports',
-            icon: <FileText className="h-4 w-4" />,
+            icon: <FileText />,
             label: 'Report Cards',
           },
         ],
@@ -82,9 +82,9 @@ export default function Navigation() {
 
   return (
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
-      <div className="flex h-16 items-center px-4 lg:px-6 border-b border-sidebar-border">
-         <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-sidebar-primary-foreground">
-          <Logo className="h-8 w-8 text-primary" />
+      <div className="flex h-16 items-center border-b border-sidebar-border group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2">
+         <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-sidebar-primary-foreground px-4">
+          <Logo className="h-8 w-8 text-primary shrink-0" />
           {state === 'expanded' && <span className="text-lg font-bold">EduReport Pro</span>}
         </Link>
       </div>
@@ -129,10 +129,10 @@ export default function Navigation() {
                                 <SidebarMenuSubItem key={subLinkIndex}>
                                   <Link href={subLink.href}>
                                     <SidebarMenuSubButton asChild isActive={isLinkActive(subLink.href)}>
-                                      <span>
+                                      <a>
                                         {subLink.icon}
                                         {state === 'expanded' && <span>{subLink.label}</span>}
-                                      </span>
+                                      </a>
                                     </SidebarMenuSubButton>
                                   </Link>
                                 </SidebarMenuSubItem>
@@ -148,10 +148,10 @@ export default function Navigation() {
                     <SidebarMenuItem key={linkIndex}>
                       <Link href={link.href!} passHref>
                         <SidebarMenuButton asChild isActive={isLinkActive(link.href!)} tooltip={link.tooltip} className="rounded-full">
-                           <span>
+                           <a>
                             {link.icon}
                             {state === 'expanded' && <span>{link.label}</span>}
-                           </span>
+                           </a>
                         </SidebarMenuButton>
                       </Link>
                     </SidebarMenuItem>
@@ -167,10 +167,10 @@ export default function Navigation() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-full"
+                className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-full group-data-[collapsible=icon]:justify-center"
               >
-                <CircleUser className="mr-2 h-5 w-5" />
-                {state === 'expanded' && <span>My Account</span>}
+                <CircleUser className="h-5 w-5 shrink-0" />
+                {state === 'expanded' && <span className="ml-2">My Account</span>}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="mb-2 w-56">
