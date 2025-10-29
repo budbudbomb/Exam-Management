@@ -18,8 +18,10 @@ import {
   ClipboardEdit,
   FileText,
   User,
+  LogOut,
 } from 'lucide-react';
 import { Logo } from '../icons/logo';
+import { Button } from '../ui/button';
 
 const navLinks = [
   {
@@ -98,7 +100,7 @@ export default function Navigation() {
                 {link.icon}
                 {link.label}
               </AccordionTrigger>
-              <AccordionContent className="ml-4 border-l border-border pl-4">
+              <AccordionContent className="pl-0">
                 <nav className="grid gap-1 py-1">
                   {link.subLinks.map((subLink: { href: string, icon: React.ReactNode, label: string }) => (
                     <Link
@@ -145,12 +147,12 @@ export default function Navigation() {
         </Link>
       </div>
       
-      <div className="flex-1">
+      <div className="flex-1 overflow-y-auto">
         <nav className="grid items-start px-2 text-sm font-medium lg:px-4 py-4 gap-1">
           {navLinks.map((section) => (
              <div key={section.label} className="space-y-1">
               {section.isHeading && (
-                <h2 className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <h2 className="px-4 pt-2 pb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   {section.label}
                 </h2>
               )}
@@ -159,7 +161,13 @@ export default function Navigation() {
           ))}
         </nav>
       </div>
-       <div className="mt-auto p-4">
+       <div className="mt-auto p-4 border-t border-sidebar-border">
+          <Link href="/">
+              <Button variant="ghost" className="w-full justify-start">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+              </Button>
+          </Link>
         </div>
     </div>
   );

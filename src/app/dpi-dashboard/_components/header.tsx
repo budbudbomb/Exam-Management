@@ -49,10 +49,6 @@ export default function DpiHeader() {
           <DropdownMenuSeparator />
           <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <Link href="/">Logout</Link>
-          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>
