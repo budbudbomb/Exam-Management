@@ -146,10 +146,10 @@ export default function Navigation() {
                     <SidebarMenuItem key={linkIndex}>
                       <Link href={link.href!} passHref>
                         <SidebarMenuButton asChild isActive={isLinkActive(link.href!)} tooltip={link.tooltip} className="rounded-full">
-                           <>
+                           <span>
                             {link.icon}
                             {state === 'expanded' && <span>{link.label}</span>}
-                           </>
+                           </span>
                         </SidebarMenuButton>
                       </Link>
                     </SidebarMenuItem>
