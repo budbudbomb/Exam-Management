@@ -23,7 +23,9 @@ export default function SankoolHeader() {
       <div className="md:hidden">
         <SidebarTrigger />
       </div>
-      <div className="text-xl font-semibold">Sankool Dashboard</div>
+      <div className="hidden md:block">
+        <SidebarTrigger />
+      </div>
 
       <div className="relative ml-auto flex-1 md:grow-0">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />

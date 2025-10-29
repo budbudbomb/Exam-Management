@@ -12,12 +12,14 @@ export default function ParikshaPrabharDashboardLayout({
       <Sidebar>
         <ParikshaPrabharNavigation />
       </Sidebar>
-      <SidebarInset>
-        <div className="flex flex-col min-h-screen">
-          <ParikshaPrabharHeader />
-          <main className="flex-1 p-4 sm:p-6 bg-background">{children}</main>
-        </div>
-      </SidebarInset>
+      <div className="flex-1 md:p-4">
+        <SidebarInset>
+          <div className="flex flex-col min-h-screen">
+            <ParikshaPrabharHeader />
+            <main className="flex-1 p-4 sm:p-6 bg-background">{children}</main>
+          </div>
+        </SidebarInset>
+      </div>
     </SidebarProvider>
   );
 }

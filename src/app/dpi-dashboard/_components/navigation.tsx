@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useSidebar, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarMenuSub, SidebarMenuSubButton, SidebarGroup, SidebarGroupLabel, SidebarGroupContent } from '@/components/ui/sidebar';
 
 const navLinks = [
     {
@@ -33,39 +34,41 @@ const navLinks = [
             isAccordion: true,
             label: 'Exam Management',
             icon: <GraduationCap className="h-4 w-4" />,
+            tooltip: 'Exam Management',
             subLinks: [
-            {
-                isAccordion: true,
-                label: 'Masters',
-                icon: <Library className="h-4 w-4" />,
-                subLinks: [
-                {
-                    href: '/dpi-dashboard/masters?tab=subjects',
-                    icon: <BookOpen className="h-4 w-4" />,
-                    label: 'Subjects',
-                },
-                {
-                    href: '/dpi-dashboard/masters?tab=exams',
-                    icon: <ListChecks className="h-4 w-4" />,
-                    label: 'Exams',
-                },
-                {
-                    href: '/dpi-dashboard/masters?tab=grades',
-                    icon: <GraduationCap className="h-4 w-4" />,
-                    label: 'Grades',
-                },
-                {
-                    href: '/dpi-dashboard/masters?tab=remarks',
-                    icon: <Bookmark className="h-4 w-4" />,
-                    label: 'Remarks',
-                },
-                ],
-            },
-            {
-                href: '/dpi-dashboard/exam-schedule',
-                icon: <CalendarDays className="h-4 w-4" />,
-                label: 'Exam Schedule',
-            },
+              {
+                  isAccordion: true,
+                  label: 'Masters',
+                  icon: <Library className="h-4 w-4" />,
+                  tooltip: 'Masters',
+                  subLinks: [
+                    {
+                        href: '/dpi-dashboard/masters?tab=subjects',
+                        icon: <BookOpen className="h-4 w-4" />,
+                        label: 'Subjects',
+                    },
+                    {
+                        href: '/dpi-dashboard/masters?tab=exams',
+                        icon: <ListChecks className="h-4 w-4" />,
+                        label: 'Exams',
+                    },
+                    {
+                        href: '/dpi-dashboard/masters?tab=grades',
+                        icon: <GraduationCap className="h-4 w-4" />,
+                        label: 'Grades',
+                    },
+                    {
+                        href: '/dpi-dashboard/masters?tab=remarks',
+                        icon: <Bookmark className="h-4 w-4" />,
+                        label: 'Remarks',
+                    },
+                  ],
+              },
+              {
+                  href: '/dpi-dashboard/exam-schedule',
+                  icon: <CalendarDays className="h-4 w-4" />,
+                  label: 'Exam Schedule',
+              },
             ],
         },
     ]}
@@ -76,6 +79,7 @@ export default function DpiNavigation() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab');
+  const { state } = useSidebar();
 
   const isLinkActive = (href: string) => {
     const [basePath, params] = href.split('?');
@@ -104,37 +108,36 @@ export default function DpiNavigation() {
   }
 
   const renderNav = (items: any[]) => {
-    return items.map((link) => {
-      if (link.isHeading) {
-        return (
-          <div key={link.label} className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            {link.label}
-          </div>
-        )
-      }
-      
+    return items.map((link, index) => {
       if (link.isAccordion && link.subLinks) {
         return (
           <Accordion
             type="single"
             collapsible
             className="w-full"
-            key={link.label}
-            defaultValue={isParentActive(link.subLinks) ? link.label : undefined}
+            key={index}
+            defaultValue={isParentActive(link.subLinks) ? `item-${index}` : undefined}
           >
-            <AccordionItem value={link.label} className="border-b-0">
-              <AccordionTrigger 
-                className={cn("flex items-center gap-3 rounded-full px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:no-underline",
-                  isParentActive(link.subLinks) && "bg-sidebar-accent text-sidebar-accent-foreground"
-                )}
-              >
-                {link.icon}
-                {link.label}
-              </AccordionTrigger>
-              <AccordionContent className="ml-4 border-l border-border pl-4">
-                <nav className="grid gap-1 py-1">
+            <AccordionItem value={`item-${index}`} className="border-b-0">
+              <SidebarMenuItem>
+                <AccordionTrigger asChild>
+                    <SidebarMenuButton 
+                        className="w-full justify-between"
+                        isActive={isParentActive(link.subLinks)}
+                        tooltip={link.tooltip}
+                    >
+                        <div className="flex items-center gap-3">
+                            {link.icon}
+                            {state === 'expanded' && <span>{link.label}</span>}
+                        </div>
+                        {state === 'expanded' && <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />}
+                    </SidebarMenuButton>
+                </AccordionTrigger>
+              </SidebarMenuItem>
+              <AccordionContent className="p-0">
+                <SidebarMenuSub>
                   {renderNav(link.subLinks)}
-                </nav>
+                </SidebarMenuSub>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -142,17 +145,14 @@ export default function DpiNavigation() {
       }
       
       return (
-        <Link
-          key={link.href}
-          href={link.href!}
-          className={cn(
-            'flex items-center gap-3 rounded-full px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-            isLinkActive(link.href) && 'bg-sidebar-accent text-sidebar-accent-foreground'
-          )}
-        >
-          {link.icon}
-          {link.label}
-        </Link>
+        <SidebarMenuSubItem key={index}>
+            <Link href={link.href!} passHref>
+                <SidebarMenuSubButton isActive={isLinkActive(link.href!)}>
+                    {link.icon}
+                    {state === 'expanded' && <span>{link.label}</span>}
+                </SidebarMenuSubButton>
+            </Link>
+        </SidebarMenuSubItem>
       );
     });
   }
@@ -162,23 +162,23 @@ export default function DpiNavigation() {
       <div className="flex h-16 items-center px-4 lg:px-6 border-b border-sidebar-border">
          <Link href="/dpi-dashboard" className="flex items-center gap-2 font-semibold text-sidebar-primary-foreground">
           <Logo className="h-8 w-8 text-primary" />
-           <span className="text-lg font-bold">EduReport Pro (DPI)</span>
+           {state === 'expanded' && <span className="text-lg font-bold">EduReport Pro (DPI)</span>}
         </Link>
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        <nav className="grid items-start px-2 text-sm font-medium lg:px-4 py-4 gap-1">
-          {navLinks.map((section) => (
-             <div key={section.label} className="space-y-1">
-              {section.isHeading && (
-                <h2 className="px-4 pt-2 pb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  {section.label}
-                </h2>
-              )}
-              {renderNav(section.items)}
-            </div>
+        <SidebarMenu className="px-2 lg:px-4 py-4 gap-1 text-sm font-medium">
+          {navLinks.map((section, sectionIndex) => (
+             <SidebarGroup key={sectionIndex}>
+                {section.isHeading && state === 'expanded' && (
+                  <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
+                )}
+                <SidebarGroupContent>
+                  {renderNav(section.items)}
+                </SidebarGroupContent>
+            </SidebarGroup>
           ))}
-        </nav>
+        </SidebarMenu>
       </div>
       <div className="mt-auto p-4 border-t border-sidebar-border">
          <DropdownMenu>
@@ -188,7 +188,7 @@ export default function DpiNavigation() {
                 className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-full"
               >
                 <CircleUser className="mr-2 h-5 w-5" />
-                My Account
+                {state === 'expanded' && <span>My Account</span>}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="mb-2 w-56">
@@ -206,3 +206,7 @@ export default function DpiNavigation() {
     </div>
   );
 }
+
+const ChevronDown = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m6 9 6 6 6-6"/></svg>
+)
