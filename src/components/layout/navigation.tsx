@@ -18,7 +18,6 @@ import {
   ClipboardEdit,
   FileText,
   User,
-  LogOut,
   CircleUser,
 } from 'lucide-react';
 import { Logo } from '../icons/logo';
@@ -95,15 +94,17 @@ export default function Navigation() {
           >
             <AccordionItem value={link.label} className="border-b-0">
               <AccordionTrigger 
-                className={cn("flex items-center gap-3 rounded-full px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:no-underline",
+                className={cn("flex items-center w-full gap-3 rounded-full px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:no-underline",
                   link.subLinks.some((sub: { href: string; }) => pathname.startsWith(sub.href)) && "bg-sidebar-accent text-sidebar-accent-foreground"
                 )}
               >
-                {link.icon}
-                {link.label}
+                <div className="flex items-center gap-3 flex-grow">
+                  {link.icon}
+                  {link.label}
+                </div>
               </AccordionTrigger>
-              <AccordionContent className="ml-4 border-l border-border pl-4">
-                <nav className="grid gap-1 py-1">
+              <AccordionContent className="ml-4 border-l border-border pl-4 py-1">
+                <nav className="grid gap-1">
                   {link.subLinks.map((subLink: { href: string, icon: React.ReactNode, label: string }) => (
                     <Link
                       key={subLink.href}
