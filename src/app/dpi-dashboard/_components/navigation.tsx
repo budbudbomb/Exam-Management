@@ -9,7 +9,7 @@ import {
   CalendarDays,
   GraduationCap,
   ListChecks,
-  BookMark,
+  Bookmark,
   Library,
 } from 'lucide-react';
 import { Logo } from '@/components/icons/logo';
@@ -61,7 +61,7 @@ const mastersLinks = {
       },
       {
         href: '/dpi-dashboard/masters?tab=remarks',
-        icon: <BookMark className="h-4 w-4" />,
+        icon: <Bookmark className="h-4 w-4" />,
         label: 'Remarks',
       },
     ],
@@ -125,7 +125,7 @@ export default function DpiNavigation() {
                 defaultValue={link.subLinks.some(sub => isLinkActive(sub.href)) ? link.label : undefined}
               >
                 <AccordionItem value={link.label} className="border-b-0">
-                  <AccordionTrigger className="flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-primary-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground hover:no-underline [&[data-state=open]]:bg-sidebar [&[data-state=open]]:text-sidebar-accent-foreground [&[data-state=open]>svg:last-child]:-rotate-90">
+                  <AccordionTrigger className="flex items-center gap-3 rounded-full px-3 py-2 text-sidebar-primary-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground hover:no-underline [&[data-state=open]]:bg-sidebar [&[data-state=open]]:text-sidebar-accent-foreground [&[data-state=open]>svg:last-child]:-rotate-90">
                     {link.icon}
                     {link.label}
                   </AccordionTrigger>
@@ -136,7 +136,7 @@ export default function DpiNavigation() {
                           key={subLink.href}
                           href={subLink.href}
                           className={cn(
-                            'flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground',
+                            'flex items-center gap-3 rounded-full px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground',
                             isLinkActive(subLink.href) && 'bg-sidebar text-sidebar-accent-foreground'
                           )}
                         >
@@ -153,7 +153,7 @@ export default function DpiNavigation() {
                 key={link.href}
                 href={link.href!}
                 className={cn(
-                  'flex items-center gap-3 rounded-md px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground',
+                  'flex items-center gap-3 rounded-full px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar hover:text-sidebar-accent-foreground',
                   pathname === link.href && 'bg-sidebar text-sidebar-accent-foreground'
                 )}
               >
@@ -166,7 +166,7 @@ export default function DpiNavigation() {
       </div>
        <div className="mt-auto p-4 bg-sidebar-accent">
           <div className="flex items-center gap-2">
-            <select className="w-full bg-sidebar text-sidebar-foreground text-sm rounded-md border-0 p-2 focus:ring-0">
+            <select className="w-full bg-sidebar text-sidebar-foreground text-sm rounded-full border-0 p-2 focus:ring-0">
               <option>English</option>
               <option>Hindi</option>
             </select>
