@@ -33,39 +33,39 @@ const navLinks = [
     items: [
       {
         href: '/dashboard',
-        icon: <Gauge />,
+        icon: <Gauge className="h-4 w-4" />,
         label: 'Dashboard',
         tooltip: 'Dashboard',
       },
       {
         isAccordion: true,
         label: 'Exam Management',
-        icon: <GraduationCap />,
+        icon: <GraduationCap className="h-4 w-4" />,
         tooltip: 'Exam Management',
         subLinks: [
           {
             href: '/dashboard/verify-enrolled-students',
-            icon: <UserCheck />,
+            icon: <UserCheck className="h-4 w-4" />,
             label: 'Verify Enrolled Students',
           },
           {
             href: '/dashboard/student-details-update',
-            icon: <User />,
+            icon: <User className="h-4 w-4" />,
             label: 'Update Students Details',
           },
           {
             href: '/dashboard/view-exam-schedule',
-            icon: <CalendarDays />,
+            icon: <CalendarDays className="h-4 w-4" />,
             label: 'View Exam Schedule',
           },
           {
             href: '/dashboard/marks-entry',
-            icon: <ClipboardEdit />,
+            icon: <ClipboardEdit className="h-4 w-4" />,
             label: 'Marks Entry',
           },
           {
             href: '/dashboard/reports',
-            icon: <FileText />,
+            icon: <FileText className="h-4 w-4" />,
             label: 'Report Cards',
           },
         ],
@@ -127,10 +127,12 @@ export default function Navigation() {
                             <SidebarMenuSub>
                               {link.subLinks.map((subLink, subLinkIndex) => (
                                 <SidebarMenuSubItem key={subLinkIndex}>
-                                  <Link href={subLink.href} asChild>
-                                    <SidebarMenuSubButton isActive={isLinkActive(subLink.href)}>
-                                      {subLink.icon}
-                                      {state === 'expanded' && <span>{subLink.label}</span>}
+                                  <Link href={subLink.href} passHref>
+                                    <SidebarMenuSubButton asChild isActive={isLinkActive(subLink.href)}>
+                                      <a>
+                                        {subLink.icon}
+                                        {state === 'expanded' && <span>{subLink.label}</span>}
+                                      </a>
                                     </SidebarMenuSubButton>
                                   </Link>
                                 </SidebarMenuSubItem>
@@ -144,10 +146,12 @@ export default function Navigation() {
                   
                   return (
                     <SidebarMenuItem key={linkIndex}>
-                      <Link href={link.href!} asChild>
-                        <SidebarMenuButton isActive={isLinkActive(link.href!)} tooltip={link.tooltip} className="rounded-full">
-                           {link.icon}
-                           {state === 'expanded' && <span>{link.label}</span>}
+                      <Link href={link.href!} passHref>
+                        <SidebarMenuButton asChild isActive={isLinkActive(link.href!)} tooltip={link.tooltip} className="rounded-full">
+                           <a>
+                            {link.icon}
+                            {state === 'expanded' && <span>{link.label}</span>}
+                           </a>
                         </SidebarMenuButton>
                       </Link>
                     </SidebarMenuItem>
