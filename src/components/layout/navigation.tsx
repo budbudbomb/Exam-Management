@@ -82,7 +82,7 @@ export default function Navigation() {
 
   return (
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
-      <div className="flex h-16 items-center border-b border-sidebar-border group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2">
+      <div className="flex h-16 shrink-0 items-center border-b border-sidebar-border group-data-[collapsible=icon]:justify-center">
          <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-sidebar-primary-foreground px-4">
           <Logo className="h-8 w-8 text-primary shrink-0" />
           {state === 'expanded' && <span className="text-lg font-bold">EduReport Pro</span>}
@@ -171,8 +171,10 @@ export default function Navigation() {
                 variant="ghost"
                 className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-full group-data-[collapsible=icon]:justify-center"
               >
-                <CircleUser className="h-5 w-5 shrink-0" />
-                {state === 'expanded' && <span className="ml-2">My Account</span>}
+                <div className="flex flex-grow items-center gap-3 group-data-[collapsible=icon]:justify-center">
+                  <CircleUser className="h-5 w-5 shrink-0" />
+                  {state === 'expanded' && <span className="ml-2">My Account</span>}
+                </div>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="mb-2 w-56">
