@@ -23,7 +23,40 @@ import { Student } from '@/lib/types';
 
 // Mock data for supplementary students, linking to mockStudents
 const supplementaryData: { [key: string]: any } = {
-  '5': { // Ishaan Patel
+  '1': { 
+    id: '1',
+    supplementarySubjects: 1,
+    term: 'Annual',
+    subjects: {
+      'S5': { theoryMin: 17, theoryMax: 50, theoryObtained: 15, practicalMin: 17, practicalMax: 50, practicalObtained: 20, subjectName: 'Computer Science' }
+    }
+  },
+  '2': {
+    id: '2',
+    supplementarySubjects: 1,
+    term: 'Annual',
+    subjects: {
+      'S2': { theoryMin: 25, theoryMax: 75, theoryObtained: 22, practicalMin: 8, practicalMax: 25, practicalObtained: 15, subjectName: 'Science' }
+    }
+  },
+  '3': {
+    id: '3',
+    supplementarySubjects: 2,
+    term: 'Half Yearly, Annual',
+    subjects: {
+      'S1': { theoryMin: 33, theoryMax: 100, theoryObtained: 30, practicalMin: null, practicalMax: null, practicalObtained: null, subjectName: 'Mathematics' },
+      'S4': { theoryMin: 25, theoryMax: 75, theoryObtained: 20, practicalMin: 8, practicalMax: 25, practicalObtained: 9, subjectName: 'Social Science' }
+    }
+  },
+  '4': {
+    id: '4',
+    supplementarySubjects: 1,
+    term: 'Quarterly',
+    subjects: {
+      'S3': { theoryMin: 33, theoryMax: 100, theoryObtained: 31, practicalMin: null, practicalMax: null, practicalObtained: null, subjectName: 'English' }
+    }
+  },
+  '5': { 
     id: '5',
     supplementarySubjects: 1,
     term: 'Annual',
@@ -31,13 +64,45 @@ const supplementaryData: { [key: string]: any } = {
       'S2': { theoryMin: 25, theoryMax: 75, theoryObtained: 20, practicalMin: 8, practicalMax: 25, practicalObtained: 10, subjectName: 'Science' }
     }
   },
-  '7': { // Vihaan Verma
+  '6': {
+    id: '6',
+    supplementarySubjects: 1,
+    term: 'Annual',
+    subjects: {
+      'S1': { theoryMin: 33, theoryMax: 100, theoryObtained: 32, practicalMin: null, practicalMax: null, practicalObtained: null, subjectName: 'Mathematics' }
+    }
+  },
+  '7': { 
     id: '7',
     supplementarySubjects: 2,
     term: 'Half Yearly, Annual',
     subjects: {
       'S1': { theoryMin: 33, theoryMax: 100, theoryObtained: 30, practicalMin: null, practicalMax: null, practicalObtained: null, subjectName: 'Mathematics' },
       'S4': { theoryMin: 25, theoryMax: 75, theoryObtained: 22, practicalMin: 8, practicalMax: 25, practicalObtained: 5, subjectName: 'Social Science' }
+    }
+  },
+  '8': {
+    id: '8',
+    supplementarySubjects: 1,
+    term: 'Annual',
+    subjects: {
+        'S5': { theoryMin: 17, theoryMax: 50, theoryObtained: 16, practicalMin: 17, practicalMax: 50, practicalObtained: 18, subjectName: 'Computer Science' }
+    }
+  },
+  '9': {
+    id: '9',
+    supplementarySubjects: 1,
+    term: 'Half Yearly',
+    subjects: {
+      'S2': { theoryMin: 25, theoryMax: 75, theoryObtained: 24, practicalMin: 8, practicalMax: 25, practicalObtained: 12, subjectName: 'Science' }
+    }
+  },
+  '10': {
+    id: '10',
+    supplementarySubjects: 1,
+    term: 'Annual',
+    subjects: {
+      'S4': { theoryMin: 25, theoryMax: 75, theoryObtained: 23, practicalMin: 8, practicalMax: 25, practicalObtained: 10, subjectName: 'Social Science' }
     }
   }
 };
