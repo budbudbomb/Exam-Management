@@ -20,6 +20,7 @@ import {
   LogOut,
   CircleUser,
   ChevronDown,
+  Book,
 } from 'lucide-react';
 import { Logo } from '../icons/logo';
 import { Button } from '../ui/button';
@@ -43,6 +44,11 @@ const navLinks = [
         icon: <GraduationCap className="h-4 w-4" />,
         tooltip: 'Exam Management',
         subLinks: [
+          {
+            href: '/dashboard/masters',
+            icon: <Book className="h-4 w-4" />,
+            label: 'Masters',
+          },
           {
             href: '/dashboard/verify-enrolled-students',
             icon: <UserCheck className="h-4 w-4" />,
@@ -127,12 +133,10 @@ export default function Navigation() {
                             <SidebarMenuSub>
                               {link.subLinks.map((subLink, subLinkIndex) => (
                                 <SidebarMenuSubItem key={subLinkIndex}>
-                                  <Link href={subLink.href} passHref legacyBehavior>
-                                    <SidebarMenuSubButton asChild isActive={isLinkActive(subLink.href)}>
-                                      <a>
+                                  <Link href={subLink.href} asChild>
+                                    <SidebarMenuSubButton isActive={isLinkActive(subLink.href)}>
                                         {subLink.icon}
                                         {state === 'expanded' && <span>{subLink.label}</span>}
-                                      </a>
                                     </SidebarMenuSubButton>
                                   </Link>
                                 </SidebarMenuSubItem>
@@ -146,14 +150,12 @@ export default function Navigation() {
                   
                   return (
                     <SidebarMenuItem key={linkIndex}>
-                      <Link href={link.href!} passHref legacyBehavior>
-                        <SidebarMenuButton asChild isActive={isLinkActive(link.href!)} tooltip={link.tooltip} className="rounded-full">
-                           <a>
+                      <Link href={link.href!} asChild>
+                        <SidebarMenuButton isActive={isLinkActive(link.href!)} tooltip={link.tooltip} className="rounded-full">
                             <div className="flex flex-grow items-center gap-3">
                               {link.icon}
                               {state === 'expanded' && <span>{link.label}</span>}
                             </div>
-                           </a>
                         </SidebarMenuButton>
                       </Link>
                     </SidebarMenuItem>
