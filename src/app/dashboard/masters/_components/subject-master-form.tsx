@@ -47,7 +47,7 @@ const MultiSelectDropdown = ({ title, subjects, selectedSubjects, onSubjectSelec
               <ChevronDown className="h-4 w-4 opacity-50" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-full">
+          <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
             <DropdownMenuLabel>{title}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {subjects.map((subject) => (
@@ -90,17 +90,20 @@ const ConfigCard = ({ config, onConfigChange, onRemove, classList }: { config: C
     const selectedClassName = classList.find(c => c.id === config.selectedClassId)?.name || 'New Configuration';
 
     return (
-        <Accordion type="single" collapsible defaultValue="item-1">
-            <AccordionItem value="item-1">
+        <Accordion type="single" collapsible defaultValue="item-1" className="w-full">
+            <AccordionItem value="item-1" className="border-none">
                 <Card>
-                    <div className="flex items-center p-4">
-                        <AccordionTrigger className="flex-1 text-lg font-semibold py-0">
-                           {selectedClassName}
-                        </AccordionTrigger>
-                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={onRemove}>
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </div>
+                    <AccordionTrigger className="w-full p-0">
+                        <div className="flex items-center p-4 w-full cursor-pointer">
+                            <div className="flex-1 text-lg font-semibold">
+                               {selectedClassName}
+                            </div>
+                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); onRemove(); }}>
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                             <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+                        </div>
+                    </AccordionTrigger>
                     <AccordionContent>
                         <CardContent>
                              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mb-6">
@@ -121,28 +124,26 @@ const ConfigCard = ({ config, onConfigChange, onRemove, classList }: { config: C
                                 </div>
                             </div>
                             
-                            {config.selectedClassId && (
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <MultiSelectDropdown 
-                                        title="Mandatory Subjects"
-                                        subjects={categorizedSubjects.Mandatory}
-                                        selectedSubjects={config.selectedSubjects}
-                                        onSubjectSelection={handleSubjectSelection}
-                                    />
-                                    <MultiSelectDropdown 
-                                        title="Language Subjects"
-                                        subjects={categorizedSubjects.Language}
-                                        selectedSubjects={config.selectedSubjects}
-                                        onSubjectSelection={handleSubjectSelection}
-                                    />
-                                    <MultiSelectDropdown 
-                                        title="Vocational Subjects"
-                                        subjects={categorizedSubjects.Vocational}
-                                        selectedSubjects={config.selectedSubjects}
-                                        onSubjectSelection={handleSubjectSelection}
-                                    />
-                                </div>
-                            )}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <MultiSelectDropdown 
+                                    title="Mandatory Subjects"
+                                    subjects={categorizedSubjects.Mandatory}
+                                    selectedSubjects={config.selectedSubjects}
+                                    onSubjectSelection={handleSubjectSelection}
+                                />
+                                <MultiSelectDropdown 
+                                    title="Language Subjects"
+                                    subjects={categorizedSubjects.Language}
+                                    selectedSubjects={config.selectedSubjects}
+                                    onSubjectSelection={handleSubjectSelection}
+                                />
+                                <MultiSelectDropdown 
+                                    title="Vocational Subjects"
+                                    subjects={categorizedSubjects.Vocational}
+                                    selectedSubjects={config.selectedSubjects}
+                                    onSubjectSelection={handleSubjectSelection}
+                                />
+                            </div>
                         </CardContent>
                     </AccordionContent>
                 </Card>
