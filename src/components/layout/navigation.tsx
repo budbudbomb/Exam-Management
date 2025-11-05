@@ -133,7 +133,7 @@ export default function Navigation() {
                             <SidebarMenuSub>
                               {link.subLinks.map((subLink, subLinkIndex) => (
                                 <SidebarMenuSubItem key={subLinkIndex}>
-                                  <Link href={subLink.href} asChild>
+                                  <Link href={subLink.href}>
                                     <SidebarMenuSubButton isActive={isLinkActive(subLink.href)}>
                                         {subLink.icon}
                                         {state === 'expanded' && <span>{subLink.label}</span>}
@@ -150,7 +150,7 @@ export default function Navigation() {
                   
                   return (
                     <SidebarMenuItem key={linkIndex}>
-                      <Link href={link.href!} asChild>
+                      <Link href={link.href!}>
                         <SidebarMenuButton isActive={isLinkActive(link.href!)} tooltip={link.tooltip} className="rounded-full">
                             <div className="flex flex-grow items-center gap-3">
                               {link.icon}
