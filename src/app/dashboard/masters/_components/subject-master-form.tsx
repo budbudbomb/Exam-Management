@@ -93,15 +93,17 @@ const ConfigCard = ({ config, onConfigChange, onRemove, classList }: { config: C
         <Accordion type="single" collapsible defaultValue="item-1" className="w-full">
             <AccordionItem value="item-1" className="border-none">
                 <Card>
-                    <AccordionTrigger className="w-full p-0">
-                        <div className="flex items-center p-4 w-full cursor-pointer">
-                            <div className="flex-1 text-lg font-semibold">
+                    <AccordionTrigger className="w-full p-0 hover:no-underline">
+                        <div className="flex items-center justify-between p-4 w-full cursor-pointer">
+                            <div className="flex-1 text-lg font-semibold text-left">
                                {selectedClassName}
                             </div>
-                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); onRemove(); }}>
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                             <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+                            <div className="flex items-center gap-2">
+                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); onRemove(); }}>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                                <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+                            </div>
                         </div>
                     </AccordionTrigger>
                     <AccordionContent>
