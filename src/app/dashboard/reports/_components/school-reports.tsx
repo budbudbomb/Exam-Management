@@ -3,13 +3,14 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { mockClasses, mockStudents } from '@/lib/data';
+import { mockClasses } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import ReportCard from './report-card';
 import { Label } from '@/components/ui/label';
 import { FileDown, Printer } from 'lucide-react';
 import { useState } from 'react';
 import Marksheet from './marksheet';
+import SupplementaryList from './supplementary-list';
 
 const reportFormats = [
     { id: 'annual-result', name: 'Annual Result' },
@@ -22,7 +23,14 @@ const reportFormats = [
 
 export default function SchoolReports() {
     const [selectedReport, setSelectedReport] = useState('annual-result');
+    const [selectedClass, setSelectedClass] = useState('');
     const [showReport, setShowReport] = useState(false);
+
+    const handleViewReport = () => {
+        if(selectedClass && selectedReport) {
+            setShowReport(true);
+        }
+    }
 
     const renderReport = () => {
         switch (selectedReport) {
@@ -30,6 +38,8 @@ export default function SchoolReports() {
                 return <ReportCard />;
             case 'marksheet':
                 return <Marksheet />;
+            case 'supplementary-list':
+                return <SupplementaryList selectedClass={selectedClass} />;
             default:
                 return (
                     <Card>
@@ -65,7 +75,7 @@ export default function SchoolReports() {
                         </div>
                         <div className="space-y-2">
                             <Label>Class</Label>
-                            <Select>
+                            <Select value={selectedClass} onValueChange={setSelectedClass}>
                                 <SelectTrigger><SelectValue placeholder="Select class" /></SelectTrigger>
                                 <SelectContent>
                                     {sortedClasses.map(cls => (
@@ -74,7 +84,7 @@ export default function SchoolReports() {
                                 </SelectContent>
                             </Select>
                         </div>
-                        <Button onClick={() => setShowReport(true)}>View Report</Button>
+                        <Button onClick={handleViewReport}>View Report</Button>
                     </div>
                 </CardContent>
             </Card>
@@ -82,7 +92,7 @@ export default function SchoolReports() {
             {showReport && (
                 <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                        <h2 className="text-2xl font-semibold">Generated Report for Aarav Sharma</h2>
+                        <h2 className="text-2xl font-semibold">Generated Report</h2>
                         <div className="flex gap-2">
                             <Button variant="outline"><Printer className="mr-2 h-4 w-4" /> Print</Button>
                             <Button variant="outline"><FileDown className="mr-2 h-4 w-4" /> Export for DEO</Button>
