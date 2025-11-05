@@ -1,12 +1,6 @@
 
 'use client';
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -18,24 +12,32 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 import { mockClasses, mockSubjects } from '@/lib/data';
 import { Subject } from '@/lib/types';
 import React, { useState, useMemo } from 'react';
+import { ChevronDown } from 'lucide-react';
+
+type SelectedSubjects = {
+  [key: string]: boolean;
+};
 
 export default function SubjectMasterForm() {
   const [selectedClassId, setSelectedClassId] = useState('');
   const [showSubjects, setShowSubjects] = useState(false);
+  const [selectedSubjects, setSelectedSubjects] = useState<SelectedSubjects>({});
 
   const handleShowSubjects = () => {
     if (selectedClassId) {
       setShowSubjects(true);
+      // Reset selections when class changes
+      setSelectedSubjects({});
     }
   };
 
@@ -53,34 +55,44 @@ export default function SubjectMasterForm() {
     return aNum - bNum;
   });
 
-  const renderSubjectTable = (subjects: Subject[]) => (
-    <div className="border rounded-md">
-      <Table>
-        <TableHeader>
-          <TableRow className="bg-muted/50">
-            <TableHead className="w-16">Select</TableHead>
-            <TableHead>Subject Name</TableHead>
-            <TableHead className="w-48">Subject Code</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {subjects.map((subject) => (
-            <TableRow key={subject.id}>
-              <TableCell className="text-center">
-                <Checkbox id={`subject-check-${subject.id}`} />
-              </TableCell>
-              <TableCell>
-                <Label htmlFor={`subject-check-${subject.id}`} className="font-normal cursor-pointer">
-                  {subject.name}
-                </Label>
-              </TableCell>
-              <TableCell>{subject.code}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  );
+  const handleSubjectSelection = (subjectId: string, checked: boolean) => {
+    setSelectedSubjects(prev => ({
+        ...prev,
+        [subjectId]: checked,
+    }));
+  };
+
+  const renderMultiSelectDropdown = (title: string, subjects: Subject[]) => {
+    const selectedCount = subjects.filter(s => selectedSubjects[s.id]).length;
+    
+    return (
+      <div className="space-y-2">
+        <Label>{title}</Label>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="w-full justify-between">
+              <span>{selectedCount > 0 ? `${selectedCount} selected` : `Select subjects`}</span>
+              <ChevronDown className="h-4 w-4 opacity-50" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-full">
+            <DropdownMenuLabel>{title}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {subjects.map((subject) => (
+              <DropdownMenuCheckboxItem
+                key={subject.id}
+                checked={!!selectedSubjects[subject.id]}
+                onCheckedChange={(checked) => handleSubjectSelection(subject.id, !!checked)}
+              >
+                {subject.name} ({subject.code})
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    );
+  };
+
 
   return (
     <div className="space-y-8">
@@ -107,36 +119,13 @@ export default function SubjectMasterForm() {
 
       {showSubjects && (
         <div className="space-y-6">
-          <Accordion type="multiple" defaultValue={['mandatory', 'language']} className="w-full space-y-4">
-            <AccordionItem value="mandatory" className="border rounded-lg">
-              <AccordionTrigger className="px-4 py-3 text-lg font-semibold">
-                Mandatory Subjects
-              </AccordionTrigger>
-              <AccordionContent className="p-4">
-                {renderSubjectTable(categorizedSubjects.Mandatory)}
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="language" className="border rounded-lg">
-              <AccordionTrigger className="px-4 py-3 text-lg font-semibold">
-                Language Subjects
-              </AccordionTrigger>
-              <AccordionContent className="p-4">
-                {renderSubjectTable(categorizedSubjects.Language)}
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="vocational" className="border rounded-lg">
-              <AccordionTrigger className="px-4 py-3 text-lg font-semibold">
-                Vocational Subjects
-              </AccordionTrigger>
-              <AccordionContent className="p-4">
-                {renderSubjectTable(categorizedSubjects.Vocational)}
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {renderMultiSelectDropdown('Mandatory Subjects', categorizedSubjects.Mandatory)}
+                {renderMultiSelectDropdown('Language Subjects', categorizedSubjects.Language)}
+                {renderMultiSelectDropdown('Vocational Subjects', categorizedSubjects.Vocational)}
+            </div>
           
-          <div className="flex justify-end">
+          <div className="flex justify-end pt-4">
             <Button>Save Subject Configuration</Button>
           </div>
         </div>
