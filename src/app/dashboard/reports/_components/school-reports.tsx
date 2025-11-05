@@ -51,8 +51,8 @@ export default function SchoolReports() {
         <div className="space-y-4">
             <Card>
                 <CardContent className="space-y-4 pt-6">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                        <div className="space-y-2 md:col-span-1">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                        <div className="space-y-2">
                             <Label>Report Format</Label>
                             <Select value={selectedReport} onValueChange={setSelectedReport}>
                                 <SelectTrigger><SelectValue placeholder="Select format" /></SelectTrigger>
@@ -70,17 +70,6 @@ export default function SchoolReports() {
                                 <SelectContent>
                                     {sortedClasses.map(cls => (
                                         <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Student</Label>
-                            <Select>
-                                <SelectTrigger><SelectValue placeholder="Select student" /></SelectTrigger>
-                                <SelectContent>
-                                    {mockStudents.map(student => (
-                                        <SelectItem key={student.id} value={student.id}>{student.name}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
