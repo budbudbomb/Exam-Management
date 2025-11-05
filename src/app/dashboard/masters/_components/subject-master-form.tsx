@@ -2,15 +2,6 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,50 +10,31 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { Card, CardContent } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { mockClasses, mockSubjects } from '@/lib/data';
 import { Subject } from '@/lib/types';
 import React, { useState, useMemo } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, PlusCircle, Trash2 } from 'lucide-react';
 
 type SelectedSubjects = {
   [key: string]: boolean;
 };
 
-export default function SubjectMasterForm() {
-  const [selectedClassId, setSelectedClassId] = useState('');
-  const [showSubjects, setShowSubjects] = useState(false);
-  const [selectedSubjects, setSelectedSubjects] = useState<SelectedSubjects>({});
+type Config = {
+    id: number;
+    selectedClassId: string;
+    selectedSubjects: SelectedSubjects;
+}
 
-  const handleShowSubjects = () => {
-    if (selectedClassId) {
-      setShowSubjects(true);
-      // Reset selections when class changes
-      setSelectedSubjects({});
-    }
-  };
-
-  const categorizedSubjects = useMemo(() => {
-    return {
-      Mandatory: mockSubjects.filter((s) => s.category === 'Core'),
-      Language: mockSubjects.filter((s) => s.category === 'Language'),
-      Vocational: mockSubjects.filter((s) => s.category === 'Vocational'),
-    };
-  }, []);
-  
-  const sortedClasses = [...mockClasses].sort((a, b) => {
-    const aNum = parseInt(a.name.split(' ')[1]);
-    const bNum = parseInt(b.name.split(' ')[1]);
-    return aNum - bNum;
-  });
-
-  const handleSubjectSelection = (subjectId: string, checked: boolean) => {
-    setSelectedSubjects(prev => ({
-        ...prev,
-        [subjectId]: checked,
-    }));
-  };
-
-  const renderMultiSelectDropdown = (title: string, subjects: Subject[]) => {
+const MultiSelectDropdown = ({ title, subjects, selectedSubjects, onSubjectSelection }: { title: string, subjects: Subject[], selectedSubjects: SelectedSubjects, onSubjectSelection: (subjectId: string, checked: boolean) => void }) => {
     const selectedCount = subjects.filter(s => selectedSubjects[s.id]).length;
     
     return (
@@ -82,7 +54,7 @@ export default function SubjectMasterForm() {
               <DropdownMenuCheckboxItem
                 key={subject.id}
                 checked={!!selectedSubjects[subject.id]}
-                onCheckedChange={(checked) => handleSubjectSelection(subject.id, !!checked)}
+                onCheckedChange={(checked) => onSubjectSelection(subject.id, !!checked)}
               >
                 {subject.name} ({subject.code})
               </DropdownMenuCheckboxItem>
@@ -91,45 +63,139 @@ export default function SubjectMasterForm() {
         </DropdownMenu>
       </div>
     );
-  };
+};
+
+const ConfigCard = ({ config, onConfigChange, onRemove, classList }: { config: Config, onConfigChange: (newConfig: Config) => void, onRemove: () => void, classList: any[] }) => {
+    
+    const categorizedSubjects = useMemo(() => {
+        return {
+          Mandatory: mockSubjects.filter((s) => s.category === 'Core'),
+          Language: mockSubjects.filter((s) => s.category === 'Language'),
+          Vocational: mockSubjects.filter((s) => s.category === 'Vocational'),
+        };
+      }, []);
+
+    const handleClassChange = (classId: string) => {
+        onConfigChange({ ...config, selectedClassId: classId, selectedSubjects: {} });
+    }
+
+    const handleSubjectSelection = (subjectId: string, checked: boolean) => {
+        const newSelectedSubjects = {
+            ...config.selectedSubjects,
+            [subjectId]: checked
+        };
+        onConfigChange({ ...config, selectedSubjects: newSelectedSubjects });
+    };
+
+    const selectedClassName = classList.find(c => c.id === config.selectedClassId)?.name || 'New Configuration';
+
+    return (
+        <Accordion type="single" collapsible defaultValue="item-1">
+            <AccordionItem value="item-1">
+                <Card>
+                    <div className="flex items-center p-4">
+                        <AccordionTrigger className="flex-1 text-lg font-semibold py-0">
+                           {selectedClassName}
+                        </AccordionTrigger>
+                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={onRemove}>
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
+                    <AccordionContent>
+                        <CardContent>
+                             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mb-6">
+                                <div className="space-y-2 col-span-full md:col-span-1">
+                                    <Label>Class</Label>
+                                    <Select value={config.selectedClassId} onValueChange={handleClassChange}>
+                                        <SelectTrigger>
+                                        <SelectValue placeholder="Select class" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                        {classList.map((cls) => (
+                                            <SelectItem key={cls.id} value={cls.id}>
+                                            {cls.name}
+                                            </SelectItem>
+                                        ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                            
+                            {config.selectedClassId && (
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <MultiSelectDropdown 
+                                        title="Mandatory Subjects"
+                                        subjects={categorizedSubjects.Mandatory}
+                                        selectedSubjects={config.selectedSubjects}
+                                        onSubjectSelection={handleSubjectSelection}
+                                    />
+                                    <MultiSelectDropdown 
+                                        title="Language Subjects"
+                                        subjects={categorizedSubjects.Language}
+                                        selectedSubjects={config.selectedSubjects}
+                                        onSubjectSelection={handleSubjectSelection}
+                                    />
+                                    <MultiSelectDropdown 
+                                        title="Vocational Subjects"
+                                        subjects={categorizedSubjects.Vocational}
+                                        selectedSubjects={config.selectedSubjects}
+                                        onSubjectSelection={handleSubjectSelection}
+                                    />
+                                </div>
+                            )}
+                        </CardContent>
+                    </AccordionContent>
+                </Card>
+            </AccordionItem>
+        </Accordion>
+    )
+}
+
+export default function SubjectMasterForm() {
+  const [configs, setConfigs] = useState<Config[]>([{ id: Date.now(), selectedClassId: '', selectedSubjects: {} }]);
+
+  const handleAddConfig = () => {
+    setConfigs(prev => [...prev, { id: Date.now(), selectedClassId: '', selectedSubjects: {} }]);
+  }
+
+  const handleUpdateConfig = (id: number, newConfig: Config) => {
+    setConfigs(prev => prev.map(c => c.id === id ? newConfig : c));
+  }
+
+  const handleRemoveConfig = (id: number) => {
+    setConfigs(prev => prev.filter(c => c.id !== id));
+  }
+  
+  const sortedClasses = [...mockClasses].sort((a, b) => {
+    const aNum = parseInt(a.name.split(' ')[1]);
+    const bNum = parseInt(b.name.split(' ')[1]);
+    return aNum - bNum;
+  });
 
 
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-        <div className="space-y-2">
-          <Label>Class</Label>
-          <Select onValueChange={setSelectedClassId}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select class" />
-            </SelectTrigger>
-            <SelectContent>
-              {sortedClasses.map((cls) => (
-                <SelectItem key={cls.id} value={cls.id}>
-                  {cls.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+    <div className="space-y-4">
+        <div className="space-y-4">
+            {configs.map(config => (
+                <ConfigCard
+                    key={config.id}
+                    config={config}
+                    onConfigChange={(newConfig) => handleUpdateConfig(config.id, newConfig)}
+                    onRemove={() => handleRemoveConfig(config.id)}
+                    classList={sortedClasses}
+                />
+            ))}
         </div>
-        <div className="col-span-full md:col-span-1 flex justify-start">
-          <Button onClick={handleShowSubjects}>Load Subjects</Button>
+      
+        <div className="flex justify-between items-center pt-4">
+            <Button variant="outline" onClick={handleAddConfig}>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Add another class
+            </Button>
+            <Button>Save All Configurations</Button>
         </div>
-      </div>
-
-      {showSubjects && (
-        <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {renderMultiSelectDropdown('Mandatory Subjects', categorizedSubjects.Mandatory)}
-                {renderMultiSelectDropdown('Language Subjects', categorizedSubjects.Language)}
-                {renderMultiSelectDropdown('Vocational Subjects', categorizedSubjects.Vocational)}
-            </div>
-          
-          <div className="flex justify-end pt-4">
-            <Button>Save Subject Configuration</Button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
+
+    
