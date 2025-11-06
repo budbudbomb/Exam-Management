@@ -12,10 +12,15 @@ import { Subject } from '@/lib/types';
 import { FilePlus2, PlusCircle, Trash2 } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 
+type SubjectInputItem = {
+    id: number;
+    value: string;
+}
+
 type SubjectInputs = {
-    mandatory: string[];
-    language: string[];
-    vocational: string[];
+    mandatory: SubjectInputItem[];
+    language: SubjectInputItem[];
+    vocational: SubjectInputItem[];
 }
 
 const AddSubjectsCard = () => {
@@ -32,24 +37,23 @@ const AddSubjectsCard = () => {
     const handleAddSubject = (category: keyof SubjectInputs) => {
         setSubjects(prev => ({
             ...prev,
-            [category]: [...prev[category], '']
+            [category]: [...prev[category], { id: Date.now(), value: '' }]
         }));
     };
     
-    const handleSubjectChange = (category: keyof SubjectInputs, index: number, value: string) => {
-        const newSubjects = [...subjects[category]];
-        newSubjects[index] = value;
+    const handleSubjectChange = (category: keyof SubjectInputs, id: number, value: string) => {
         setSubjects(prev => ({
             ...prev,
-            [category]: newSubjects
+            [category]: prev[category].map(subject => 
+                subject.id === id ? { ...subject, value } : subject
+            )
         }));
     }
     
-    const handleRemoveSubject = (category: keyof SubjectInputs, index: number) => {
-        const newSubjects = subjects[category].filter((_, i) => i !== index);
-         setSubjects(prev => ({
+    const handleRemoveSubject = (category: keyof SubjectInputs, id: number) => {
+        setSubjects(prev => ({
             ...prev,
-            [category]: newSubjects
+            [category]: prev[category].filter(subject => subject.id !== id)
         }));
     }
 
@@ -57,15 +61,15 @@ const AddSubjectsCard = () => {
         <div className="space-y-2">
             <h4 className="font-medium text-center">{title}</h4>
             <div className="space-y-2 rounded-md border p-4 min-h-[100px] bg-muted/20">
-                 {subjects[category].map((subject, index) => (
-                    <div key={index} className="flex items-center gap-2">
+                 {subjects[category].map((subject) => (
+                    <div key={subject.id} className="flex items-center gap-2">
                         <Input
                             type="text"
                             placeholder="e.g. Maths (123)"
-                            value={subject}
-                            onChange={(e) => handleSubjectChange(category, index, e.target.value)}
+                            value={subject.value}
+                            onChange={(e) => handleSubjectChange(category, subject.id, e.target.value)}
                         />
-                         <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive shrink-0" onClick={() => handleRemoveSubject(category, index)}>
+                         <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive shrink-0" onClick={() => handleRemoveSubject(category, subject.id)}>
                             <Trash2 className="h-4 w-4" />
                         </Button>
                     </div>
