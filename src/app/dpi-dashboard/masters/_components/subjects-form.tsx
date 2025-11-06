@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { mockClasses, mockSubjects } from '@/lib/data';
 import { Subject } from '@/lib/types';
 import { FilePlus2, PlusCircle, Trash2 } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 
 type SubjectInputItem = {
     id: number;
@@ -41,14 +41,17 @@ const AddSubjectsCard = () => {
         }));
     };
     
-    const handleSubjectChange = (category: keyof SubjectInputs, id: number, value: string) => {
-        setSubjects(prev => ({
-            ...prev,
-            [category]: prev[category].map(subject => 
+    const handleSubjectChange = useCallback((category: keyof SubjectInputs, id: number, value: string) => {
+        setSubjects(prev => {
+            const newCategorySubjects = prev[category].map(subject => 
                 subject.id === id ? { ...subject, value } : subject
-            )
-        }));
-    }
+            );
+            return {
+                ...prev,
+                [category]: newCategorySubjects
+            };
+        });
+    }, []);
     
     const handleRemoveSubject = (category: keyof SubjectInputs, id: number) => {
         setSubjects(prev => ({
@@ -57,7 +60,7 @@ const AddSubjectsCard = () => {
         }));
     }
 
-    const SubjectColumn = ({ category, title }: { category: keyof SubjectInputs, title: string }) => (
+    const SubjectColumn = React.memo(({ category, title }: { category: keyof SubjectInputs, title: string }) => (
         <div className="space-y-2">
             <h4 className="font-medium text-center">{title}</h4>
             <div className="space-y-2 rounded-md border p-4 min-h-[100px] bg-muted/20">
@@ -66,7 +69,7 @@ const AddSubjectsCard = () => {
                         <Input
                             type="text"
                             placeholder="e.g. Maths (123)"
-                            value={subject.value}
+                            defaultValue={subject.value}
                             onChange={(e) => handleSubjectChange(category, subject.id, e.target.value)}
                         />
                          <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive shrink-0" onClick={() => handleRemoveSubject(category, subject.id)}>
@@ -79,7 +82,9 @@ const AddSubjectsCard = () => {
                 </Button>
             </div>
         </div>
-    );
+    ));
+    SubjectColumn.displayName = 'SubjectColumn';
+
 
     return (
         <Card>
@@ -302,3 +307,4 @@ export default function SubjectsForm() {
     
 
     
+
