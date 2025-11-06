@@ -12,36 +12,70 @@ import { Subject } from '@/lib/types';
 import { FilePlus2, PlusCircle, Trash2 } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 
+type SubjectInputs = {
+    mandatory: string[];
+    language: string[];
+    vocational: string[];
+}
+
 const AddSubjectsCard = () => {
     const [selectedClass, setSelectedClass] = useState('');
     const [selectedMedium, setSelectedMedium] = useState('');
-    
+    const [subjects, setSubjects] = useState<SubjectInputs>({ mandatory: [], language: [], vocational: [] });
+
     const sortedClasses = [...mockClasses].sort((a, b) => {
         const aNum = parseInt(a.name.split(' ')[1]);
         const bNum = parseInt(b.name.split(' ')[1]);
         return aNum - bNum;
     });
 
-    const SubjectRow = ({ category }: { category: 'Mandatory' | 'Language' | 'Vocational' }) => {
-        return (
-            <div className="flex items-end gap-4">
-                <div className="w-1/3 space-y-2">
-                    <Label>{category} Subjects</Label>
-                    <Select>
-                        <SelectTrigger><SelectValue placeholder="Select subject" /></SelectTrigger>
-                        <SelectContent>
-                            {mockSubjects.filter(s => s.category === category || category === 'Mandatory' && s.category === 'Core').map(s => (
-                                <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-                <Button variant="outline" size="sm">
+    const handleAddSubject = (category: keyof SubjectInputs) => {
+        setSubjects(prev => ({
+            ...prev,
+            [category]: [...prev[category], '']
+        }));
+    };
+    
+    const handleSubjectChange = (category: keyof SubjectInputs, index: number, value: string) => {
+        const newSubjects = [...subjects[category]];
+        newSubjects[index] = value;
+        setSubjects(prev => ({
+            ...prev,
+            [category]: newSubjects
+        }));
+    }
+    
+    const handleRemoveSubject = (category: keyof SubjectInputs, index: number) => {
+        const newSubjects = subjects[category].filter((_, i) => i !== index);
+         setSubjects(prev => ({
+            ...prev,
+            [category]: newSubjects
+        }));
+    }
+
+    const SubjectColumn = ({ category, title }: { category: keyof SubjectInputs, title: string }) => (
+        <div className="space-y-2">
+            <h4 className="font-medium text-center">{title}</h4>
+            <div className="space-y-2 rounded-md border p-4 min-h-[100px] bg-muted/20">
+                 {subjects[category].map((subject, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                        <Input
+                            type="text"
+                            placeholder="e.g. Maths (123)"
+                            value={subject}
+                            onChange={(e) => handleSubjectChange(category, index, e.target.value)}
+                        />
+                         <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive shrink-0" onClick={() => handleRemoveSubject(category, index)}>
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
+                ))}
+                <Button variant="outline" size="sm" className="w-full mt-2" onClick={() => handleAddSubject(category)}>
                     <PlusCircle className="mr-2 h-4 w-4" /> Add
                 </Button>
             </div>
-        );
-    }
+        </div>
+    );
 
     return (
         <Card>
@@ -76,14 +110,14 @@ const AddSubjectsCard = () => {
 
                 {selectedClass && selectedMedium && (
                     <div className="space-y-4 pt-4 border-t">
-                        <SubjectRow category="Mandatory" />
-                        <SubjectRow category="Language" />
-                        <SubjectRow category="Vocational" />
-                        
-                        {/* Here you would list the added subjects */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <SubjectColumn category="mandatory" title="Mandatory Subjects" />
+                            <SubjectColumn category="language" title="Language Subjects" />
+                            <SubjectColumn category="vocational" title="Vocational Subjects" />
+                        </div>
                     </div>
                 )}
-                 <div className="flex justify-end">
+                 <div className="flex justify-end pt-4">
                     <Button>Save Class Subjects</Button>
                 </div>
             </CardContent>
@@ -260,5 +294,7 @@ export default function SubjectsForm() {
     );
 }
 
+
+    
 
     
