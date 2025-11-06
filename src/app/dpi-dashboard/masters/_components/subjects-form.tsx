@@ -15,7 +15,8 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 type SubjectInputItem = {
     id: number;
-    value: string;
+    name: string;
+    code: string;
 }
 
 type SubjectInputs = {
@@ -38,14 +39,14 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
     const handleAddSubject = (category: keyof SubjectInputs) => {
         setSubjects(prev => ({
             ...prev,
-            [category]: [...prev[category], { id: Date.now(), value: '' }]
+            [category]: [...prev[category], { id: Date.now(), name: '', code: '' }]
         }));
     };
     
-    const handleSubjectChange = useCallback((category: keyof SubjectInputs, id: number, value: string) => {
+    const handleSubjectChange = useCallback((category: keyof SubjectInputs, id: number, field: 'name' | 'code', value: string) => {
         setSubjects(prev => {
             const newCategorySubjects = prev[category].map(subject => 
-                subject.id === id ? { ...subject, value } : subject
+                subject.id === id ? { ...subject, [field]: value } : subject
             );
             return {
                 ...prev,
@@ -67,12 +68,20 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
             <div className="space-y-2 rounded-md border p-4 min-h-[100px] bg-muted/20">
                  {subjects[category].map((subject) => (
                     <div key={subject.id} className="flex items-center gap-2">
-                        <Input
-                            type="text"
-                            placeholder="e.g. Maths (123)"
-                            defaultValue={subject.value}
-                            onChange={(e) => handleSubjectChange(category, subject.id, e.target.value)}
-                        />
+                        <div className="grid grid-cols-2 gap-2 flex-1">
+                            <Input
+                                type="text"
+                                placeholder="Subject Name"
+                                value={subject.name}
+                                onChange={(e) => handleSubjectChange(category, subject.id, 'name', e.target.value)}
+                            />
+                             <Input
+                                type="text"
+                                placeholder="Code"
+                                value={subject.code}
+                                onChange={(e) => handleSubjectChange(category, subject.id, 'code', e.target.value)}
+                            />
+                        </div>
                          <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive shrink-0" onClick={() => handleRemoveSubject(category, subject.id)}>
                             <Trash2 className="h-4 w-4" />
                         </Button>
