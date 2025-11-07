@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Subject } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
 
 
 type SubjectInputItem = {
@@ -130,7 +131,11 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
 type SubjectConfigRow = {
     id: number;
     subjectId: string;
-    theorySubType: 'Basic' | 'Standard';
+    theorySubTypes: {
+        basic: boolean;
+        standard: boolean;
+        none: boolean;
+    };
     theoryMaxMarks: string;
     assessmentType: 'Practical' | 'Project';
     assessmentMaxMarks: string;
@@ -140,7 +145,7 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
     const [selectedClassId, setSelectedClassId] = useState('');
     const [selectedMedium, setSelectedMedium] = useState('');
     const [subjects, setSubjects] = useState<SubjectConfigRow[]>([
-        { id: Date.now(), subjectId: '', theorySubType: 'Standard', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMaxMarks: '' }
+        { id: Date.now(), subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMaxMarks: '', assessmentType: 'Practical', assessmentMaxMarks: '' }
     ]);
 
     const classSubjects = useMemo(() => {
@@ -152,7 +157,7 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
     const handleAddSubject = () => {
         setSubjects(prev => [
             ...prev,
-            { id: Date.now(), subjectId: '', theorySubType: 'Standard', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMaxMarks: '' }
+            { id: Date.now(), subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMaxMarks: '', assessmentType: 'Practical', assessmentMaxMarks: '' }
         ]);
     };
 
@@ -160,8 +165,28 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
         setSubjects(prev => prev.filter(s => s.id !== id));
     };
 
-    const handleSubjectChange = (id: number, field: keyof Omit<SubjectConfigRow, 'id'>, value: string) => {
+    const handleSubjectChange = (id: number, field: keyof Omit<SubjectConfigRow, 'id' | 'theorySubTypes'>, value: string) => {
         setSubjects(prev => prev.map(s => s.id === id ? { ...s, [field]: value } : s));
+    };
+
+    const handleTheorySubTypeChange = (id: number, subType: 'basic' | 'standard' | 'none') => {
+        setSubjects(prev => prev.map(s => {
+            if (s.id === id) {
+                const newSubTypes = { ...s.theorySubTypes };
+                if (subType === 'none') {
+                    newSubTypes.none = !newSubTypes.none;
+                    newSubTypes.basic = false;
+                    newSubTypes.standard = false;
+                } else {
+                    newSubTypes[subType] = !newSubTypes[subType];
+                    if (newSubTypes.basic || newSubTypes.standard) {
+                        newSubTypes.none = false;
+                    }
+                }
+                return { ...s, theorySubTypes: newSubTypes };
+            }
+            return s;
+        }));
     };
     
     return (
@@ -242,20 +267,34 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                                     <div className="flex items-center gap-4">
                                         <div className="flex-1 space-y-2">
                                             <Label className="text-xs text-muted-foreground">Sub-type</Label>
-                                            <RadioGroup
-                                                value={subject.theorySubType}
-                                                onValueChange={(value: 'Basic' | 'Standard') => handleSubjectChange(subject.id, 'theorySubType', value)}
-                                                className="flex gap-4"
-                                            >
+                                            <div className="flex gap-4 items-center">
                                                 <div className="flex items-center space-x-2">
-                                                    <RadioGroupItem value="Basic" id={`basic-${subject.id}`} />
+                                                    <Checkbox 
+                                                        id={`basic-${subject.id}`} 
+                                                        checked={subject.theorySubTypes.basic}
+                                                        onCheckedChange={() => handleTheorySubTypeChange(subject.id, 'basic')}
+                                                        disabled={subject.theorySubTypes.none}
+                                                    />
                                                     <Label htmlFor={`basic-${subject.id}`} className="font-normal">Basic</Label>
                                                 </div>
                                                 <div className="flex items-center space-x-2">
-                                                    <RadioGroupItem value="Standard" id={`standard-${subject.id}`} />
+                                                    <Checkbox 
+                                                        id={`standard-${subject.id}`} 
+                                                        checked={subject.theorySubTypes.standard}
+                                                        onCheckedChange={() => handleTheorySubTypeChange(subject.id, 'standard')}
+                                                        disabled={subject.theorySubTypes.none}
+                                                    />
                                                     <Label htmlFor={`standard-${subject.id}`} className="font-normal">Standard</Label>
                                                 </div>
-                                            </RadioGroup>
+                                                 <div className="flex items-center space-x-2">
+                                                    <Checkbox 
+                                                        id={`none-${subject.id}`}
+                                                        checked={subject.theorySubTypes.none}
+                                                        onCheckedChange={() => handleTheorySubTypeChange(subject.id, 'none')}
+                                                    />
+                                                    <Label htmlFor={`none-${subject.id}`} className="font-normal">None</Label>
+                                                </div>
+                                            </div>
                                         </div>
                                          <div className="flex-1 space-y-2">
                                             <Label className="text-xs text-muted-foreground">Max Marks</Label>
@@ -617,4 +656,6 @@ export default function SubjectsForm() {
         </div>
     );
 }
+
+
 
