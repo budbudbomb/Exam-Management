@@ -278,7 +278,7 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                                     </div>
                                 </AccordionTrigger>
                                 <AccordionContent className="p-4 pt-0">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                                         <div className="space-y-2">
                                             <Label>Subject Category</Label>
                                             <Select 
@@ -313,61 +313,53 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                                                 </SelectContent>
                                             </Select>
                                         </div>
-                                        
-                                        <div className="space-y-2 col-span-1 lg:col-span-1">
-                                            <Label>Theory</Label>
-                                            <div className="flex items-center gap-4">
-                                                <div className="flex-1 space-y-2">
-                                                    <Label className="text-xs text-muted-foreground">Sub-type</Label>
-                                                    <div className="flex gap-4 items-center h-10">
-                                                        <div className="flex items-center space-x-2">
-                                                            <Checkbox 
-                                                                id={`basic-${subject.id}`} 
-                                                                checked={subject.theorySubTypes.basic}
-                                                                onCheckedChange={() => handleTheorySubTypeChange(subject.id, 'basic')}
-                                                                disabled={subject.theorySubTypes.none}
-                                                            />
-                                                            <Label htmlFor={`basic-${subject.id}`} className="font-normal">Basic</Label>
-                                                        </div>
-                                                        <div className="flex items-center space-x-2">
-                                                            <Checkbox 
-                                                                id={`standard-${subject.id}`} 
-                                                                checked={subject.theorySubTypes.standard}
-                                                                onCheckedChange={() => handleTheorySubTypeChange(subject.id, 'standard')}
-                                                                disabled={subject.theorySubTypes.none}
-                                                            />
-                                                            <Label htmlFor={`standard-${subject.id}`} className="font-normal">Standard</Label>
-                                                        </div>
-                                                         <div className="flex items-center space-x-2">
-                                                            <Checkbox 
-                                                                id={`none-${subject.id}`}
-                                                                checked={subject.theorySubTypes.none}
-                                                                onCheckedChange={() => handleTheorySubTypeChange(subject.id, 'none')}
-                                                            />
-                                                            <Label htmlFor={`none-${subject.id}`} className="font-normal">None</Label>
-                                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t pt-6">
+                                        <div className="space-y-4">
+                                            <h4 className="font-medium text-base">Theory Component</h4>
+                                            <div className="space-y-2">
+                                                <Label>Sub-type</Label>
+                                                <div className="flex gap-4 items-center h-10">
+                                                    <div className="flex items-center space-x-2">
+                                                        <Checkbox 
+                                                            id={`basic-${subject.id}`} 
+                                                            checked={subject.theorySubTypes.basic}
+                                                            onCheckedChange={() => handleTheorySubTypeChange(subject.id, 'basic')}
+                                                            disabled={subject.theorySubTypes.none}
+                                                        />
+                                                        <Label htmlFor={`basic-${subject.id}`} className="font-normal">Basic</Label>
+                                                    </div>
+                                                    <div className="flex items-center space-x-2">
+                                                        <Checkbox 
+                                                            id={`standard-${subject.id}`} 
+                                                            checked={subject.theorySubTypes.standard}
+                                                            onCheckedChange={() => handleTheorySubTypeChange(subject.id, 'standard')}
+                                                            disabled={subject.theorySubTypes.none}
+                                                        />
+                                                        <Label htmlFor={`standard-${subject.id}`} className="font-normal">Standard</Label>
+                                                    </div>
+                                                     <div className="flex items-center space-x-2">
+                                                        <Checkbox 
+                                                            id={`none-${subject.id}`}
+                                                            checked={subject.theorySubTypes.none}
+                                                            onCheckedChange={() => handleTheorySubTypeChange(subject.id, 'none')}
+                                                        />
+                                                        <Label htmlFor={`none-${subject.id}`} className="font-normal">None</Label>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-
-                                        <div className="space-y-2 col-span-1 lg:col-span-2">
-                                            <Label>Theory Marks</Label>
-                                            <div className="flex flex-1 gap-2">
-                                                <div className="flex-1 space-y-2">
-                                                    <Label className="text-xs text-muted-foreground">Min Marks</Label>
+                                             <div className="space-y-2">
+                                                <Label>Marks</Label>
+                                                <div className="flex gap-2">
                                                     <Input
                                                         type="number"
-                                                        placeholder="e.g. 25"
+                                                        placeholder="Min Marks"
                                                         value={subject.theoryMinMarks}
                                                         onChange={e => handleSubjectChange(subject.id, 'theoryMinMarks', e.target.value)}
                                                     />
-                                                </div>
-                                                    <div className="flex-1 space-y-2">
-                                                    <Label className="text-xs text-muted-foreground">Max Marks</Label>
                                                     <Input
                                                         type="number"
-                                                        placeholder="e.g. 75"
+                                                        placeholder="Max Marks"
                                                         value={subject.theoryMaxMarks}
                                                         onChange={e => handleSubjectChange(subject.id, 'theoryMaxMarks', e.target.value)}
                                                     />
@@ -375,40 +367,37 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                                             </div>
                                         </div>
 
-                                        <div className="space-y-2">
-                                            <Label>Additional Assessment</Label>
-                                            <RadioGroup
-                                                value={subject.assessmentType}
-                                                onValueChange={(value: 'Practical' | 'Project') => handleSubjectChange(subject.id, 'assessmentType', value)}
-                                                className="flex gap-4 h-10 items-center"
-                                            >
-                                                <div className="flex items-center space-x-2">
-                                                    <RadioGroupItem value="Practical" id={`prac-${subject.id}`} />
-                                                    <Label htmlFor={`prac-${subject.id}`} className="font-normal">Practical</Label>
-                                                </div>
-                                                <div className="flex items-center space-x-2">
-                                                    <RadioGroupItem value="Project" id={`proj-${subject.id}`} />
-                                                    <Label htmlFor={`proj-${subject.id}`} className="font-normal">Project</Label>
-                                                </div>
-                                            </RadioGroup>
-                                        </div>
-                                        <div className="space-y-2 col-span-1 lg:col-span-2">
-                                            <Label>{subject.assessmentType} Marks</Label>
-                                            <div className="flex gap-2">
-                                                <div className="flex-1 space-y-2">
-                                                        <Label className="text-xs text-muted-foreground">Min Marks</Label>
-                                                        <Input
-                                                            type="number"
-                                                            placeholder="e.g. 8"
-                                                            value={subject.assessmentMinMarks}
-                                                            onChange={e => handleSubjectChange(subject.id, 'assessmentMinMarks', e.target.value)}
-                                                        />
+                                        <div className="space-y-4">
+                                             <h4 className="font-medium text-base">Assessment Component</h4>
+                                             <div className="space-y-2">
+                                                <Label>Type</Label>
+                                                <RadioGroup
+                                                    value={subject.assessmentType}
+                                                    onValueChange={(value: 'Practical' | 'Project') => handleSubjectChange(subject.id, 'assessmentType', value)}
+                                                    className="flex gap-4 h-10 items-center"
+                                                >
+                                                    <div className="flex items-center space-x-2">
+                                                        <RadioGroupItem value="Practical" id={`prac-${subject.id}`} />
+                                                        <Label htmlFor={`prac-${subject.id}`} className="font-normal">Practical</Label>
                                                     </div>
-                                                <div className="flex-1 space-y-2">
-                                                    <Label className="text-xs text-muted-foreground">Max Marks</Label>
+                                                    <div className="flex items-center space-x-2">
+                                                        <RadioGroupItem value="Project" id={`proj-${subject.id}`} />
+                                                        <Label htmlFor={`proj-${subject.id}`} className="font-normal">Project</Label>
+                                                    </div>
+                                                </RadioGroup>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>{subject.assessmentType} Marks</Label>
+                                                <div className="flex gap-2">
                                                     <Input
                                                         type="number"
-                                                        placeholder="e.g. 25"
+                                                        placeholder="Min Marks"
+                                                        value={subject.assessmentMinMarks}
+                                                        onChange={e => handleSubjectChange(subject.id, 'assessmentMinMarks', e.target.value)}
+                                                    />
+                                                    <Input
+                                                        type="number"
+                                                        placeholder="Max Marks"
                                                         value={subject.assessmentMaxMarks}
                                                         onChange={e => handleSubjectChange(subject.id, 'assessmentMaxMarks', e.target.value)}
                                                     />
