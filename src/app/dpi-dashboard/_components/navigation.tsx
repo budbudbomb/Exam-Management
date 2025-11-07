@@ -3,7 +3,6 @@
 
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { cn } from '@/lib/utils';
 import {
   BookOpen,
   CalendarDays,
@@ -11,8 +10,8 @@ import {
   ListChecks,
   Bookmark,
   Library,
-  LogOut,
   CircleUser,
+  ChevronDown,
 } from 'lucide-react';
 import { Logo } from '@/components/icons/logo';
 import {
@@ -23,7 +22,7 @@ import {
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { useSidebar, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarMenuSub, SidebarMenuSubButton, SidebarGroup, SidebarGroupLabel, SidebarGroupContent } from '@/components/ui/sidebar';
+import { useSidebar, SidebarMenu, SidebarMenuButton, SidebarMenuSub, SidebarMenuSubButton, SidebarGroup, SidebarGroupLabel, SidebarGroupContent } from '@/components/ui/sidebar';
 
 const navLinks = [
     {
@@ -209,7 +208,3 @@ export default function DpiNavigation() {
     </div>
   );
 }
-
-const ChevronDown = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m6 9 6 6 6-6"/></svg>
-)

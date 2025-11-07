@@ -11,17 +11,16 @@ import ExamsForm from './_components/exams-form';
 import GradesForm from './_components/grades-form';
 import RemarksForm from './_components/remarks-form';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import React from 'react';
+import React, { Suspense } from 'react';
 
-
-export default function MastersPage() {
+const MastersPageContent = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab') || 'subjects';
 
   const handleTabChange = (value: string) => {
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams(searchParams.toString());
     params.set('tab', value);
     // Remove view when changing tabs
     params.delete('view');
@@ -62,3 +61,11 @@ export default function MastersPage() {
   );
 }
 
+
+export default function MastersPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MastersPageContent />
+    </Suspense>
+  );
+}
