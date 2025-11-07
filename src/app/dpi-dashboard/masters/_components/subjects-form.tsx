@@ -131,6 +131,7 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
 
 type SubjectConfigRow = {
     id: number;
+    subjectCategory: 'Core' | 'Language' | 'Vocational' | '';
     subjectId: string;
     theorySubTypes: {
         basic: boolean;
@@ -148,21 +149,25 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
     const [selectedClassId, setSelectedClassId] = useState('');
     const [selectedMedium, setSelectedMedium] = useState('');
     const [subjects, setSubjects] = useState<SubjectConfigRow[]>([
-        { id: Date.now(), subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }
+        { id: Date.now(), subjectCategory: '', subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }
     ]);
-
-    const classSubjects = useMemo(() => {
-        if (!selectedClassId) return [];
+    
+    const categorizedClassSubjects = useMemo(() => {
+        if (!selectedClassId) return { Core: [], Language: [], Vocational: [] };
         const selectedClass = mockClasses.find(c => c.id === selectedClassId);
-        // For the sake of the demo, we assume all mockSubjects are available if the class doesn't have specific ones.
-        // In a real app, this would be tied to the "Assign Subjects" feature.
-        return selectedClass?.subjects.length ? selectedClass.subjects : mockSubjects;
+        const classSubjects = selectedClass?.subjects.length ? selectedClass.subjects : mockSubjects;
+        
+        return {
+          Core: classSubjects.filter((s) => s.category === 'Core'),
+          Language: classSubjects.filter((s) => s.category === 'Language'),
+          Vocational: classSubjects.filter((s) => s.category === 'Vocational'),
+        };
     }, [selectedClassId]);
     
     const handleAddSubject = () => {
         setSubjects(prev => [
             ...prev,
-            { id: Date.now(), subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }
+            { id: Date.now(), subjectCategory: '', subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }
         ]);
     };
 
@@ -170,8 +175,16 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
         setSubjects(prev => prev.filter(s => s.id !== id));
     };
 
-    const handleSubjectChange = (id: number, field: keyof Omit<SubjectConfigRow, 'id' | 'theorySubTypes'>, value: string) => {
-        setSubjects(prev => prev.map(s => s.id === id ? { ...s, [field]: value } : s));
+    const handleSubjectChange = (id: number, field: keyof Omit<SubjectConfigRow, 'id' | 'theorySubTypes'>, value: any) => {
+        setSubjects(prev => prev.map(s => {
+            if (s.id === id) {
+                if(field === 'subjectCategory') {
+                    return { ...s, subjectCategory: value, subjectId: '' }; // Reset subject when category changes
+                }
+                return { ...s, [field]: value };
+            }
+            return s;
+        }));
     };
 
     const handleTheorySubTypeChange = (id: number, subType: 'basic' | 'standard' | 'none') => {
@@ -194,8 +207,11 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
         }));
     };
     
-    const getSubjectName = (subjectId: string) => {
-        return classSubjects.find(s => s.id === subjectId)?.name || 'New Subject';
+    const getSubjectName = (subject: SubjectConfigRow) => {
+        if (!subject.subjectId || !subject.subjectCategory) return 'New Subject';
+        
+        const subjectsForCategory = categorizedClassSubjects[subject.subjectCategory];
+        return subjectsForCategory.find(s => s.id === subject.subjectId)?.name || 'New Subject';
     }
 
     return (
@@ -249,7 +265,7 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                                 <AccordionTrigger className="w-full p-0 hover:no-underline">
                                     <div className="flex items-center justify-between p-4 w-full cursor-pointer">
                                         <div className="flex-1 text-lg font-semibold text-left">
-                                            {index + 1}. {getSubjectName(subject.subjectId)}
+                                            {index + 1}. {getSubjectName(subject)}
                                         </div>
                                         <div className="flex items-center gap-2">
                                             {subjects.length > 1 && (
@@ -264,24 +280,41 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                                 <AccordionContent className="p-4 pt-0">
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                         <div className="space-y-2">
+                                            <Label>Subject Category</Label>
+                                            <Select 
+                                                value={subject.subjectCategory} 
+                                                onValueChange={(value: 'Core' | 'Language' | 'Vocational') => handleSubjectChange(subject.id, 'subjectCategory', value)}
+                                                disabled={!selectedClassId}
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select category" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="Core">Mandatory</SelectItem>
+                                                    <SelectItem value="Language">Language</SelectItem>
+                                                    <SelectItem value="Vocational">Vocational</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-2">
                                             <Label>Subject Name</Label>
                                             <Select 
                                                 value={subject.subjectId} 
                                                 onValueChange={(value) => handleSubjectChange(subject.id, 'subjectId', value)}
-                                                disabled={!selectedClassId}
+                                                disabled={!subject.subjectCategory}
                                             >
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select subject" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {classSubjects.map(s => (
+                                                    {subject.subjectCategory && categorizedClassSubjects[subject.subjectCategory].map(s => (
                                                         <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
                                                     ))}
                                                 </SelectContent>
                                             </Select>
                                         </div>
                                         
-                                        <div className="space-y-2 col-span-1 lg:col-span-2">
+                                        <div className="space-y-2 col-span-1 lg:col-span-1">
                                             <Label>Theory</Label>
                                             <div className="flex items-center gap-4">
                                                 <div className="flex-1 space-y-2">
@@ -315,26 +348,30 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                 <div className="flex flex-1 gap-2">
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2 col-span-1 lg:col-span-2">
+                                            <Label>Theory Marks</Label>
+                                            <div className="flex flex-1 gap-2">
+                                                <div className="flex-1 space-y-2">
+                                                    <Label className="text-xs text-muted-foreground">Min Marks</Label>
+                                                    <Input
+                                                        type="number"
+                                                        placeholder="e.g. 25"
+                                                        value={subject.theoryMinMarks}
+                                                        onChange={e => handleSubjectChange(subject.id, 'theoryMinMarks', e.target.value)}
+                                                    />
+                                                </div>
                                                     <div className="flex-1 space-y-2">
-                                                        <Label className="text-xs text-muted-foreground">Min Marks</Label>
-                                                        <Input
-                                                            type="number"
-                                                            placeholder="e.g. 25"
-                                                            value={subject.theoryMinMarks}
-                                                            onChange={e => handleSubjectChange(subject.id, 'theoryMinMarks', e.target.value)}
-                                                        />
-                                                    </div>
-                                                     <div className="flex-1 space-y-2">
-                                                        <Label className="text-xs text-muted-foreground">Max Marks</Label>
-                                                        <Input
-                                                            type="number"
-                                                            placeholder="e.g. 75"
-                                                            value={subject.theoryMaxMarks}
-                                                            onChange={e => handleSubjectChange(subject.id, 'theoryMaxMarks', e.target.value)}
-                                                        />
-                                                    </div>
-                                                 </div>
+                                                    <Label className="text-xs text-muted-foreground">Max Marks</Label>
+                                                    <Input
+                                                        type="number"
+                                                        placeholder="e.g. 75"
+                                                        value={subject.theoryMaxMarks}
+                                                        onChange={e => handleSubjectChange(subject.id, 'theoryMaxMarks', e.target.value)}
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
 
