@@ -316,7 +316,7 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t pt-6">
                                         <div className="space-y-4">
-                                            <h4 className="font-medium text-base">Theory Component</h4>
+                                            <h4 className="font-medium text-base">Theory</h4>
                                             <div className="space-y-2">
                                                 <Label>Sub-type</Label>
                                                 <div className="flex gap-4 items-center h-10">
@@ -368,7 +368,7 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                                         </div>
 
                                         <div className="space-y-4">
-                                             <h4 className="font-medium text-base">Assessment Component</h4>
+                                             <h4 className="font-medium text-base">Other assessment type</h4>
                                              <div className="space-y-2">
                                                 <Label>Type</Label>
                                                 <RadioGroup
