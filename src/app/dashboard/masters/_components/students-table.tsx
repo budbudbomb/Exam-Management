@@ -81,7 +81,7 @@ export default function StudentsTable() {
         if (selectedClassId) {
             const selectedClass = mockClasses.find(c => c.id === selectedClassId);
             const className = selectedClass ? selectedClass.name.split(' ')[1] : '';
-            setFilteredStudents(mockStudents.filter(student => student.class === className));
+            setFilteredStudents(students.filter(student => student.class === className));
             setShowTable(true);
         } else {
             setFilteredStudents([]);
@@ -194,8 +194,8 @@ export default function StudentsTable() {
                                             {student.isUpdated ? (
                                                 <Button
                                                     variant="outline"
-                                                    disabled
-                                                    className="bg-green-100 text-green-800 border-green-300 hover:bg-green-100"
+                                                    className="bg-green-100 text-green-800 border-green-300 hover:bg-green-200"
+                                                    onClick={() => handleOpenUpdateModal(student)}
                                                 >
                                                     <CheckCircle className="mr-2 h-4 w-4" />
                                                     Updated
