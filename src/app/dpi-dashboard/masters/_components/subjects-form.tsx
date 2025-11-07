@@ -4,8 +4,8 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { FilePlus2, PlusCircle, Trash2, ChevronRight, ArrowLeft, ChevronDown } from 'lucide-react';
-import React, { useState, useCallback } from 'react';
+import { FilePlus2, PlusCircle, Trash2, ChevronRight, ArrowLeft, ChevronDown, Edit } from 'lucide-react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { mockClasses, mockSubjects } from '@/lib/data';
 import { Label } from '@/components/ui/label';
@@ -80,12 +80,12 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
     const [subjects, setSubjects] = useState<SubjectInputs>({ mandatory: [], language: [], vocational: [] });
 
     const handleSubjectChange = useCallback((category: keyof SubjectInputs, id: number, field: 'name' | 'code', value: string) => {
-        setSubjects(prev => {
-            const newCategorySubjects = prev[category].map(subject => 
+        setSubjects(prev => ({
+            ...prev,
+            [category]: prev[category].map(subject =>
                 subject.id === id ? { ...subject, [field]: value } : subject
-            );
-            return { ...prev, [category]: newCategorySubjects };
-        });
+            )
+        }));
     }, []);
 
     const handleAddSubject = useCallback((category: keyof SubjectInputs) => {
@@ -215,30 +215,10 @@ type ClassConfig = {
 }
 
 const AssignSubjectsToClassCard = ({ onBack }: { onBack: () => void }) => {
-    const [configs, setConfigs] = useState<ClassConfig[]>([
-        { id: Date.now(), selectedClassId: '', selectedMedium: '', selectedSubjects: {} }
-    ]);
+    const [savedConfigs, setSavedConfigs] = useState<ClassConfig[]>([]);
+    const [editingConfig, setEditingConfig] = useState<ClassConfig[] | null>(null);
 
-    const handleAddConfig = () => {
-        setConfigs(prev => [...prev, { id: Date.now(), selectedClassId: '', selectedMedium: '', selectedSubjects: {} }]);
-    }
-    
-    const handleRemoveConfig = (id: number) => {
-        setConfigs(prev => prev.filter(c => c.id !== id));
-    }
-
-    const handleConfigChange = (id: number, field: keyof Omit<ClassConfig, 'id' | 'selectedSubjects'>, value: string) => {
-        setConfigs(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c));
-    }
-
-    const handleSubjectSelection = (id: number, subjectId: string, checked: boolean) => {
-        setConfigs(prev => prev.map(c => c.id === id ? {
-            ...c,
-            selectedSubjects: { ...c.selectedSubjects, [subjectId]: checked }
-        } : c));
-    };
-
-    const categorizedSubjects = React.useMemo(() => {
+    const categorizedSubjects = useMemo(() => {
         return {
           Mandatory: mockSubjects.filter((s) => s.category === 'Core'),
           Language: mockSubjects.filter((s) => s.category === 'Language'),
@@ -246,96 +226,195 @@ const AssignSubjectsToClassCard = ({ onBack }: { onBack: () => void }) => {
         };
     }, []);
 
-    const sortedClasses = [...mockClasses].sort((a, b) => {
+    const sortedClasses = useMemo(() => [...mockClasses].sort((a, b) => {
         const aNum = parseInt(a.name.split(' ')[1]);
         const bNum = parseInt(b.name.split(' ')[1]);
         return aNum - bNum;
-    });
+    }), []);
+    
+    const getSubjectName = (id: string) => mockSubjects.find(s => s.id === id)?.name || id;
 
-    return (
+    // View component for saved configurations
+    const ViewSavedConfigs = () => (
         <Card>
             <CardHeader>
-                <div className="flex items-center gap-4">
-                    <Button variant="outline" size="icon" onClick={onBack}>
-                        <ArrowLeft className="h-4 w-4" />
-                    </Button>
+                <div className="flex justify-between items-center">
                     <div>
                         <CardTitle>Assign Subjects to Class</CardTitle>
-                        <CardDescription>Create configurations to assign specific subjects to a class and medium.</CardDescription>
+                        <CardDescription>Review and manage subject assignments for each class and medium.</CardDescription>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <Button onClick={() => setEditingConfig([{ id: Date.now(), selectedClassId: '', selectedMedium: '', selectedSubjects: {} }])}>
+                            <PlusCircle className="mr-2 h-4 w-4" /> Create New
+                        </Button>
+                         <Button variant="outline" size="icon" onClick={onBack}>
+                            <ArrowLeft className="h-4 w-4" />
+                        </Button>
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className="space-y-6">
-                {configs.map(config => (
-                    <Card key={config.id} className="p-4 relative bg-muted/20">
-                         {configs.length > 1 && (
-                            <Button variant="ghost" size="icon" className="absolute top-2 right-2 text-destructive hover:text-destructive" onClick={() => handleRemoveConfig(config.id)}>
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                         )}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <div className="space-y-2">
-                                <Label>Class</Label>
-                                <Select value={config.selectedClassId} onValueChange={(value) => handleConfigChange(config.id, 'selectedClassId', value)}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select a class" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {sortedClasses.map(cls => (
-                                            <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+            <CardContent className="space-y-4">
+                {savedConfigs.length === 0 ? (
+                    <div className="text-center text-muted-foreground py-8">
+                        No configurations saved yet. Click "Create New" to get started.
+                    </div>
+                ) : (
+                    savedConfigs.map(config => (
+                        <Card key={config.id} className="p-4">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <h3 className="font-semibold">{sortedClasses.find(c => c.id === config.selectedClassId)?.name} - {config.selectedMedium}</h3>
+                                    <div className="mt-2 space-y-2 text-sm">
+                                        <div>
+                                            <h4 className="font-medium text-muted-foreground">Mandatory Subjects</h4>
+                                            <p>{Object.keys(config.selectedSubjects).filter(key => config.selectedSubjects[key] && categorizedSubjects.Mandatory.some(s => s.id === key)).map(getSubjectName).join(', ') || 'None'}</p>
+                                        </div>
+                                        <div>
+                                            <h4 className="font-medium text-muted-foreground">Language Subjects</h4>
+                                            <p>{Object.keys(config.selectedSubjects).filter(key => config.selectedSubjects[key] && categorizedSubjects.Language.some(s => s.id === key)).map(getSubjectName).join(', ') || 'None'}</p>
+                                        </div>
+                                        <div>
+                                            <h4 className="font-medium text-muted-foreground">Vocational Subjects</h4>
+                                            <p>{Object.keys(config.selectedSubjects).filter(key => config.selectedSubjects[key] && categorizedSubjects.Vocational.some(s => s.id === key)).map(getSubjectName).join(', ') || 'None'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <Button variant="outline" size="sm" onClick={() => setEditingConfig([config])}><Edit className="mr-2 h-4 w-4" />Edit</Button>
                             </div>
-                             <div className="space-y-2">
-                                <Label>Medium</Label>
-                                <Select value={config.selectedMedium} onValueChange={(value) => handleConfigChange(config.id, 'selectedMedium', value)}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select a medium" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="English">English</SelectItem>
-                                        <SelectItem value="Hindi">Hindi</SelectItem>
-                                        <SelectItem value="Urdu">Urdu</SelectItem>
-                                        <SelectItem value="Sanskrit">Sanskrit</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                             <MultiSelectDropdown 
-                                title="Mandatory Subjects"
-                                subjects={categorizedSubjects.Mandatory}
-                                selectedSubjects={config.selectedSubjects}
-                                onSubjectSelection={(subjectId, checked) => handleSubjectSelection(config.id, subjectId, checked)}
-                            />
-                            <MultiSelectDropdown 
-                                title="Language Subjects"
-                                subjects={categorizedSubjects.Language}
-                                selectedSubjects={config.selectedSubjects}
-                                onSubjectSelection={(subjectId, checked) => handleSubjectSelection(config.id, subjectId, checked)}
-                            />
-                            <MultiSelectDropdown 
-                                title="Vocational Subjects"
-                                subjects={categorizedSubjects.Vocational}
-                                selectedSubjects={config.selectedSubjects}
-                                onSubjectSelection={(subjectId, checked) => handleSubjectSelection(config.id, subjectId, checked)}
-                            />
-                        </div>
-                    </Card>
-                ))}
-                 <div className="flex justify-between items-center pt-4">
-                    <Button variant="outline" onClick={handleAddConfig}>
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Add another class configuration
-                    </Button>
-                    <Button>Save All Assignments</Button>
-                </div>
-
+                        </Card>
+                    ))
+                )}
             </CardContent>
         </Card>
     );
+
+    // Edit/Create component
+    const EditConfig = () => {
+        const [configs, setConfigs] = useState<ClassConfig[]>(editingConfig || []);
+        
+        const handleAddConfig = () => {
+            setConfigs(prev => [...prev, { id: Date.now(), selectedClassId: '', selectedMedium: '', selectedSubjects: {} }]);
+        }
+        
+        const handleRemoveConfig = (id: number) => {
+            setConfigs(prev => prev.filter(c => c.id !== id));
+        }
+
+        const handleConfigChange = (id: number, field: keyof Omit<ClassConfig, 'id' | 'selectedSubjects'>, value: string) => {
+            setConfigs(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c));
+        }
+
+        const handleSubjectSelection = (id: number, subjectId: string, checked: boolean) => {
+            setConfigs(prev => prev.map(c => c.id === id ? {
+                ...c,
+                selectedSubjects: { ...c.selectedSubjects, [subjectId]: checked }
+            } : c));
+        };
+        
+        const handleSave = () => {
+            // In a real app, you'd check for new vs updated configs
+            setSavedConfigs(prev => {
+                const newSaved = [...prev];
+                configs.forEach(currentConfig => {
+                    const index = newSaved.findIndex(sc => sc.id === currentConfig.id);
+                    if (index > -1) {
+                        newSaved[index] = currentConfig; // Update existing
+                    } else {
+                        newSaved.push(currentConfig); // Add new
+                    }
+                });
+                return newSaved;
+            });
+            setEditingConfig(null);
+        };
+
+
+        return (
+            <Card>
+                <CardHeader>
+                    <div className="flex items-center gap-4">
+                        <Button variant="outline" size="icon" onClick={() => setEditingConfig(null)}>
+                            <ArrowLeft className="h-4 w-4" />
+                        </Button>
+                        <div>
+                            <CardTitle>{editingConfig && editingConfig.length === 1 ? 'Edit Configuration' : 'Create New Configurations'}</CardTitle>
+                            <CardDescription>Assign specific subjects to a class and medium.</CardDescription>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    {configs.map(config => (
+                        <Card key={config.id} className="p-4 relative bg-muted/20">
+                            {configs.length > 1 && (
+                                <Button variant="ghost" size="icon" className="absolute top-2 right-2 text-destructive hover:text-destructive" onClick={() => handleRemoveConfig(config.id)}>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            )}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div className="space-y-2">
+                                    <Label>Class</Label>
+                                    <Select value={config.selectedClassId} onValueChange={(value) => handleConfigChange(config.id, 'selectedClassId', value)}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a class" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {sortedClasses.map(cls => (
+                                                <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Medium</Label>
+                                    <Select value={config.selectedMedium} onValueChange={(value) => handleConfigChange(config.id, 'selectedMedium', value)}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a medium" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="English">English</SelectItem>
+                                            <SelectItem value="Hindi">Hindi</SelectItem>
+                                            <SelectItem value="Urdu">Urdu</SelectItem>
+                                            <SelectItem value="Sanskrit">Sanskrit</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <MultiSelectDropdown 
+                                    title="Mandatory Subjects"
+                                    subjects={categorizedSubjects.Mandatory}
+                                    selectedSubjects={config.selectedSubjects}
+                                    onSubjectSelection={(subjectId, checked) => handleSubjectSelection(config.id, subjectId, checked)}
+                                />
+                                <MultiSelectDropdown 
+                                    title="Language Subjects"
+                                    subjects={categorizedSubjects.Language}
+                                    selectedSubjects={config.selectedSubjects}
+                                    onSubjectSelection={(subjectId, checked) => handleSubjectSelection(config.id, subjectId, checked)}
+                                />
+                                <MultiSelectDropdown 
+                                    title="Vocational Subjects"
+                                    subjects={categorizedSubjects.Vocational}
+                                    selectedSubjects={config.selectedSubjects}
+                                    onSubjectSelection={(subjectId, checked) => handleSubjectSelection(config.id, subjectId, checked)}
+                                />
+                            </div>
+                        </Card>
+                    ))}
+                    <div className="flex justify-between items-center pt-4">
+                        <Button variant="outline" onClick={handleAddConfig}>
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            Add another class configuration
+                        </Button>
+                        <Button onClick={handleSave}>Save All Assignments</Button>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
+    
+    return editingConfig ? <EditConfig /> : <ViewSavedConfigs />;
 };
 
 
@@ -401,3 +480,5 @@ export default function SubjectsForm() {
         </div>
     );
 }
+
+    
