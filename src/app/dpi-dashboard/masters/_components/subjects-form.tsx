@@ -255,8 +255,14 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
     };
 
     const ClassConfigCard = ({ config }: { config: ClassConfig }) => {
-        const selectedClassName = mockClasses.find(c => c.id === config.classId)?.name;
-        const headerTitle = selectedClassName ? `Configuration for ${selectedClassName}` : "New Class Configuration";
+        const selectedClass = mockClasses.find(c => c.id === config.classId);
+        const selectedClassName = selectedClass?.name;
+        
+        const headerTitleParts = [];
+        if (selectedClassName) headerTitleParts.push(selectedClassName);
+        if (config.medium) headerTitleParts.push(config.medium);
+        
+        const headerTitle = headerTitleParts.length > 0 ? headerTitleParts.join(' - ') : "New Class Configuration";
 
         const categorizedClassSubjects = useMemo(() => {
             if (!config.classId) return { Core: [], Language: [], Vocational: [] };
@@ -506,7 +512,8 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
 
                 <div className="flex justify-between items-center pt-4">
                     <Button variant="outline" onClick={handleAddClassConfig}>
-                        <PlusCircle className="mr-2 h-4 w-4" /> Add another class
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Add another class
                     </Button>
                     <Button>Save All Configurations</Button>
                 </div>
