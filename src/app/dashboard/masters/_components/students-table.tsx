@@ -16,7 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { mockStudents, mockClasses, mockSubjects } from '@/lib/data';
-import { ChevronDown, FilePlus2, Search, Upload, User as UserIcon, CheckCircle } from 'lucide-react';
+import { ChevronDown, FilePlus2, Search, Upload, User as UserIcon, CheckCircle, Edit } from 'lucide-react';
 import React, { useState, useMemo } from 'react';
 import { Student, Subject as SubjectType } from '@/lib/types';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -27,7 +27,7 @@ type SelectedSubjects = {
     [key: string]: boolean;
 };
 
-const MultiSelectDropdown = ({ title, subjects, selectedSubjects, onSubjectSelection }: { title: string, subjects: SubjectType[], selectedSubjects: SelectedSubjects, onSubjectSelection: (subjectId: string, checked: boolean) => void }) => {
+const MultiSelectDropdown = ({ title, subjects, selectedSubjects, onSubjectSelection, disabled }: { title: string, subjects: SubjectType[], selectedSubjects: SelectedSubjects, onSubjectSelection: (subjectId: string, checked: boolean) => void, disabled?: boolean }) => {
     const selectedCount = subjects.filter(s => selectedSubjects[s.id]).length;
     
     return (
@@ -35,7 +35,7 @@ const MultiSelectDropdown = ({ title, subjects, selectedSubjects, onSubjectSelec
         <Label>{title}</Label>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="w-full justify-between">
+            <Button variant="outline" className="w-full justify-between" disabled={disabled}>
               <span>{selectedCount > 0 ? `${selectedCount} selected` : `Select subjects`}</span>
               <ChevronDown className="h-4 w-4 opacity-50" />
             </Button>
@@ -59,6 +59,22 @@ const MultiSelectDropdown = ({ title, subjects, selectedSubjects, onSubjectSelec
     );
 };
 
+const SelectedSubjectsDisplay = ({ title, subjects, selectedSubjects }: { title: string; subjects: SubjectType[]; selectedSubjects: SelectedSubjects }) => {
+    const selectedSubjectNames = subjects
+        .filter(s => selectedSubjects[s.id])
+        .map(s => s.name)
+        .join(', ');
+
+    return (
+        <div className="space-y-2">
+            <Label>{title}</Label>
+            <div className="p-2 border rounded-md bg-muted/50 min-h-[40px] text-sm">
+                {selectedSubjectNames || <span className="text-muted-foreground">None selected</span>}
+            </div>
+        </div>
+    );
+};
+
 
 export default function StudentsTable() {
     const [students, setStudents] = useState<Student[]>(mockStudents);
@@ -68,6 +84,7 @@ export default function StudentsTable() {
     const [showTable, setShowTable] = useState(false);
     const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+    const [isEditing, setIsEditing] = useState(false);
 
     const categorizedSubjects = useMemo(() => {
         return {
@@ -91,6 +108,7 @@ export default function StudentsTable() {
     
     const handleOpenUpdateModal = (student: Student) => {
         setSelectedStudent(student);
+        setIsEditing(!student.isUpdated);
         setUpdateModalOpen(true);
     }
     
@@ -222,7 +240,7 @@ export default function StudentsTable() {
                         <DialogHeader>
                             <DialogTitle>Update Student Details</DialogTitle>
                             <DialogDescription>
-                                Update details for {selectedStudent?.name}.
+                                {isEditing ? 'Update' : 'View'} details for {selectedStudent?.name}.
                             </DialogDescription>
                         </DialogHeader>
                         <div className="max-h-[70vh] overflow-y-auto p-1 pr-4">
@@ -234,6 +252,7 @@ export default function StudentsTable() {
                                         <Select 
                                             value={selectedStudent?.medium} 
                                             onValueChange={(value: 'English' | 'Hindi' | 'Urdu' | 'Sanskrit') => setSelectedStudent(prev => prev ? {...prev, medium: value} : null)}
+                                            disabled={!isEditing}
                                         >
                                             <SelectTrigger id="medium">
                                                 <SelectValue placeholder="Select a medium" />
@@ -252,6 +271,7 @@ export default function StudentsTable() {
                                             <Select 
                                                 value={selectedStudent?.stream} 
                                                 onValueChange={(value: 'PCB' | 'PCM' | 'Commerce' | 'Arts' | 'Vocational Courses') => setSelectedStudent(prev => prev ? {...prev, stream: value} : null)}
+                                                disabled={!isEditing}
                                             >
                                                 <SelectTrigger id="stream">
                                                     <SelectValue placeholder="Select a stream" />
@@ -271,6 +291,7 @@ export default function StudentsTable() {
                                         <Select 
                                             value={selectedStudent?.section}
                                             onValueChange={(value) => setSelectedStudent(prev => prev ? {...prev, section: value} : null)}
+                                            disabled={!isEditing}
                                         >
                                             <SelectTrigger id="section">
                                                 <SelectValue placeholder="Select a section" />
@@ -289,6 +310,7 @@ export default function StudentsTable() {
                                             id="rollNumber" 
                                             value={selectedStudent?.rollNumber || ''} 
                                             onChange={(e) => setSelectedStudent(prev => prev ? {...prev, rollNumber: e.target.value} : null)} 
+                                            readOnly={!isEditing}
                                         />
                                     </div>
                                 </div>
@@ -298,7 +320,7 @@ export default function StudentsTable() {
                                         <div className="w-24 h-24 rounded-md border border-dashed flex items-center justify-center bg-muted">
                                             <UserIcon className="w-12 h-12 text-muted-foreground" />
                                         </div>
-                                        <Button variant="outline">
+                                        <Button variant="outline" disabled={!isEditing}>
                                             <Upload className="mr-2 h-4 w-4" />
                                             Upload
                                         </Button>
@@ -309,29 +331,61 @@ export default function StudentsTable() {
 
                                 <h3 className="text-lg font-medium">Assign Subjects</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <MultiSelectDropdown 
-                                        title="Mandatory Subjects"
-                                        subjects={categorizedSubjects.Mandatory}
-                                        selectedSubjects={selectedStudent?.assignedSubjects || {}}
-                                        onSubjectSelection={handleSubjectSelection}
-                                    />
-                                    <MultiSelectDropdown 
-                                        title="Language Subjects"
-                                        subjects={categorizedSubjects.Language}
-                                        selectedSubjects={selectedStudent?.assignedSubjects || {}}
-                                        onSubjectSelection={handleSubjectSelection}
-                                    />
-                                    <MultiSelectDropdown 
-                                        title="Vocational Subjects"
-                                        subjects={categorizedSubjects.Vocational}
-                                        selectedSubjects={selectedStudent?.assignedSubjects || {}}
-                                        onSubjectSelection={handleSubjectSelection}
-                                    />
+                                    {isEditing ? (
+                                        <>
+                                            <MultiSelectDropdown 
+                                                title="Mandatory Subjects"
+                                                subjects={categorizedSubjects.Mandatory}
+                                                selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                                onSubjectSelection={handleSubjectSelection}
+                                                disabled={!isEditing}
+                                            />
+                                            <MultiSelectDropdown 
+                                                title="Language Subjects"
+                                                subjects={categorizedSubjects.Language}
+                                                selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                                onSubjectSelection={handleSubjectSelection}
+                                                disabled={!isEditing}
+                                            />
+                                            <MultiSelectDropdown 
+                                                title="Vocational Subjects"
+                                                subjects={categorizedSubjects.Vocational}
+                                                selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                                onSubjectSelection={handleSubjectSelection}
+                                                disabled={!isEditing}
+                                            />
+                                        </>
+                                    ) : (
+                                        <>
+                                            <SelectedSubjectsDisplay
+                                                title="Mandatory Subjects"
+                                                subjects={categorizedSubjects.Mandatory}
+                                                selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                            />
+                                             <SelectedSubjectsDisplay
+                                                title="Language Subjects"
+                                                subjects={categorizedSubjects.Language}
+                                                selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                            />
+                                             <SelectedSubjectsDisplay
+                                                title="Vocational Subjects"
+                                                subjects={categorizedSubjects.Vocational}
+                                                selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                            />
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </div>
                         <DialogFooter className="pt-4 border-t">
-                            <Button type="submit" onClick={handleUpdateStudent}>Save Changes</Button>
+                             {isEditing ? (
+                                <Button type="submit" onClick={handleUpdateStudent}>Save Changes</Button>
+                            ) : (
+                                <Button type="button" onClick={() => setIsEditing(true)}>
+                                    <Edit className="mr-2 h-4 w-4" />
+                                    Edit
+                                </Button>
+                            )}
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
