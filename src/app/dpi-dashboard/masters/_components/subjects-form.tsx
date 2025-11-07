@@ -28,6 +28,75 @@ type SubjectInputs = {
 }
 
 const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
+    const [inputs, setInputs] = useState<SubjectInputs>({
+        mandatory: [{ id: 1, name: '', code: '' }],
+        language: [{ id: 1, name: '', code: '' }],
+        vocational: [{ id: 1, name: '', code: '' }],
+    });
+
+    const handleInputChange = (category: keyof SubjectInputs, id: number, field: 'name' | 'code', value: string) => {
+        setInputs(prev => ({
+            ...prev,
+            [category]: prev[category].map(item =>
+                item.id === id ? { ...item, [field]: value } : item
+            ),
+        }));
+    };
+
+    const handleAddItem = (category: keyof SubjectInputs) => {
+        setInputs(prev => ({
+            ...prev,
+            [category]: [...prev[category], { id: Date.now(), name: '', code: '' }],
+        }));
+    };
+    
+    const handleRemoveItem = (category: keyof SubjectInputs, id: number) => {
+        setInputs(prev => ({
+            ...prev,
+            [category]: prev[category].filter(item => item.id !== id),
+        }));
+    };
+
+    const renderCategory = (category: keyof SubjectInputs, title: string) => (
+        <div className="space-y-4 rounded-lg border p-4">
+            <h3 className="font-medium">{title}</h3>
+            {inputs[category].map(item => (
+                <div key={item.id} className="flex items-end gap-4">
+                    <div className="flex-1 space-y-2">
+                        <Label htmlFor={`name-${category}-${item.id}`}>Subject Name</Label>
+                        <Input
+                            id={`name-${category}-${item.id}`}
+                            value={item.name}
+                            onChange={(e) => handleInputChange(category, item.id, 'name', e.target.value)}
+                            placeholder="e.g. Mathematics"
+                        />
+                    </div>
+                    <div className="flex-1 space-y-2">
+                        <Label htmlFor={`code-${category}-${item.id}`}>Subject Code</Label>
+                        <Input
+                            id={`code-${category}-${item.id}`}
+                            value={item.code}
+                            onChange={(e) => handleInputChange(category, item.id, 'code', e.target.value)}
+                            placeholder="e.g. M-101"
+                        />
+                    </div>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive hover:text-destructive"
+                        onClick={() => handleRemoveItem(category, item.id)}
+                        disabled={inputs[category].length === 1}
+                    >
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                </div>
+            ))}
+            <Button variant="outline" size="sm" onClick={() => handleAddItem(category)}>
+                <PlusCircle className="mr-2 h-4 w-4" /> Add Subject
+            </Button>
+        </div>
+    );
+
     return (
         <Card>
             <CardHeader>
@@ -41,8 +110,17 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
                     </div>
                 </div>
             </CardHeader>
-            <CardContent>
-                <p>Add subjects form will go here.</p>
+            <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {renderCategory('mandatory', 'Mandatory Subjects')}
+                    {renderCategory('language', 'Language Subjects')}
+                    {renderCategory('vocational', 'Vocational Subjects')}
+                </div>
+                <div className="flex justify-end">
+                    <Button>
+                        <FilePlus2 className="mr-2 h-4 w-4" /> Save Subjects
+                    </Button>
+                </div>
             </CardContent>
         </Card>
     );
@@ -51,24 +129,30 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
 
 type SubjectConfigRow = {
     id: number;
-    subjectName: string;
+    subjectId: string;
     theorySubType: 'Basic' | 'Standard';
     theoryMaxMarks: string;
-    assessmentType: 'Practical' | 'Project' | 'None';
+    assessmentType: 'Practical' | 'Project';
     assessmentMaxMarks: string;
 };
 
 const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
-    const [selectedClass, setSelectedClass] = useState('');
+    const [selectedClassId, setSelectedClassId] = useState('');
     const [selectedMedium, setSelectedMedium] = useState('');
     const [subjects, setSubjects] = useState<SubjectConfigRow[]>([
-        { id: Date.now(), subjectName: '', theorySubType: 'Standard', theoryMaxMarks: '', assessmentType: 'None', assessmentMaxMarks: '' }
+        { id: Date.now(), subjectId: '', theorySubType: 'Standard', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMaxMarks: '' }
     ]);
+
+    const classSubjects = useMemo(() => {
+        if (!selectedClassId) return [];
+        const selectedClass = mockClasses.find(c => c.id === selectedClassId);
+        return selectedClass ? selectedClass.subjects : [];
+    }, [selectedClassId]);
     
     const handleAddSubject = () => {
         setSubjects(prev => [
             ...prev,
-            { id: Date.now(), subjectName: '', theorySubType: 'Standard', theoryMaxMarks: '', assessmentType: 'None', assessmentMaxMarks: '' }
+            { id: Date.now(), subjectId: '', theorySubType: 'Standard', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMaxMarks: '' }
         ]);
     };
 
@@ -97,7 +181,7 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label>Class</Label>
-                        <Select value={selectedClass} onValueChange={setSelectedClass}>
+                        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a class" />
                             </SelectTrigger>
@@ -137,11 +221,20 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 <div className="space-y-2">
                                     <Label>Subject Name</Label>
-                                    <Input
-                                        placeholder="e.g. Mathematics"
-                                        value={subject.subjectName}
-                                        onChange={e => handleSubjectChange(subject.id, 'subjectName', e.target.value)}
-                                    />
+                                    <Select 
+                                        value={subject.subjectId} 
+                                        onValueChange={(value) => handleSubjectChange(subject.id, 'subjectId', value)}
+                                        disabled={!selectedClassId}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select subject" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {classSubjects.map(s => (
+                                                <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                                 
                                 <div className="space-y-2 col-span-1 lg:col-span-2">
@@ -150,7 +243,7 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                                         <div className="flex-1 space-y-2">
                                             <Label className="text-xs text-muted-foreground">Sub-type</Label>
                                             <RadioGroup
-                                                defaultValue={subject.theorySubType}
+                                                value={subject.theorySubType}
                                                 onValueChange={(value: 'Basic' | 'Standard') => handleSubjectChange(subject.id, 'theorySubType', value)}
                                                 className="flex gap-4"
                                             >
@@ -179,8 +272,8 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                                 <div className="space-y-2">
                                     <Label>Additional Assessment</Label>
                                     <RadioGroup
-                                        defaultValue={subject.assessmentType}
-                                        onValueChange={(value: 'Practical' | 'Project' | 'None') => handleSubjectChange(subject.id, 'assessmentType', value)}
+                                        value={subject.assessmentType}
+                                        onValueChange={(value: 'Practical' | 'Project') => handleSubjectChange(subject.id, 'assessmentType', value)}
                                         className="flex gap-4"
                                     >
                                         <div className="flex items-center space-x-2">
@@ -191,23 +284,17 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                                             <RadioGroupItem value="Project" id={`proj-${subject.id}`} />
                                             <Label htmlFor={`proj-${subject.id}`} className="font-normal">Project</Label>
                                         </div>
-                                         <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="None" id={`none-${subject.id}`} />
-                                            <Label htmlFor={`none-${subject.id}`} className="font-normal">None</Label>
-                                        </div>
                                     </RadioGroup>
                                 </div>
-                                {subject.assessmentType !== 'None' && (
-                                     <div className="space-y-2">
-                                        <Label>{subject.assessmentType} Max Marks</Label>
-                                        <Input
-                                            type="number"
-                                            placeholder="e.g. 25"
-                                            value={subject.assessmentMaxMarks}
-                                            onChange={e => handleSubjectChange(subject.id, 'assessmentMaxMarks', e.target.value)}
-                                        />
-                                    </div>
-                                )}
+                                <div className="space-y-2">
+                                    <Label>{subject.assessmentType} Max Marks</Label>
+                                    <Input
+                                        type="number"
+                                        placeholder="e.g. 25"
+                                        value={subject.assessmentMaxMarks}
+                                        onChange={e => handleSubjectChange(subject.id, 'assessmentMaxMarks', e.target.value)}
+                                    />
+                                </div>
                             </div>
                         </Card>
                     ))}
@@ -530,3 +617,4 @@ export default function SubjectsForm() {
         </div>
     );
 }
+
