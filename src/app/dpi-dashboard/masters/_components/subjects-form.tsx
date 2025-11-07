@@ -26,15 +26,7 @@ type SubjectInputs = {
 }
 
 const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
-    const [selectedClass, setSelectedClass] = useState('');
-    const [selectedMedium, setSelectedMedium] = useState('');
     const [subjects, setSubjects] = useState<SubjectInputs>({ mandatory: [], language: [], vocational: [] });
-
-    const sortedClasses = [...mockClasses].sort((a, b) => {
-        const aNum = parseInt(a.name.split(' ')[1]);
-        const bNum = parseInt(b.name.split(' ')[1]);
-        return aNum - bNum;
-    });
 
     const handleAddSubject = (category: keyof SubjectInputs) => {
         setSubjects(prev => ({
@@ -105,44 +97,18 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
                     </Button>
                     <div>
                         <CardTitle>Add Subjects</CardTitle>
-                        <CardDescription>Configure subjects for each class and medium.</CardDescription>
+                        <CardDescription>Add new subjects and their codes to the system.</CardDescription>
                     </div>
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                    <div className="space-y-2">
-                        <Label>Class</Label>
-                        <Select value={selectedClass} onValueChange={setSelectedClass}>
-                            <SelectTrigger><SelectValue placeholder="Select class" /></SelectTrigger>
-                            <SelectContent>
-                                {sortedClasses.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Medium</Label>
-                        <Select value={selectedMedium} onValueChange={setSelectedMedium}>
-                            <SelectTrigger><SelectValue placeholder="Select medium" /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="English">English</SelectItem>
-                                <SelectItem value="Hindi">Hindi</SelectItem>
-                                <SelectItem value="Urdu">Urdu</SelectItem>
-                                <SelectItem value="Sanskrit">Sanskrit</SelectItem>
-                            </SelectContent>
-                        </Select>
+                <div className="space-y-4 pt-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <SubjectColumn category="mandatory" title="Mandatory Subjects" />
+                        <SubjectColumn category="language" title="Language Subjects" />
+                        <SubjectColumn category="vocational" title="Vocational Subjects" />
                     </div>
                 </div>
-
-                {selectedClass && selectedMedium && (
-                    <div className="space-y-4 pt-4 border-t">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <SubjectColumn category="mandatory" title="Mandatory Subjects" />
-                            <SubjectColumn category="language" title="Language Subjects" />
-                            <SubjectColumn category="vocational" title="Vocational Subjects" />
-                        </div>
-                    </div>
-                )}
                  <div className="flex justify-end pt-4">
                     <Button>Save Class Subjects</Button>
                 </div>
