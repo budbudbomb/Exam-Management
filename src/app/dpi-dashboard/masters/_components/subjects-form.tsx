@@ -4,9 +4,15 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { FilePlus2, PlusCircle, Trash2, ChevronRight, ArrowLeft } from 'lucide-react';
+import { FilePlus2, PlusCircle, Trash2, ChevronRight, ArrowLeft, ChevronDown } from 'lucide-react';
 import React, { useState, useCallback } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { mockClasses, mockSubjects } from '@/lib/data';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Subject } from '@/lib/types';
+
 
 type SubjectInputItem = {
     id: number;
@@ -34,37 +40,39 @@ const SubjectColumn = React.memo(({
     onSubjectChange: (category: keyof SubjectInputs, id: number, field: 'name' | 'code', value: string) => void,
     onAddSubject: (category: keyof SubjectInputs) => void,
     onRemoveSubject: (category: keyof SubjectInputs, id: number) => void
-}) => (
-    <div className="space-y-2">
-        <h4 className="font-medium text-center">{title}</h4>
-        <div className="space-y-2 rounded-md border p-4 min-h-[100px] bg-muted/20">
-             {subjects.map((subject) => (
-                <div key={subject.id} className="flex items-center gap-2">
-                    <div className="grid grid-cols-2 gap-2 flex-1">
-                        <Input
-                            type="text"
-                            placeholder="Subject Name"
-                            value={subject.name}
-                            onChange={(e) => onSubjectChange(category, subject.id, 'name', e.target.value)}
-                        />
-                         <Input
-                            type="text"
-                            placeholder="Code"
-                            value={subject.code}
-                            onChange={(e) => onSubjectChange(category, subject.id, 'code', e.target.value)}
-                        />
+}) => {
+    return (
+        <div className="space-y-2">
+            <h4 className="font-medium text-center">{title}</h4>
+            <div className="space-y-2 rounded-md border p-4 min-h-[100px] bg-muted/20">
+                 {subjects.map((subject) => (
+                    <div key={subject.id} className="flex items-center gap-2">
+                        <div className="grid grid-cols-2 gap-2 flex-1">
+                            <Input
+                                type="text"
+                                placeholder="Subject Name"
+                                value={subject.name}
+                                onChange={(e) => onSubjectChange(category, subject.id, 'name', e.target.value)}
+                            />
+                             <Input
+                                type="text"
+                                placeholder="Code"
+                                value={subject.code}
+                                onChange={(e) => onSubjectChange(category, subject.id, 'code', e.target.value)}
+                            />
+                        </div>
+                         <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive shrink-0" onClick={() => onRemoveSubject(category, subject.id)}>
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
                     </div>
-                     <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive shrink-0" onClick={() => onRemoveSubject(category, subject.id)}>
-                        <Trash2 className="h-4 w-4" />
-                    </Button>
-                </div>
-            ))}
-            <Button variant="outline" size="sm" className="w-full mt-2" onClick={() => onAddSubject(category)}>
-                <PlusCircle className="mr-2 h-4 w-4" /> Add
-            </Button>
+                ))}
+                <Button variant="outline" size="sm" className="w-full mt-2" onClick={() => onAddSubject(category)}>
+                    <PlusCircle className="mr-2 h-4 w-4" /> Add
+                </Button>
+            </div>
         </div>
-    </div>
-));
+    );
+});
 SubjectColumn.displayName = 'SubjectColumn';
 
 
@@ -79,15 +87,12 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
     }, []);
     
     const handleSubjectChange = useCallback((category: keyof SubjectInputs, id: number, field: 'name' | 'code', value: string) => {
-        setSubjects(prev => {
-            const newCategorySubjects = prev[category].map(subject => 
+        setSubjects(prev => ({
+            ...prev,
+            [category]: prev[category].map(subject => 
                 subject.id === id ? { ...subject, [field]: value } : subject
-            );
-            return {
-                ...prev,
-                [category]: newCategorySubjects
-            };
-        });
+            )
+        }));
     }, []);
     
     const handleRemoveSubject = useCallback((category: keyof SubjectInputs, id: number) => {
@@ -140,7 +145,7 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
                     </div>
                 </div>
                  <div className="flex justify-end pt-4">
-                    <Button>Save Class Subjects</Button>
+                    <Button>Save Subjects</Button>
                 </div>
             </CardContent>
         </Card>
@@ -163,6 +168,122 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
             </CardHeader>
             <CardContent>
                 <p>Subject management form will go here.</p>
+            </CardContent>
+        </Card>
+    );
+};
+
+type SelectedSubjects = { [key: string]: boolean };
+
+const MultiSelectDropdown = ({ title, subjects, selectedSubjects, onSubjectSelection }: { title: string, subjects: Subject[], selectedSubjects: SelectedSubjects, onSubjectSelection: (subjectId: string, checked: boolean) => void }) => {
+    const selectedCount = subjects.filter(s => selectedSubjects[s.id]).length;
+    
+    return (
+      <div className="space-y-2">
+        <h4 className="font-medium text-center">{title}</h4>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="w-full justify-between">
+              <span>{selectedCount > 0 ? `${selectedCount} selected` : `Select subjects`}</span>
+              <ChevronDown className="h-4 w-4 opacity-50" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
+            <DropdownMenuLabel>{title}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {subjects.map((subject) => (
+              <DropdownMenuCheckboxItem
+                key={subject.id}
+                checked={!!selectedSubjects[subject.id]}
+                onCheckedChange={(checked) => onSubjectSelection(subject.id, !!checked)}
+              >
+                {subject.name} ({subject.code})
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    );
+};
+
+
+const AssignSubjectsToClassCard = ({ onBack }: { onBack: () => void }) => {
+    const [selectedClassId, setSelectedClassId] = useState<string>('');
+    const [selectedSubjects, setSelectedSubjects] = useState<SelectedSubjects>({});
+
+    const handleSubjectSelection = (subjectId: string, checked: boolean) => {
+        setSelectedSubjects(prev => ({
+            ...prev,
+            [subjectId]: checked
+        }));
+    };
+
+    const categorizedSubjects = React.useMemo(() => {
+        return {
+          Mandatory: mockSubjects.filter((s) => s.category === 'Core'),
+          Language: mockSubjects.filter((s) => s.category === 'Language'),
+          Vocational: mockSubjects.filter((s) => s.category === 'Vocational'),
+        };
+    }, []);
+
+    const sortedClasses = [...mockClasses].sort((a, b) => {
+        const aNum = parseInt(a.name.split(' ')[1]);
+        const bNum = parseInt(b.name.split(' ')[1]);
+        return aNum - bNum;
+    });
+
+    return (
+        <Card>
+            <CardHeader>
+                <div className="flex items-center gap-4">
+                    <Button variant="outline" size="icon" onClick={onBack}>
+                        <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                    <div>
+                        <CardTitle>Assign Subjects to Class</CardTitle>
+                        <CardDescription>Select a class and assign subjects from the available lists.</CardDescription>
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="space-y-2 max-w-xs">
+                    <Label>Class</Label>
+                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a class" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {sortedClasses.map(cls => (
+                                <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                     <MultiSelectDropdown 
+                        title="Mandatory Subjects"
+                        subjects={categorizedSubjects.Mandatory}
+                        selectedSubjects={selectedSubjects}
+                        onSubjectSelection={handleSubjectSelection}
+                    />
+                    <MultiSelectDropdown 
+                        title="Language Subjects"
+                        subjects={categorizedSubjects.Language}
+                        selectedSubjects={selectedSubjects}
+                        onSubjectSelection={handleSubjectSelection}
+                    />
+                    <MultiSelectDropdown 
+                        title="Vocational Subjects"
+                        subjects={categorizedSubjects.Vocational}
+                        selectedSubjects={selectedSubjects}
+                        onSubjectSelection={handleSubjectSelection}
+                    />
+                </div>
+
+                <div className="flex justify-end pt-4">
+                    <Button>Save Class Assignment</Button>
+                </div>
             </CardContent>
         </Card>
     );
@@ -194,6 +315,10 @@ export default function SubjectsForm() {
     if (view === 'subject-management') {
         return <SubjectManagementCard onBack={handleBack} />;
     }
+    
+    if (view === 'assign-subjects') {
+        return <AssignSubjectsToClassCard onBack={handleBack} />;
+    }
 
     return (
         <div className="space-y-6">
@@ -206,11 +331,20 @@ export default function SubjectsForm() {
                     <ChevronRight className="h-6 w-6 text-muted-foreground" />
                 </CardHeader>
             </Card>
+            <Card className="cursor-pointer hover:bg-muted/50" onClick={() => handleNavigate('assign-subjects')}>
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                        <CardTitle>Assign Subjects to Class</CardTitle>
+                        <CardDescription>Assign subjects from the available lists to a specific class.</CardDescription>
+                    </div>
+                    <ChevronRight className="h-6 w-6 text-muted-foreground" />
+                </CardHeader>
+            </Card>
             <Card className="cursor-pointer hover:bg-muted/50" onClick={() => handleNavigate('subject-management')}>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
                         <CardTitle>Subject Management</CardTitle>
-                        <CardDescription>Add, edit, or remove subjects taught in the school.</CardDescription>
+                        <CardDescription>Edit, or remove existing subjects taught in the school.</CardDescription>
                     </div>
                     <ChevronRight className="h-6 w-6 text-muted-foreground" />
                 </CardHeader>
