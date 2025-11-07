@@ -14,6 +14,7 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Subject } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 
 type SubjectInputItem = {
@@ -153,7 +154,9 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
     const classSubjects = useMemo(() => {
         if (!selectedClassId) return [];
         const selectedClass = mockClasses.find(c => c.id === selectedClassId);
-        return selectedClass ? selectedClass.subjects : [];
+        // For the sake of the demo, we assume all mockSubjects are available if the class doesn't have specific ones.
+        // In a real app, this would be tied to the "Assign Subjects" feature.
+        return selectedClass?.subjects.length ? selectedClass.subjects : mockSubjects;
     }, [selectedClassId]);
     
     const handleAddSubject = () => {
@@ -191,6 +194,10 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
         }));
     };
     
+    const getSubjectName = (subjectId: string) => {
+        return classSubjects.find(s => s.id === subjectId)?.name || 'New Subject';
+    }
+
     return (
         <Card>
             <CardHeader>
@@ -235,136 +242,148 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                     </div>
                 </div>
 
-                <div className="space-y-4">
-                    {subjects.map(subject => (
-                        <Card key={subject.id} className="p-4 bg-muted/30 relative">
-                             <div className="flex justify-end absolute top-2 right-2">
-                                {subjects.length > 1 && (
-                                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive h-7 w-7" onClick={() => handleRemoveSubject(subject.id)}>
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                )}
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                <div className="space-y-2">
-                                    <Label>Subject Name</Label>
-                                    <Select 
-                                        value={subject.subjectId} 
-                                        onValueChange={(value) => handleSubjectChange(subject.id, 'subjectId', value)}
-                                        disabled={!selectedClassId}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select subject" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {classSubjects.map(s => (
-                                                <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                
-                                <div className="space-y-2 col-span-1 lg:col-span-2">
-                                    <Label>Theory</Label>
-                                    <div className="flex items-center gap-4">
-                                        <div className="flex-1 space-y-2">
-                                            <Label className="text-xs text-muted-foreground">Sub-type</Label>
-                                            <div className="flex gap-4 items-center h-10">
-                                                <div className="flex items-center space-x-2">
-                                                    <Checkbox 
-                                                        id={`basic-${subject.id}`} 
-                                                        checked={subject.theorySubTypes.basic}
-                                                        onCheckedChange={() => handleTheorySubTypeChange(subject.id, 'basic')}
-                                                        disabled={subject.theorySubTypes.none}
-                                                    />
-                                                    <Label htmlFor={`basic-${subject.id}`} className="font-normal">Basic</Label>
+                <Accordion type="multiple" className="space-y-4" defaultValue={subjects.map(s => `item-${s.id}`)}>
+                    {subjects.map((subject, index) => (
+                        <AccordionItem key={subject.id} value={`item-${subject.id}`} className="border-none">
+                            <Card className="bg-muted/30">
+                                <AccordionTrigger className="w-full p-0 hover:no-underline">
+                                    <div className="flex items-center justify-between p-4 w-full cursor-pointer">
+                                        <div className="flex-1 text-lg font-semibold text-left">
+                                            {index + 1}. {getSubjectName(subject.subjectId)}
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            {subjects.length > 1 && (
+                                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); handleRemoveSubject(subject.id); }}>
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            )}
+                                            <ChevronDown className="h-5 w-5 shrink-0 transition-transform duration-200" />
+                                        </div>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="p-4 pt-0">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        <div className="space-y-2">
+                                            <Label>Subject Name</Label>
+                                            <Select 
+                                                value={subject.subjectId} 
+                                                onValueChange={(value) => handleSubjectChange(subject.id, 'subjectId', value)}
+                                                disabled={!selectedClassId}
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select subject" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {classSubjects.map(s => (
+                                                        <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        
+                                        <div className="space-y-2 col-span-1 lg:col-span-2">
+                                            <Label>Theory</Label>
+                                            <div className="flex items-center gap-4">
+                                                <div className="flex-1 space-y-2">
+                                                    <Label className="text-xs text-muted-foreground">Sub-type</Label>
+                                                    <div className="flex gap-4 items-center h-10">
+                                                        <div className="flex items-center space-x-2">
+                                                            <Checkbox 
+                                                                id={`basic-${subject.id}`} 
+                                                                checked={subject.theorySubTypes.basic}
+                                                                onCheckedChange={() => handleTheorySubTypeChange(subject.id, 'basic')}
+                                                                disabled={subject.theorySubTypes.none}
+                                                            />
+                                                            <Label htmlFor={`basic-${subject.id}`} className="font-normal">Basic</Label>
+                                                        </div>
+                                                        <div className="flex items-center space-x-2">
+                                                            <Checkbox 
+                                                                id={`standard-${subject.id}`} 
+                                                                checked={subject.theorySubTypes.standard}
+                                                                onCheckedChange={() => handleTheorySubTypeChange(subject.id, 'standard')}
+                                                                disabled={subject.theorySubTypes.none}
+                                                            />
+                                                            <Label htmlFor={`standard-${subject.id}`} className="font-normal">Standard</Label>
+                                                        </div>
+                                                         <div className="flex items-center space-x-2">
+                                                            <Checkbox 
+                                                                id={`none-${subject.id}`}
+                                                                checked={subject.theorySubTypes.none}
+                                                                onCheckedChange={() => handleTheorySubTypeChange(subject.id, 'none')}
+                                                            />
+                                                            <Label htmlFor={`none-${subject.id}`} className="font-normal">None</Label>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div className="flex items-center space-x-2">
-                                                    <Checkbox 
-                                                        id={`standard-${subject.id}`} 
-                                                        checked={subject.theorySubTypes.standard}
-                                                        onCheckedChange={() => handleTheorySubTypeChange(subject.id, 'standard')}
-                                                        disabled={subject.theorySubTypes.none}
-                                                    />
-                                                    <Label htmlFor={`standard-${subject.id}`} className="font-normal">Standard</Label>
-                                                </div>
-                                                 <div className="flex items-center space-x-2">
-                                                    <Checkbox 
-                                                        id={`none-${subject.id}`}
-                                                        checked={subject.theorySubTypes.none}
-                                                        onCheckedChange={() => handleTheorySubTypeChange(subject.id, 'none')}
-                                                    />
-                                                    <Label htmlFor={`none-${subject.id}`} className="font-normal">None</Label>
-                                                </div>
+                                                 <div className="flex flex-1 gap-2">
+                                                    <div className="flex-1 space-y-2">
+                                                        <Label className="text-xs text-muted-foreground">Min Marks</Label>
+                                                        <Input
+                                                            type="number"
+                                                            placeholder="e.g. 25"
+                                                            value={subject.theoryMinMarks}
+                                                            onChange={e => handleSubjectChange(subject.id, 'theoryMinMarks', e.target.value)}
+                                                        />
+                                                    </div>
+                                                     <div className="flex-1 space-y-2">
+                                                        <Label className="text-xs text-muted-foreground">Max Marks</Label>
+                                                        <Input
+                                                            type="number"
+                                                            placeholder="e.g. 75"
+                                                            value={subject.theoryMaxMarks}
+                                                            onChange={e => handleSubjectChange(subject.id, 'theoryMaxMarks', e.target.value)}
+                                                        />
+                                                    </div>
+                                                 </div>
                                             </div>
                                         </div>
-                                         <div className="flex flex-1 gap-2">
-                                            <div className="flex-1 space-y-2">
-                                                <Label className="text-xs text-muted-foreground">Min Marks</Label>
-                                                <Input
-                                                    type="number"
-                                                    placeholder="e.g. 25"
-                                                    value={subject.theoryMinMarks}
-                                                    onChange={e => handleSubjectChange(subject.id, 'theoryMinMarks', e.target.value)}
-                                                />
-                                            </div>
-                                             <div className="flex-1 space-y-2">
-                                                <Label className="text-xs text-muted-foreground">Max Marks</Label>
-                                                <Input
-                                                    type="number"
-                                                    placeholder="e.g. 75"
-                                                    value={subject.theoryMaxMarks}
-                                                    onChange={e => handleSubjectChange(subject.id, 'theoryMaxMarks', e.target.value)}
-                                                />
-                                            </div>
-                                         </div>
-                                    </div>
-                                </div>
 
-                                <div className="space-y-2">
-                                    <Label>Additional Assessment</Label>
-                                    <RadioGroup
-                                        value={subject.assessmentType}
-                                        onValueChange={(value: 'Practical' | 'Project') => handleSubjectChange(subject.id, 'assessmentType', value)}
-                                        className="flex gap-4 h-10 items-center"
-                                    >
-                                        <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="Practical" id={`prac-${subject.id}`} />
-                                            <Label htmlFor={`prac-${subject.id}`} className="font-normal">Practical</Label>
+                                        <div className="space-y-2">
+                                            <Label>Additional Assessment</Label>
+                                            <RadioGroup
+                                                value={subject.assessmentType}
+                                                onValueChange={(value: 'Practical' | 'Project') => handleSubjectChange(subject.id, 'assessmentType', value)}
+                                                className="flex gap-4 h-10 items-center"
+                                            >
+                                                <div className="flex items-center space-x-2">
+                                                    <RadioGroupItem value="Practical" id={`prac-${subject.id}`} />
+                                                    <Label htmlFor={`prac-${subject.id}`} className="font-normal">Practical</Label>
+                                                </div>
+                                                <div className="flex items-center space-x-2">
+                                                    <RadioGroupItem value="Project" id={`proj-${subject.id}`} />
+                                                    <Label htmlFor={`proj-${subject.id}`} className="font-normal">Project</Label>
+                                                </div>
+                                            </RadioGroup>
                                         </div>
-                                        <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="Project" id={`proj-${subject.id}`} />
-                                            <Label htmlFor={`proj-${subject.id}`} className="font-normal">Project</Label>
-                                        </div>
-                                    </RadioGroup>
-                                </div>
-                                <div className="space-y-2 col-span-1 lg:col-span-2">
-                                    <Label>{subject.assessmentType} Marks</Label>
-                                    <div className="flex gap-2">
-                                        <div className="flex-1 space-y-2">
-                                                <Label className="text-xs text-muted-foreground">Min Marks</Label>
-                                                <Input
-                                                    type="number"
-                                                    placeholder="e.g. 8"
-                                                    value={subject.assessmentMinMarks}
-                                                    onChange={e => handleSubjectChange(subject.id, 'assessmentMinMarks', e.target.value)}
-                                                />
+                                        <div className="space-y-2 col-span-1 lg:col-span-2">
+                                            <Label>{subject.assessmentType} Marks</Label>
+                                            <div className="flex gap-2">
+                                                <div className="flex-1 space-y-2">
+                                                        <Label className="text-xs text-muted-foreground">Min Marks</Label>
+                                                        <Input
+                                                            type="number"
+                                                            placeholder="e.g. 8"
+                                                            value={subject.assessmentMinMarks}
+                                                            onChange={e => handleSubjectChange(subject.id, 'assessmentMinMarks', e.target.value)}
+                                                        />
+                                                    </div>
+                                                <div className="flex-1 space-y-2">
+                                                    <Label className="text-xs text-muted-foreground">Max Marks</Label>
+                                                    <Input
+                                                        type="number"
+                                                        placeholder="e.g. 25"
+                                                        value={subject.assessmentMaxMarks}
+                                                        onChange={e => handleSubjectChange(subject.id, 'assessmentMaxMarks', e.target.value)}
+                                                    />
+                                                </div>
                                             </div>
-                                        <div className="flex-1 space-y-2">
-                                            <Label className="text-xs text-muted-foreground">Max Marks</Label>
-                                            <Input
-                                                type="number"
-                                                placeholder="e.g. 25"
-                                                value={subject.assessmentMaxMarks}
-                                                onChange={e => handleSubjectChange(subject.id, 'assessmentMaxMarks', e.target.value)}
-                                            />
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </Card>
+                                </AccordionContent>
+                            </Card>
+                        </AccordionItem>
                     ))}
-                </div>
+                </Accordion>
                 <div className="flex justify-between items-center pt-4">
                     <Button variant="outline" onClick={handleAddSubject}>
                         <PlusCircle className="mr-2 h-4 w-4" /> Add Another Subject
