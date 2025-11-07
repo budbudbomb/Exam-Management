@@ -180,7 +180,7 @@ const MultiSelectDropdown = ({ title, subjects, selectedSubjects, onSubjectSelec
     
     return (
       <div className="space-y-2">
-        <h4 className="font-medium text-center">{title}</h4>
+        <Label>{title}</Label>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="w-full justify-between">
@@ -206,16 +206,35 @@ const MultiSelectDropdown = ({ title, subjects, selectedSubjects, onSubjectSelec
     );
 };
 
+type ClassConfig = {
+    id: number;
+    selectedClassId: string;
+    selectedMedium: string;
+    selectedSubjects: SelectedSubjects;
+}
 
 const AssignSubjectsToClassCard = ({ onBack }: { onBack: () => void }) => {
-    const [selectedClassId, setSelectedClassId] = useState<string>('');
-    const [selectedSubjects, setSelectedSubjects] = useState<SelectedSubjects>({});
+    const [configs, setConfigs] = useState<ClassConfig[]>([
+        { id: Date.now(), selectedClassId: '', selectedMedium: '', selectedSubjects: {} }
+    ]);
 
-    const handleSubjectSelection = (subjectId: string, checked: boolean) => {
-        setSelectedSubjects(prev => ({
-            ...prev,
-            [subjectId]: checked
-        }));
+    const handleAddConfig = () => {
+        setConfigs(prev => [...prev, { id: Date.now(), selectedClassId: '', selectedMedium: '', selectedSubjects: {} }]);
+    }
+    
+    const handleRemoveConfig = (id: number) => {
+        setConfigs(prev => prev.filter(c => c.id !== id));
+    }
+
+    const handleConfigChange = (id: number, field: keyof Omit<ClassConfig, 'id' | 'selectedSubjects'>, value: string) => {
+        setConfigs(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c));
+    }
+
+    const handleSubjectSelection = (id: number, subjectId: string, checked: boolean) => {
+        setConfigs(prev => prev.map(c => c.id === id ? {
+            ...c,
+            selectedSubjects: { ...c.selectedSubjects, [subjectId]: checked }
+        } : c));
     };
 
     const categorizedSubjects = React.useMemo(() => {
@@ -241,49 +260,78 @@ const AssignSubjectsToClassCard = ({ onBack }: { onBack: () => void }) => {
                     </Button>
                     <div>
                         <CardTitle>Assign Subjects to Class</CardTitle>
-                        <CardDescription>Select a class and assign subjects from the available lists.</CardDescription>
+                        <CardDescription>Create configurations to assign specific subjects to a class and medium.</CardDescription>
                     </div>
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div className="space-y-2 max-w-xs">
-                    <Label>Class</Label>
-                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select a class" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {sortedClasses.map(cls => (
-                                <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                {configs.map(config => (
+                    <Card key={config.id} className="p-4 relative bg-muted/20">
+                         {configs.length > 1 && (
+                            <Button variant="ghost" size="icon" className="absolute top-2 right-2 text-destructive hover:text-destructive" onClick={() => handleRemoveConfig(config.id)}>
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                         )}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div className="space-y-2">
+                                <Label>Class</Label>
+                                <Select value={config.selectedClassId} onValueChange={(value) => handleConfigChange(config.id, 'selectedClassId', value)}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a class" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {sortedClasses.map(cls => (
+                                            <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                             <div className="space-y-2">
+                                <Label>Medium</Label>
+                                <Select value={config.selectedMedium} onValueChange={(value) => handleConfigChange(config.id, 'selectedMedium', value)}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a medium" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="English">English</SelectItem>
+                                        <SelectItem value="Hindi">Hindi</SelectItem>
+                                        <SelectItem value="Urdu">Urdu</SelectItem>
+                                        <SelectItem value="Sanskrit">Sanskrit</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                             <MultiSelectDropdown 
+                                title="Mandatory Subjects"
+                                subjects={categorizedSubjects.Mandatory}
+                                selectedSubjects={config.selectedSubjects}
+                                onSubjectSelection={(subjectId, checked) => handleSubjectSelection(config.id, subjectId, checked)}
+                            />
+                            <MultiSelectDropdown 
+                                title="Language Subjects"
+                                subjects={categorizedSubjects.Language}
+                                selectedSubjects={config.selectedSubjects}
+                                onSubjectSelection={(subjectId, checked) => handleSubjectSelection(config.id, subjectId, checked)}
+                            />
+                            <MultiSelectDropdown 
+                                title="Vocational Subjects"
+                                subjects={categorizedSubjects.Vocational}
+                                selectedSubjects={config.selectedSubjects}
+                                onSubjectSelection={(subjectId, checked) => handleSubjectSelection(config.id, subjectId, checked)}
+                            />
+                        </div>
+                    </Card>
+                ))}
+                 <div className="flex justify-between items-center pt-4">
+                    <Button variant="outline" onClick={handleAddConfig}>
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Add another class configuration
+                    </Button>
+                    <Button>Save All Assignments</Button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                     <MultiSelectDropdown 
-                        title="Mandatory Subjects"
-                        subjects={categorizedSubjects.Mandatory}
-                        selectedSubjects={selectedSubjects}
-                        onSubjectSelection={handleSubjectSelection}
-                    />
-                    <MultiSelectDropdown 
-                        title="Language Subjects"
-                        subjects={categorizedSubjects.Language}
-                        selectedSubjects={selectedSubjects}
-                        onSubjectSelection={handleSubjectSelection}
-                    />
-                    <MultiSelectDropdown 
-                        title="Vocational Subjects"
-                        subjects={categorizedSubjects.Vocational}
-                        selectedSubjects={selectedSubjects}
-                        onSubjectSelection={handleSubjectSelection}
-                    />
-                </div>
-
-                <div className="flex justify-end pt-4">
-                    <Button>Save Class Assignment</Button>
-                </div>
             </CardContent>
         </Card>
     );
