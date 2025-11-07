@@ -17,6 +17,7 @@ export interface Student {
     schoolUdideCode?: string;
     scholarNumber?: string;
     assignedSubjects?: { [key: string]: boolean };
+    isUpdated?: boolean;
   }
   
   export interface Subject {

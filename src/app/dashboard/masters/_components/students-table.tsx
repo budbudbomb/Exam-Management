@@ -16,11 +16,12 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { mockStudents, mockClasses, mockSubjects } from '@/lib/data';
-import { ChevronDown, FilePlus2, Search, Upload, User as UserIcon } from 'lucide-react';
+import { ChevronDown, FilePlus2, Search, Upload, User as UserIcon, CheckCircle } from 'lucide-react';
 import React, { useState, useMemo } from 'react';
 import { Student, Subject as SubjectType } from '@/lib/types';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 
 type SelectedSubjects = {
     [key: string]: boolean;
@@ -96,10 +97,11 @@ export default function StudentsTable() {
     const handleUpdateStudent = () => {
         if (!selectedStudent) return;
 
-        const newStudents = students.map(s => s.id === selectedStudent.id ? selectedStudent : s);
+        const updatedStudent = { ...selectedStudent, isUpdated: true };
+
+        const newStudents = students.map(s => s.id === updatedStudent.id ? updatedStudent : s);
         setStudents(newStudents);
         
-        // Re-filter students in case the updated student affects the filtered list
         if (showTable && selectedClassId) {
             const selectedClass = mockClasses.find(c => c.id === selectedClassId);
             const className = selectedClass ? selectedClass.name.split(' ')[1] : '';
@@ -189,7 +191,18 @@ export default function StudentsTable() {
                                         <TableCell>{student.motherName || 'N/A'}</TableCell>
                                         <TableCell>{student.enrollmentNumber || 'N/A'}</TableCell>
                                         <TableCell className="text-right">
-                                            <Button variant="outline" onClick={() => handleOpenUpdateModal(student)}>Update</Button>
+                                            {student.isUpdated ? (
+                                                <Button
+                                                    variant="outline"
+                                                    disabled
+                                                    className="bg-green-100 text-green-800 border-green-300 hover:bg-green-100"
+                                                >
+                                                    <CheckCircle className="mr-2 h-4 w-4" />
+                                                    Updated
+                                                </Button>
+                                            ) : (
+                                                <Button variant="outline" onClick={() => handleOpenUpdateModal(student)}>Update</Button>
+                                            )}
                                         </TableCell>
                                     </TableRow>
                                 ))}
