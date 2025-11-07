@@ -79,19 +79,19 @@ SubjectColumn.displayName = 'SubjectColumn';
 const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
     const [subjects, setSubjects] = useState<SubjectInputs>({ mandatory: [], language: [], vocational: [] });
 
+    const handleSubjectChange = useCallback((category: keyof SubjectInputs, id: number, field: 'name' | 'code', value: string) => {
+        setSubjects(prev => {
+            const newCategorySubjects = prev[category].map(subject => 
+                subject.id === id ? { ...subject, [field]: value } : subject
+            );
+            return { ...prev, [category]: newCategorySubjects };
+        });
+    }, []);
+
     const handleAddSubject = useCallback((category: keyof SubjectInputs) => {
         setSubjects(prev => ({
             ...prev,
             [category]: [...prev[category], { id: Date.now(), name: '', code: '' }]
-        }));
-    }, []);
-    
-    const handleSubjectChange = useCallback((category: keyof SubjectInputs, id: number, field: 'name' | 'code', value: string) => {
-        setSubjects(prev => ({
-            ...prev,
-            [category]: prev[category].map(subject => 
-                subject.id === id ? { ...subject, [field]: value } : subject
-            )
         }));
     }, []);
     
@@ -111,7 +111,7 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
                     </Button>
                     <div>
                         <CardTitle>Add Subjects</CardTitle>
-                        <CardDescription>Add new subjects and their codes to the system.</CardDescription>
+                        <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
                     </div>
                 </div>
             </CardHeader>
@@ -162,7 +162,7 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                     </Button>
                     <div>
                         <CardTitle>Subject Management</CardTitle>
-                        <CardDescription>Add, edit, or remove subjects taught in the school.</CardDescription>
+                        <CardDescription>Add, edit, or remove existing subjects taught in the school.</CardDescription>
                     </div>
                 </div>
             </CardHeader>
@@ -196,6 +196,7 @@ const MultiSelectDropdown = ({ title, subjects, selectedSubjects, onSubjectSelec
                 key={subject.id}
                 checked={!!selectedSubjects[subject.id]}
                 onCheckedChange={(checked) => onSubjectSelection(subject.id, !!checked)}
+                onSelect={(e) => e.preventDefault()}
               >
                 {subject.name} ({subject.code})
               </DropdownMenuCheckboxItem>
