@@ -15,10 +15,48 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { mockStudents, mockClasses } from '@/lib/data';
-import { FilePlus2, Search, Upload, User as UserIcon } from 'lucide-react';
-import React, { useState } from 'react';
-import { Student } from '@/lib/types';
+import { mockStudents, mockClasses, mockSubjects } from '@/lib/data';
+import { ChevronDown, FilePlus2, Search, Upload, User as UserIcon } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Student, Subject as SubjectType } from '@/lib/types';
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Separator } from '@/components/ui/separator';
+
+type SelectedSubjects = {
+    [key: string]: boolean;
+};
+
+const MultiSelectDropdown = ({ title, subjects, selectedSubjects, onSubjectSelection }: { title: string, subjects: SubjectType[], selectedSubjects: SelectedSubjects, onSubjectSelection: (subjectId: string, checked: boolean) => void }) => {
+    const selectedCount = subjects.filter(s => selectedSubjects[s.id]).length;
+    
+    return (
+      <div className="space-y-2">
+        <Label>{title}</Label>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="w-full justify-between">
+              <span>{selectedCount > 0 ? `${selectedCount} selected` : `Select subjects`}</span>
+              <ChevronDown className="h-4 w-4 opacity-50" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
+            <DropdownMenuLabel>{title}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {subjects.map((subject) => (
+              <DropdownMenuCheckboxItem
+                key={subject.id}
+                checked={!!selectedSubjects[subject.id]}
+                onCheckedChange={(checked) => onSubjectSelection(subject.id, !!checked)}
+                onSelect={(e) => e.preventDefault()}
+              >
+                {subject.name} ({subject.code})
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    );
+};
 
 
 export default function StudentsTable() {
@@ -29,6 +67,14 @@ export default function StudentsTable() {
     const [showTable, setShowTable] = useState(false);
     const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+
+    const categorizedSubjects = useMemo(() => {
+        return {
+          Mandatory: mockSubjects.filter((s) => s.category === 'Core'),
+          Language: mockSubjects.filter((s) => s.category === 'Language'),
+          Vocational: mockSubjects.filter((s) => s.category === 'Vocational'),
+        };
+    }, []);
 
     const handleSearch = () => {
         if (selectedClassId) {
@@ -65,6 +111,17 @@ export default function StudentsTable() {
         setUpdateModalOpen(false);
         setSelectedStudent(null);
     }
+
+    const handleSubjectSelection = (subjectId: string, checked: boolean) => {
+        setSelectedStudent(prev => {
+            if (!prev) return null;
+            const newSelectedSubjects = {
+                ...(prev.assignedSubjects || {}),
+                [subjectId]: checked
+            };
+            return { ...prev, assignedSubjects: newSelectedSubjects };
+        });
+    };
 
     const sortedClasses = [...mockClasses].sort((a, b) => {
         const aNum = parseInt(a.name.split(' ')[1]);
@@ -148,90 +205,119 @@ export default function StudentsTable() {
                 )}
 
                 <Dialog open={isUpdateModalOpen} onOpenChange={setUpdateModalOpen}>
-                    <DialogContent className="sm:max-w-[425px]">
+                    <DialogContent className="sm:max-w-4xl">
                         <DialogHeader>
                             <DialogTitle>Update Student Details</DialogTitle>
                             <DialogDescription>
                                 Update details for {selectedStudent?.name}.
                             </DialogDescription>
                         </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="medium">Medium</Label>
-                                <Select 
-                                    value={selectedStudent?.medium} 
-                                    onValueChange={(value: 'English' | 'Hindi' | 'Urdu' | 'Sanskrit') => setSelectedStudent(prev => prev ? {...prev, medium: value} : null)}
-                                >
-                                    <SelectTrigger id="medium">
-                                        <SelectValue placeholder="Select a medium" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="English">English</SelectItem>
-                                        <SelectItem value="Hindi">Hindi</SelectItem>
-                                        <SelectItem value="Urdu">Urdu</SelectItem>
-                                        <SelectItem value="Sanskrit">Sanskrit</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            {selectedStudent?.class === '11' && (
-                                <div className="space-y-2">
-                                    <Label htmlFor="stream">Stream</Label>
-                                    <Select 
-                                        value={selectedStudent?.stream} 
-                                        onValueChange={(value: 'PCB' | 'PCM' | 'Commerce' | 'Arts' | 'Vocational Courses') => setSelectedStudent(prev => prev ? {...prev, stream: value} : null)}
-                                    >
-                                        <SelectTrigger id="stream">
-                                            <SelectValue placeholder="Select a stream" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="PCB">PCB</SelectItem>
-                                            <SelectItem value="PCM">PCM</SelectItem>
-                                            <SelectItem value="Commerce">Commerce</SelectItem>
-                                            <SelectItem value="Arts">Arts</SelectItem>
-                                            <SelectItem value="Vocational Courses">Vocational Courses</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            )}
-                            <div className="space-y-2">
-                                <Label htmlFor="section">Section</Label>
-                                 <Select 
-                                    value={selectedStudent?.section}
-                                    onValueChange={(value) => setSelectedStudent(prev => prev ? {...prev, section: value} : null)}
-                                >
-                                    <SelectTrigger id="section">
-                                        <SelectValue placeholder="Select a section" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                       <SelectItem value="A">A</SelectItem>
-                                       <SelectItem value="B">B</SelectItem>
-                                       <SelectItem value="C">C</SelectItem>
-                                       <SelectItem value="D">D</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                             <div className="space-y-2">
-                                <Label htmlFor="rollNumber">Roll No.</Label>
-                                <Input 
-                                    id="rollNumber" 
-                                    value={selectedStudent?.rollNumber || ''} 
-                                    onChange={(e) => setSelectedStudent(prev => prev ? {...prev, rollNumber: e.target.value} : null)} 
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="photo">Photo</Label>
-                                <div className="flex items-center gap-4">
-                                    <div className="w-24 h-24 rounded-md border border-dashed flex items-center justify-center bg-muted">
-                                        <UserIcon className="w-12 h-12 text-muted-foreground" />
+                        <div className="max-h-[70vh] overflow-y-auto p-1 pr-4">
+                            <div className="space-y-4 py-4">
+                                <h3 className="text-lg font-medium">Profile Information</h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="medium">Medium</Label>
+                                        <Select 
+                                            value={selectedStudent?.medium} 
+                                            onValueChange={(value: 'English' | 'Hindi' | 'Urdu' | 'Sanskrit') => setSelectedStudent(prev => prev ? {...prev, medium: value} : null)}
+                                        >
+                                            <SelectTrigger id="medium">
+                                                <SelectValue placeholder="Select a medium" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="English">English</SelectItem>
+                                                <SelectItem value="Hindi">Hindi</SelectItem>
+                                                <SelectItem value="Urdu">Urdu</SelectItem>
+                                                <SelectItem value="Sanskrit">Sanskrit</SelectItem>
+                                            </SelectContent>
+                                        </Select>
                                     </div>
-                                    <Button variant="outline">
-                                        <Upload className="mr-2 h-4 w-4" />
-                                        Upload
-                                    </Button>
+                                    {selectedStudent?.class === '11' && (
+                                        <div className="space-y-2">
+                                            <Label htmlFor="stream">Stream</Label>
+                                            <Select 
+                                                value={selectedStudent?.stream} 
+                                                onValueChange={(value: 'PCB' | 'PCM' | 'Commerce' | 'Arts' | 'Vocational Courses') => setSelectedStudent(prev => prev ? {...prev, stream: value} : null)}
+                                            >
+                                                <SelectTrigger id="stream">
+                                                    <SelectValue placeholder="Select a stream" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="PCB">PCB</SelectItem>
+                                                    <SelectItem value="PCM">PCM</SelectItem>
+                                                    <SelectItem value="Commerce">Commerce</SelectItem>
+                                                    <SelectItem value="Arts">Arts</SelectItem>
+                                                    <SelectItem value="Vocational Courses">Vocational Courses</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    )}
+                                    <div className="space-y-2">
+                                        <Label htmlFor="section">Section</Label>
+                                        <Select 
+                                            value={selectedStudent?.section}
+                                            onValueChange={(value) => setSelectedStudent(prev => prev ? {...prev, section: value} : null)}
+                                        >
+                                            <SelectTrigger id="section">
+                                                <SelectValue placeholder="Select a section" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                            <SelectItem value="A">A</SelectItem>
+                                            <SelectItem value="B">B</SelectItem>
+                                            <SelectItem value="C">C</SelectItem>
+                                            <SelectItem value="D">D</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="rollNumber">Roll No.</Label>
+                                        <Input 
+                                            id="rollNumber" 
+                                            value={selectedStudent?.rollNumber || ''} 
+                                            onChange={(e) => setSelectedStudent(prev => prev ? {...prev, rollNumber: e.target.value} : null)} 
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="photo">Photo</Label>
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-24 h-24 rounded-md border border-dashed flex items-center justify-center bg-muted">
+                                            <UserIcon className="w-12 h-12 text-muted-foreground" />
+                                        </div>
+                                        <Button variant="outline">
+                                            <Upload className="mr-2 h-4 w-4" />
+                                            Upload
+                                        </Button>
+                                    </div>
+                                </div>
+                                
+                                <Separator className="my-6" />
+
+                                <h3 className="text-lg font-medium">Assign Subjects</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <MultiSelectDropdown 
+                                        title="Mandatory Subjects"
+                                        subjects={categorizedSubjects.Mandatory}
+                                        selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                        onSubjectSelection={handleSubjectSelection}
+                                    />
+                                    <MultiSelectDropdown 
+                                        title="Language Subjects"
+                                        subjects={categorizedSubjects.Language}
+                                        selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                        onSubjectSelection={handleSubjectSelection}
+                                    />
+                                    <MultiSelectDropdown 
+                                        title="Vocational Subjects"
+                                        subjects={categorizedSubjects.Vocational}
+                                        selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                        onSubjectSelection={handleSubjectSelection}
+                                    />
                                 </div>
                             </div>
                         </div>
-                        <DialogFooter>
+                        <DialogFooter className="pt-4 border-t">
                             <Button type="submit" onClick={handleUpdateStudent}>Save Changes</Button>
                         </DialogFooter>
                     </DialogContent>

@@ -16,6 +16,7 @@ export interface Student {
     stream?: 'PCB' | 'PCM' | 'Commerce' | 'Arts' | 'Vocational Courses';
     schoolUdideCode?: string;
     scholarNumber?: string;
+    assignedSubjects?: { [key: string]: boolean };
   }
   
   export interface Subject {
