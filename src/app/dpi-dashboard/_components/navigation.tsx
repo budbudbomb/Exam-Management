@@ -147,7 +147,7 @@ export default function DpiNavigation() {
       
       return (
         <li key={index}>
-            <Link href={link.href!} passHref legacyBehavior>
+            <Link href={link.href!} passHref>
                 <SidebarMenuSubButton asChild isActive={isLinkActive(link.href!)}>
                     <a>
                         {link.icon}

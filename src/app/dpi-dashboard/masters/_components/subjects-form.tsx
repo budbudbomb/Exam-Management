@@ -3,14 +3,9 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { mockClasses, mockSubjects } from '@/lib/data';
-import { Subject } from '@/lib/types';
 import { FilePlus2, PlusCircle, Trash2, ChevronRight, ArrowLeft } from 'lucide-react';
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 type SubjectInputItem = {
@@ -25,17 +20,65 @@ type SubjectInputs = {
     vocational: SubjectInputItem[];
 }
 
+const SubjectColumn = React.memo(({
+    category,
+    title,
+    subjects,
+    onSubjectChange,
+    onAddSubject,
+    onRemoveSubject
+}: {
+    category: keyof SubjectInputs,
+    title: string,
+    subjects: SubjectInputItem[],
+    onSubjectChange: (category: keyof SubjectInputs, id: number, field: 'name' | 'code', value: string) => void,
+    onAddSubject: (category: keyof SubjectInputs) => void,
+    onRemoveSubject: (category: keyof SubjectInputs, id: number) => void
+}) => (
+    <div className="space-y-2">
+        <h4 className="font-medium text-center">{title}</h4>
+        <div className="space-y-2 rounded-md border p-4 min-h-[100px] bg-muted/20">
+             {subjects.map((subject) => (
+                <div key={subject.id} className="flex items-center gap-2">
+                    <div className="grid grid-cols-2 gap-2 flex-1">
+                        <Input
+                            type="text"
+                            placeholder="Subject Name"
+                            value={subject.name}
+                            onChange={(e) => onSubjectChange(category, subject.id, 'name', e.target.value)}
+                        />
+                         <Input
+                            type="text"
+                            placeholder="Code"
+                            value={subject.code}
+                            onChange={(e) => onSubjectChange(category, subject.id, 'code', e.target.value)}
+                        />
+                    </div>
+                     <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive shrink-0" onClick={() => onRemoveSubject(category, subject.id)}>
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                </div>
+            ))}
+            <Button variant="outline" size="sm" className="w-full mt-2" onClick={() => onAddSubject(category)}>
+                <PlusCircle className="mr-2 h-4 w-4" /> Add
+            </Button>
+        </div>
+    </div>
+));
+SubjectColumn.displayName = 'SubjectColumn';
+
+
 const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
     const [subjects, setSubjects] = useState<SubjectInputs>({ mandatory: [], language: [], vocational: [] });
 
-    const handleAddSubject = (category: keyof SubjectInputs) => {
+    const handleAddSubject = useCallback((category: keyof SubjectInputs) => {
         setSubjects(prev => ({
             ...prev,
             [category]: [...prev[category], { id: Date.now(), name: '', code: '' }]
         }));
-    };
+    }, []);
     
-    const handleSubjectChange = (category: keyof SubjectInputs, id: number, field: 'name' | 'code', value: string) => {
+    const handleSubjectChange = useCallback((category: keyof SubjectInputs, id: number, field: 'name' | 'code', value: string) => {
         setSubjects(prev => {
             const newCategorySubjects = prev[category].map(subject => 
                 subject.id === id ? { ...subject, [field]: value } : subject
@@ -45,62 +88,14 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
                 [category]: newCategorySubjects
             };
         });
-    };
+    }, []);
     
-    const handleRemoveSubject = (category: keyof SubjectInputs, id: number) => {
+    const handleRemoveSubject = useCallback((category: keyof SubjectInputs, id: number) => {
         setSubjects(prev => ({
             ...prev,
             [category]: prev[category].filter(subject => subject.id !== id)
         }));
-    }
-
-    const SubjectColumn = React.memo(({
-        category,
-        title,
-        subjects,
-        onSubjectChange,
-        onAddSubject,
-        onRemoveSubject
-    }: {
-        category: keyof SubjectInputs,
-        title: string,
-        subjects: SubjectInputItem[],
-        onSubjectChange: (id: number, field: 'name' | 'code', value: string) => void,
-        onAddSubject: () => void,
-        onRemoveSubject: (id: number) => void
-    }) => (
-        <div className="space-y-2">
-            <h4 className="font-medium text-center">{title}</h4>
-            <div className="space-y-2 rounded-md border p-4 min-h-[100px] bg-muted/20">
-                 {subjects.map((subject) => (
-                    <div key={subject.id} className="flex items-center gap-2">
-                        <div className="grid grid-cols-2 gap-2 flex-1">
-                            <Input
-                                type="text"
-                                placeholder="Subject Name"
-                                value={subject.name}
-                                onChange={(e) => onSubjectChange(subject.id, 'name', e.target.value)}
-                            />
-                             <Input
-                                type="text"
-                                placeholder="Code"
-                                value={subject.code}
-                                onChange={(e) => onSubjectChange(subject.id, 'code', e.target.value)}
-                            />
-                        </div>
-                         <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive shrink-0" onClick={() => onRemoveSubject(subject.id)}>
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </div>
-                ))}
-                <Button variant="outline" size="sm" className="w-full mt-2" onClick={onAddSubject}>
-                    <PlusCircle className="mr-2 h-4 w-4" /> Add
-                </Button>
-            </div>
-        </div>
-    ));
-    SubjectColumn.displayName = 'SubjectColumn';
-
+    }, []);
 
     return (
         <Card>
@@ -122,25 +117,25 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
                             category="mandatory"
                             title="Mandatory Subjects"
                             subjects={subjects.mandatory}
-                            onSubjectChange={(id, field, value) => handleSubjectChange('mandatory', id, field, value)}
-                            onAddSubject={() => handleAddSubject('mandatory')}
-                            onRemoveSubject={(id) => handleRemoveSubject('mandatory', id)}
+                            onSubjectChange={handleSubjectChange}
+                            onAddSubject={handleAddSubject}
+                            onRemoveSubject={handleRemoveSubject}
                         />
                         <SubjectColumn
                             category="language"
                             title="Language Subjects"
                             subjects={subjects.language}
-                            onSubjectChange={(id, field, value) => handleSubjectChange('language', id, field, value)}
-                            onAddSubject={() => handleAddSubject('language')}
-                            onRemoveSubject={(id) => handleRemoveSubject('language', id)}
+                            onSubjectChange={handleSubjectChange}
+                            onAddSubject={handleAddSubject}
+                            onRemoveSubject={handleRemoveSubject}
                         />
                         <SubjectColumn
                             category="vocational"
                             title="Vocational Subjects"
                             subjects={subjects.vocational}
-                            onSubjectChange={(id, field, value) => handleSubjectChange('vocational', id, field, value)}
-                            onAddSubject={() => handleAddSubject('vocational')}
-                            onRemoveSubject={(id) => handleRemoveSubject('vocational', id)}
+                            onSubjectChange={handleSubjectChange}
+                            onAddSubject={handleAddSubject}
+                            onRemoveSubject={handleRemoveSubject}
                         />
                     </div>
                 </div>
@@ -153,51 +148,6 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
 };
 
 const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
-    const [subjects, setSubjects] = React.useState<Subject[]>(mockSubjects);
-
-    const handleAddSubject = () => {
-        const newSubject: Subject = {
-            id: `S${subjects.length + 1}`,
-            name: '',
-            category: 'Core',
-            code: '',
-            minMarks: 0,
-            maxMarks: 100,
-            passingMarks: 33,
-            hasPractical: false,
-            hasProject: false,
-        };
-        setSubjects([...subjects, newSubject]);
-    };
-    
-    const handleDeleteSubject = (index: number) => {
-        const newSubjects = [...subjects];
-        newSubjects.splice(index, 1);
-        setSubjects(newSubjects);
-    };
-
-    const handleSubjectChange = (index: number, field: keyof Subject, value: any) => {
-        const newSubjects = [...subjects];
-        const updatedSubject = { ...newSubjects[index] };
-
-        if (['minMarks', 'maxMarks', 'passingMarks', 'practicalMinMarks', 'practicalMaxMarks', 'practicalPassingMarks', 'projectMinMarks', 'projectMaxMarks', 'projectPassingMarks'].includes(field)) {
-            const numValue = parseInt(value, 10);
-            (updatedSubject as any)[field] = isNaN(numValue) ? '' : numValue;
-        } else {
-            (updatedSubject as any)[field] = value;
-        }
-
-        if (field === 'hasPractical' && value === true) {
-            updatedSubject.hasProject = false;
-        }
-        if (field === 'hasProject' && value === true) {
-            updatedSubject.hasPractical = false;
-        }
-        
-        newSubjects[index] = updatedSubject;
-        setSubjects(newSubjects);
-    }
-
     return (
         <Card>
             <CardHeader>
@@ -211,114 +161,8 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="space-y-4">
-                    {subjects.map((subject, index) => (
-                        <Card key={index} className="p-4">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="space-y-2 flex-grow">
-                                    <Label htmlFor={`subject-name-${index}`}>Subject Name</Label>
-                                    <Input id={`subject-name-${index}`} value={subject.name} onChange={(e) => handleSubjectChange(index, 'name', e.target.value)} placeholder="e.g. Mathematics" />
-                                </div>
-                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive ml-4" onClick={() => handleDeleteSubject(index)}>
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {/* Column 1: General */}
-                                <div className="space-y-4 border-r pr-6">
-                                    <h4 className="font-medium text-sm text-muted-foreground">General</h4>
-                                    <div className="space-y-2">
-                                        <Label htmlFor={`subject-category-${index}`}>Category</Label>
-                                        <Select value={subject.category} onValueChange={(value) => handleSubjectChange(index, 'category', value)}>
-                                            <SelectTrigger id={`subject-category-${index}`}>
-                                                <SelectValue placeholder="Select category" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="Core">Core</SelectItem>
-                                                <SelectItem value="Language">Language</SelectItem>
-                                                <SelectItem value="Vocational">Vocational</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor={`subject-subcategory-${index}`}>Sub Category</Label>
-                                        <Select value={subject.subCategory} onValueChange={(value) => handleSubjectChange(index, 'subCategory', value)}>
-                                            <SelectTrigger id={`subject-subcategory-${index}`}>
-                                                <SelectValue placeholder="Select sub-category" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="Standard">Standard</SelectItem>
-                                                <SelectItem value="Basic">Basic</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor={`subject-code-${index}`}>Subject Code</Label>
-                                        <Input id={`subject-code-${index}`} value={subject.code} onChange={(e) => handleSubjectChange(index, 'code', e.target.value)} placeholder="e.g. M-101" />
-                                    </div>
-                                </div>
-
-                                {/* Column 2: Theory */}
-                                <div className="space-y-4 border-r pr-6">
-                                    <h4 className="font-medium text-sm text-muted-foreground">Theory</h4>
-                                    <div className="space-y-2">
-                                        <Label htmlFor={`min-marks-${index}`}>Min Marks</Label>
-                                        <Input id={`min-marks-${index}`} type="number" value={subject.minMarks} onChange={(e) => handleSubjectChange(index, 'minMarks', e.target.value)} placeholder="e.g. 0" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor={`max-marks-${index}`}>Max Marks</Label>
-                                        <Input id={`max-marks-${index}`} type="number" value={subject.maxMarks} onChange={(e) => handleSubjectChange(index, 'maxMarks', e.target.value)} placeholder="e.g. 100" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor={`passing-marks-${index}`}>Passing Marks</Label>
-                                        <Input id={`passing-marks-${index}`} type="number" value={subject.passingMarks} onChange={(e) => handleSubjectChange(index, 'passingMarks', e.target.value)} placeholder="e.g. 33" />
-                                    </div>
-                                </div>
-
-                                {/* Column 3: Practical/Projects */}
-                                <div className="space-y-4">
-                                    <div className="flex items-center space-x-4 pt-2">
-                                        <div className="flex items-center space-x-2">
-                                            <Checkbox id={`practical-check-${index}`} checked={subject.hasPractical} onCheckedChange={(checked) => handleSubjectChange(index, 'hasPractical', !!checked)}/>
-                                            <Label htmlFor={`practical-check-${index}`} className="font-medium">Has Practical</Label>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                            <Checkbox id={`project-check-${index}`} checked={subject.hasProject} onCheckedChange={(checked) => handleSubjectChange(index, 'hasProject', !!checked)}/>
-                                            <Label htmlFor={`project-check-${index}`} className="font-medium">Has Project</Label>
-                                        </div>
-                                    </div>
-
-                                    {(subject.hasPractical || subject.hasProject) && (
-                                        <div className="space-y-4 pt-2">
-                                            <div className="space-y-2">
-                                                <Label htmlFor={`prac-proj-min-marks-${index}`}>Min Marks</Label>
-                                                <Input id={`prac-proj-min-marks-${index}`} type="number" value={subject.hasPractical ? subject.practicalMinMarks ?? '' : subject.projectMinMarks ?? ''} onChange={(e) => handleSubjectChange(index, subject.hasPractical ? 'practicalMinMarks' : 'projectMinMarks', e.target.value)} placeholder="e.g. 0" />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor={`prac-proj-max-marks-${index}`}>Max Marks</Label>
-                                                <Input id={`prac-proj-max-marks-${index}`} type="number" value={subject.hasPractical ? subject.practicalMaxMarks ?? '' : subject.projectMaxMarks ?? ''} onChange={(e) => handleSubjectChange(index, subject.hasPractical ? 'practicalMaxMarks' : 'projectMaxMarks', e.target.value)} placeholder="e.g. 25" />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor={`prac-proj-passing-marks-${index}`}>Passing Marks</Label>
-                                                <Input id={`prac-proj-passing-marks-${index}`} type="number" value={subject.hasPractical ? subject.practicalPassingMarks ?? '' : subject.projectPassingMarks ?? ''} onChange={(e) => handleSubjectChange(index, subject.hasPractical ? 'practicalPassingMarks' : 'projectPassingMarks', e.target.value)} placeholder="e.g. 8" />
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </Card>
-                    ))}
-                </div>
-                <div className="flex justify-between items-center">
-                    <Button variant="outline" onClick={handleAddSubject}>
-                        <PlusCircle className="mr-2 h-4 w-4" /> Add Subject
-                    </Button>
-                    <Button>
-                        <FilePlus2 className="mr-2 h-4 w-4" /> Save Changes
-                    </Button>
-                </div>
+            <CardContent>
+                <p>Subject management form will go here.</p>
             </CardContent>
         </Card>
     );
