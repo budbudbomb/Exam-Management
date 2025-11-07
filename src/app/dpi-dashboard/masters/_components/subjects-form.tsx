@@ -35,7 +35,7 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
         }));
     };
     
-    const handleSubjectChange = useCallback((category: keyof SubjectInputs, id: number, field: 'name' | 'code', value: string) => {
+    const handleSubjectChange = (category: keyof SubjectInputs, id: number, field: 'name' | 'code', value: string) => {
         setSubjects(prev => {
             const newCategorySubjects = prev[category].map(subject => 
                 subject.id === id ? { ...subject, [field]: value } : subject
@@ -45,7 +45,7 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
                 [category]: newCategorySubjects
             };
         });
-    }, []);
+    };
     
     const handleRemoveSubject = (category: keyof SubjectInputs, id: number) => {
         setSubjects(prev => ({
@@ -54,32 +54,46 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
         }));
     }
 
-    const SubjectColumn = React.memo(({ category, title }: { category: keyof SubjectInputs, title: string }) => (
+    const SubjectColumn = React.memo(({
+        category,
+        title,
+        subjects,
+        onSubjectChange,
+        onAddSubject,
+        onRemoveSubject
+    }: {
+        category: keyof SubjectInputs,
+        title: string,
+        subjects: SubjectInputItem[],
+        onSubjectChange: (id: number, field: 'name' | 'code', value: string) => void,
+        onAddSubject: () => void,
+        onRemoveSubject: (id: number) => void
+    }) => (
         <div className="space-y-2">
             <h4 className="font-medium text-center">{title}</h4>
             <div className="space-y-2 rounded-md border p-4 min-h-[100px] bg-muted/20">
-                 {subjects[category].map((subject) => (
+                 {subjects.map((subject) => (
                     <div key={subject.id} className="flex items-center gap-2">
                         <div className="grid grid-cols-2 gap-2 flex-1">
                             <Input
                                 type="text"
                                 placeholder="Subject Name"
                                 value={subject.name}
-                                onChange={(e) => handleSubjectChange(category, subject.id, 'name', e.target.value)}
+                                onChange={(e) => onSubjectChange(subject.id, 'name', e.target.value)}
                             />
                              <Input
                                 type="text"
                                 placeholder="Code"
                                 value={subject.code}
-                                onChange={(e) => handleSubjectChange(category, subject.id, 'code', e.target.value)}
+                                onChange={(e) => onSubjectChange(subject.id, 'code', e.target.value)}
                             />
                         </div>
-                         <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive shrink-0" onClick={() => handleRemoveSubject(category, subject.id)}>
+                         <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive shrink-0" onClick={() => onRemoveSubject(subject.id)}>
                             <Trash2 className="h-4 w-4" />
                         </Button>
                     </div>
                 ))}
-                <Button variant="outline" size="sm" className="w-full mt-2" onClick={() => handleAddSubject(category)}>
+                <Button variant="outline" size="sm" className="w-full mt-2" onClick={onAddSubject}>
                     <PlusCircle className="mr-2 h-4 w-4" /> Add
                 </Button>
             </div>
@@ -104,9 +118,30 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
             <CardContent className="space-y-6">
                 <div className="space-y-4 pt-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <SubjectColumn category="mandatory" title="Mandatory Subjects" />
-                        <SubjectColumn category="language" title="Language Subjects" />
-                        <SubjectColumn category="vocational" title="Vocational Subjects" />
+                        <SubjectColumn
+                            category="mandatory"
+                            title="Mandatory Subjects"
+                            subjects={subjects.mandatory}
+                            onSubjectChange={(id, field, value) => handleSubjectChange('mandatory', id, field, value)}
+                            onAddSubject={() => handleAddSubject('mandatory')}
+                            onRemoveSubject={(id) => handleRemoveSubject('mandatory', id)}
+                        />
+                        <SubjectColumn
+                            category="language"
+                            title="Language Subjects"
+                            subjects={subjects.language}
+                            onSubjectChange={(id, field, value) => handleSubjectChange('language', id, field, value)}
+                            onAddSubject={() => handleAddSubject('language')}
+                            onRemoveSubject={(id) => handleRemoveSubject('language', id)}
+                        />
+                        <SubjectColumn
+                            category="vocational"
+                            title="Vocational Subjects"
+                            subjects={subjects.vocational}
+                            onSubjectChange={(id, field, value) => handleSubjectChange('vocational', id, field, value)}
+                            onAddSubject={() => handleAddSubject('vocational')}
+                            onRemoveSubject={(id) => handleRemoveSubject('vocational', id)}
+                        />
                     </div>
                 </div>
                  <div className="flex justify-end pt-4">
@@ -297,13 +332,13 @@ export default function SubjectsForm() {
     const view = searchParams.get('view');
 
     const handleNavigate = (view: string) => {
-        const params = new URLSearchParams(searchParams);
+        const params = new URLSearchParams(searchParams.toString());
         params.set('view', view);
         router.push(`${pathname}?${params.toString()}`);
     }
 
     const handleBack = () => {
-        const params = new URLSearchParams(searchParams);
+        const params = new URLSearchParams(searchParams.toString());
         params.delete('view');
         router.push(`${pathname}?${params.toString()}`);
     }
@@ -322,7 +357,7 @@ export default function SubjectsForm() {
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
                         <CardTitle>Add Subjects</CardTitle>
-                        <CardDescription>Configure subjects for each class and medium.</CardDescription>
+                        <CardDescription>Add new subjects and their codes to the system.</CardDescription>
                     </div>
                     <ChevronRight className="h-6 w-6 text-muted-foreground" />
                 </CardHeader>
