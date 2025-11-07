@@ -60,16 +60,15 @@ const MultiSelectDropdown = ({ title, subjects, selectedSubjects, onSubjectSelec
 };
 
 const SelectedSubjectsDisplay = ({ title, subjects, selectedSubjects }: { title: string; subjects: SubjectType[]; selectedSubjects: SelectedSubjects }) => {
-    const selectedSubjectNames = subjects
+    const selectedSubjectItems = subjects
         .filter(s => selectedSubjects[s.id])
-        .map(s => s.name)
-        .join(', ');
+        .map(s => <div key={s.id}>{s.name}</div>);
 
     return (
         <div className="space-y-2">
             <Label>{title}</Label>
-            <div className="p-2 border rounded-md bg-muted/50 min-h-[40px] text-sm">
-                {selectedSubjectNames || <span className="text-muted-foreground">None selected</span>}
+            <div className="p-2 border rounded-md bg-muted/50 min-h-[40px] text-sm space-y-1">
+                {selectedSubjectItems.length > 0 ? selectedSubjectItems : <span className="text-muted-foreground">None selected</span>}
             </div>
         </div>
     );
@@ -394,5 +393,7 @@ export default function StudentsTable() {
         </Card>
     );
 }
+
+    
 
     
