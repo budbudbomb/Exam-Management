@@ -136,8 +136,10 @@ type SubjectConfigRow = {
         standard: boolean;
         none: boolean;
     };
+    theoryMinMarks: string;
     theoryMaxMarks: string;
     assessmentType: 'Practical' | 'Project';
+    assessmentMinMarks: string;
     assessmentMaxMarks: string;
 };
 
@@ -145,7 +147,7 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
     const [selectedClassId, setSelectedClassId] = useState('');
     const [selectedMedium, setSelectedMedium] = useState('');
     const [subjects, setSubjects] = useState<SubjectConfigRow[]>([
-        { id: Date.now(), subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMaxMarks: '', assessmentType: 'Practical', assessmentMaxMarks: '' }
+        { id: Date.now(), subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }
     ]);
 
     const classSubjects = useMemo(() => {
@@ -157,7 +159,7 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
     const handleAddSubject = () => {
         setSubjects(prev => [
             ...prev,
-            { id: Date.now(), subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMaxMarks: '', assessmentType: 'Practical', assessmentMaxMarks: '' }
+            { id: Date.now(), subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }
         ]);
     };
 
@@ -267,7 +269,7 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                                     <div className="flex items-center gap-4">
                                         <div className="flex-1 space-y-2">
                                             <Label className="text-xs text-muted-foreground">Sub-type</Label>
-                                            <div className="flex gap-4 items-center">
+                                            <div className="flex gap-4 items-center h-10">
                                                 <div className="flex items-center space-x-2">
                                                     <Checkbox 
                                                         id={`basic-${subject.id}`} 
@@ -296,15 +298,26 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                                                 </div>
                                             </div>
                                         </div>
-                                         <div className="flex-1 space-y-2">
-                                            <Label className="text-xs text-muted-foreground">Max Marks</Label>
-                                            <Input
-                                                type="number"
-                                                placeholder="e.g. 75"
-                                                value={subject.theoryMaxMarks}
-                                                onChange={e => handleSubjectChange(subject.id, 'theoryMaxMarks', e.target.value)}
-                                            />
-                                        </div>
+                                         <div className="flex flex-1 gap-2">
+                                            <div className="flex-1 space-y-2">
+                                                <Label className="text-xs text-muted-foreground">Min Marks</Label>
+                                                <Input
+                                                    type="number"
+                                                    placeholder="e.g. 25"
+                                                    value={subject.theoryMinMarks}
+                                                    onChange={e => handleSubjectChange(subject.id, 'theoryMinMarks', e.target.value)}
+                                                />
+                                            </div>
+                                             <div className="flex-1 space-y-2">
+                                                <Label className="text-xs text-muted-foreground">Max Marks</Label>
+                                                <Input
+                                                    type="number"
+                                                    placeholder="e.g. 75"
+                                                    value={subject.theoryMaxMarks}
+                                                    onChange={e => handleSubjectChange(subject.id, 'theoryMaxMarks', e.target.value)}
+                                                />
+                                            </div>
+                                         </div>
                                     </div>
                                 </div>
 
@@ -313,7 +326,7 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                                     <RadioGroup
                                         value={subject.assessmentType}
                                         onValueChange={(value: 'Practical' | 'Project') => handleSubjectChange(subject.id, 'assessmentType', value)}
-                                        className="flex gap-4"
+                                        className="flex gap-4 h-10 items-center"
                                     >
                                         <div className="flex items-center space-x-2">
                                             <RadioGroupItem value="Practical" id={`prac-${subject.id}`} />
@@ -325,14 +338,28 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                                         </div>
                                     </RadioGroup>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label>{subject.assessmentType} Max Marks</Label>
-                                    <Input
-                                        type="number"
-                                        placeholder="e.g. 25"
-                                        value={subject.assessmentMaxMarks}
-                                        onChange={e => handleSubjectChange(subject.id, 'assessmentMaxMarks', e.target.value)}
-                                    />
+                                <div className="space-y-2 col-span-1 lg:col-span-2">
+                                    <Label>{subject.assessmentType} Marks</Label>
+                                    <div className="flex gap-2">
+                                        <div className="flex-1 space-y-2">
+                                                <Label className="text-xs text-muted-foreground">Min Marks</Label>
+                                                <Input
+                                                    type="number"
+                                                    placeholder="e.g. 8"
+                                                    value={subject.assessmentMinMarks}
+                                                    onChange={e => handleSubjectChange(subject.id, 'assessmentMinMarks', e.target.value)}
+                                                />
+                                            </div>
+                                        <div className="flex-1 space-y-2">
+                                            <Label className="text-xs text-muted-foreground">Max Marks</Label>
+                                            <Input
+                                                type="number"
+                                                placeholder="e.g. 25"
+                                                value={subject.assessmentMaxMarks}
+                                                onChange={e => handleSubjectChange(subject.id, 'assessmentMaxMarks', e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </Card>
@@ -659,3 +686,6 @@ export default function SubjectsForm() {
 
 
 
+
+
+    
