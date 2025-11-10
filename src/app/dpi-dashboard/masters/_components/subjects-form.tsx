@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,7 @@ import { Subject } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import SubjectGroupForm from './subject-group-form';
 
 
 type SubjectInputItem = {
@@ -789,12 +791,16 @@ export default function SubjectsForm() {
         return <AddSubjectsCard onBack={handleBack} />;
     }
 
-    if (view === 'subject-management') {
-        return <SubjectManagementCard onBack={handleBack} />;
+    if (view === 'subject-groups') {
+        return <SubjectGroupForm onBack={handleBack} />;
     }
-    
+
     if (view === 'assign-subjects') {
         return <AssignSubjectsToClassCard onBack={handleBack} />;
+    }
+    
+    if (view === 'subject-management') {
+        return <SubjectManagementCard onBack={handleBack} />;
     }
 
     return (
@@ -804,6 +810,15 @@ export default function SubjectsForm() {
                     <div>
                         <CardTitle>Add Subjects</CardTitle>
                         <CardDescription>Add new subjects and their codes to the system.</CardDescription>
+                    </div>
+                    <ChevronRight className="h-6 w-6 text-muted-foreground" />
+                </CardHeader>
+            </Card>
+            <Card className="cursor-pointer hover:bg-muted/50" onClick={() => handleNavigate('subject-groups')}>
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                        <CardTitle>Create subject groups for 11th and 12th</CardTitle>
+                        <CardDescription>Define valid subject combinations (e.g. PCM, PCB) for higher secondary classes.</CardDescription>
                     </div>
                     <ChevronRight className="h-6 w-6 text-muted-foreground" />
                 </CardHeader>
@@ -835,3 +850,4 @@ export default function SubjectsForm() {
 
 
     
+
