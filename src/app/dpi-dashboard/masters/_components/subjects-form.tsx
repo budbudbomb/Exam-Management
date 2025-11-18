@@ -17,6 +17,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import SubjectGroupForm from './subject-group-form';
+import { useToast } from '@/hooks/use-toast';
 
 
 type SubjectInputItem = {
@@ -26,17 +27,18 @@ type SubjectInputItem = {
 }
 
 type SubjectInputs = {
-    mandatory: SubjectInputItem[];
-    language: SubjectInputItem[];
-    vocational: SubjectInputItem[];
+    Core: SubjectInputItem[];
+    Language: SubjectInputItem[];
+    Vocational: SubjectInputItem[];
 }
 
-const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
+const AddSubjectsCard = ({ onBack, onSave }: { onBack: () => void, onSave: (newSubjects: Subject[]) => void }) => {
     const [inputs, setInputs] = useState<SubjectInputs>({
-        mandatory: [{ id: 1, name: '', code: '' }],
-        language: [{ id: 1, name: '', code: '' }],
-        vocational: [{ id: 1, name: '', code: '' }],
+        Core: [{ id: 1, name: '', code: '' }],
+        Language: [{ id: 1, name: '', code: '' }],
+        Vocational: [{ id: 1, name: '', code: '' }],
     });
+    const { toast } = useToast();
 
     const handleInputChange = (category: keyof SubjectInputs, id: number, field: 'name' | 'code', value: string) => {
         setInputs(prev => ({
@@ -59,6 +61,49 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
             ...prev,
             [category]: prev[category].filter(item => item.id !== id),
         }));
+    };
+
+    const handleSaveSubjects = () => {
+        const newSubjects: Subject[] = [];
+        const allSubjects = [
+            ...inputs.Core,
+            ...inputs.Language,
+            ...inputs.Vocational
+        ];
+        
+        if (allSubjects.every(s => s.name === '' && s.code === '')) {
+             toast({
+                variant: "destructive",
+                title: "No subjects entered",
+                description: "Please enter at least one subject to save.",
+            });
+            return;
+        }
+
+        Object.keys(inputs).forEach(category => {
+            inputs[category as keyof SubjectInputs].forEach(subject => {
+                if (subject.name && subject.code) {
+                    newSubjects.push({
+                        id: `S${Date.now()}-${subject.code}`,
+                        name: subject.name,
+                        code: subject.code,
+                        category: category as 'Core' | 'Language' | 'Vocational',
+                        maxMarks: 100, // Default value
+                        minMarks: 0, // Default value
+                        passingMarks: 33, // Default value
+                        hasPractical: false,
+                        hasProject: false,
+                    });
+                }
+            });
+        });
+
+        onSave(newSubjects);
+        toast({
+            title: "Subjects Saved",
+            description: "The new subjects have been successfully saved.",
+        });
+        onBack();
     };
 
     const renderCategory = (category: keyof SubjectInputs, title: string) => (
@@ -116,12 +161,12 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {renderCategory('mandatory', 'Mandatory and group subjects')}
-                    {renderCategory('language', 'Language Subjects')}
-                    {renderCategory('vocational', 'Vocational Subjects')}
+                    {renderCategory('Core', 'Mandatory and group subjects')}
+                    {renderCategory('Language', 'Language Subjects')}
+                    {renderCategory('Vocational', 'Vocational Subjects')}
                 </div>
                 <div className="flex justify-end">
-                    <Button>
+                    <Button onClick={handleSaveSubjects}>
                         <FilePlus2 className="mr-2 h-4 w-4" /> Save Subjects
                     </Button>
                 </div>
@@ -774,6 +819,7 @@ export default function SubjectsForm() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const view = searchParams.get('view');
+    const [subjects, setSubjects] = useState<Subject[]>(mockSubjects);
 
     const handleNavigate = (view: string) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -787,8 +833,15 @@ export default function SubjectsForm() {
         router.push(`${pathname}?${params.toString()}`);
     }
 
+    const handleSaveSubjects = (newSubjects: Subject[]) => {
+        setSubjects(prev => [...prev, ...newSubjects]);
+        // In a real app this would be an API call. 
+        // For now, we just update the state. The data isn't persisted.
+        console.log('New subjects to save:', newSubjects);
+    };
+
     if (view === 'add-subjects') {
-        return <AddSubjectsCard onBack={handleBack} />;
+        return <AddSubjectsCard onBack={handleBack} onSave={handleSaveSubjects} />;
     }
 
     if (view === 'subject-groups') {
@@ -850,5 +903,6 @@ export default function SubjectsForm() {
 
 
     
+
 
 
