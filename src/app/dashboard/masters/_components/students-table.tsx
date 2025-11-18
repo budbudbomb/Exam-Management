@@ -94,9 +94,10 @@ export default function StudentsTable() {
 
     const categorizedSubjects = useMemo(() => {
         return {
-          Mandatory: allSubjects.filter((s) => s.category === 'Core'),
+          Core: allSubjects.filter((s) => s.category === 'Core'),
           Language: allSubjects.filter((s) => s.category === 'Language'),
           Vocational: allSubjects.filter((s) => s.category === 'Vocational'),
+          Additional: allSubjects.filter((s) => s.category === 'Core'), // Assuming additional are also core for now
         };
     }, [allSubjects]);
 
@@ -336,51 +337,111 @@ export default function StudentsTable() {
                                 <Separator className="my-6" />
 
                                 <h3 className="text-lg font-medium">Assign Subjects</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    {isEditing ? (
-                                        <>
-                                            <MultiSelectDropdown 
-                                                title="Mandatory and group subjects"
-                                                subjects={categorizedSubjects.Mandatory}
-                                                selectedSubjects={selectedStudent?.assignedSubjects || {}}
-                                                onSubjectSelection={handleSubjectSelection}
-                                                disabled={!isEditing}
-                                            />
-                                            <MultiSelectDropdown 
-                                                title="Language Subjects"
-                                                subjects={categorizedSubjects.Language}
-                                                selectedSubjects={selectedStudent?.assignedSubjects || {}}
-                                                onSubjectSelection={handleSubjectSelection}
-                                                disabled={!isEditing}
-                                            />
-                                            <MultiSelectDropdown 
-                                                title="Vocational Subjects"
-                                                subjects={categorizedSubjects.Vocational}
-                                                selectedSubjects={selectedStudent?.assignedSubjects || {}}
-                                                onSubjectSelection={handleSubjectSelection}
-                                                disabled={!isEditing}
-                                            />
-                                        </>
-                                    ) : (
-                                        <>
-                                            <SelectedSubjectsDisplay
-                                                title="Mandatory and group subjects"
-                                                subjects={categorizedSubjects.Mandatory}
-                                                selectedSubjects={selectedStudent?.assignedSubjects || {}}
-                                            />
-                                             <SelectedSubjectsDisplay
-                                                title="Language Subjects"
-                                                subjects={categorizedSubjects.Language}
-                                                selectedSubjects={selectedStudent?.assignedSubjects || {}}
-                                            />
-                                             <SelectedSubjectsDisplay
-                                                title="Vocational Subjects"
-                                                subjects={categorizedSubjects.Vocational}
-                                                selectedSubjects={selectedStudent?.assignedSubjects || {}}
-                                            />
-                                        </>
-                                    )}
-                                </div>
+                                {selectedStudent?.class === '11' ? (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                        {isEditing ? (
+                                            <>
+                                                <MultiSelectDropdown 
+                                                    title="Subject group"
+                                                    subjects={categorizedSubjects.Core}
+                                                    selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                                    onSubjectSelection={handleSubjectSelection}
+                                                    disabled={!isEditing}
+                                                />
+                                                <MultiSelectDropdown 
+                                                    title="Language subjects"
+                                                    subjects={categorizedSubjects.Language}
+                                                    selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                                    onSubjectSelection={handleSubjectSelection}
+                                                    disabled={!isEditing}
+                                                />
+                                                <MultiSelectDropdown 
+                                                    title="Vocational subjects"
+                                                    subjects={categorizedSubjects.Vocational}
+                                                    selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                                    onSubjectSelection={handleSubjectSelection}
+                                                    disabled={!isEditing}
+                                                />
+                                                <MultiSelectDropdown 
+                                                    title="Additional subjects"
+                                                    subjects={categorizedSubjects.Additional}
+                                                    selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                                    onSubjectSelection={handleSubjectSelection}
+                                                    disabled={!isEditing}
+                                                />
+                                            </>
+                                        ) : (
+                                            <>
+                                                <SelectedSubjectsDisplay
+                                                    title="Subject group"
+                                                    subjects={categorizedSubjects.Core}
+                                                    selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                                />
+                                                <SelectedSubjectsDisplay
+                                                    title="Language subjects"
+                                                    subjects={categorizedSubjects.Language}
+                                                    selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                                />
+                                                <SelectedSubjectsDisplay
+                                                    title="Vocational subjects"
+                                                    subjects={categorizedSubjects.Vocational}
+                                                    selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                                />
+                                                <SelectedSubjectsDisplay
+                                                    title="Additional subjects"
+                                                    subjects={categorizedSubjects.Additional}
+                                                    selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                                />
+                                            </>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        {isEditing ? (
+                                            <>
+                                                <MultiSelectDropdown 
+                                                    title="Mandatory and group subjects"
+                                                    subjects={categorizedSubjects.Core}
+                                                    selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                                    onSubjectSelection={handleSubjectSelection}
+                                                    disabled={!isEditing}
+                                                />
+                                                <MultiSelectDropdown 
+                                                    title="Language Subjects"
+                                                    subjects={categorizedSubjects.Language}
+                                                    selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                                    onSubjectSelection={handleSubjectSelection}
+                                                    disabled={!isEditing}
+                                                />
+                                                <MultiSelectDropdown 
+                                                    title="Vocational Subjects"
+                                                    subjects={categorizedSubjects.Vocational}
+                                                    selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                                    onSubjectSelection={handleSubjectSelection}
+                                                    disabled={!isEditing}
+                                                />
+                                            </>
+                                        ) : (
+                                            <>
+                                                <SelectedSubjectsDisplay
+                                                    title="Mandatory and group subjects"
+                                                    subjects={categorizedSubjects.Core}
+                                                    selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                                />
+                                                <SelectedSubjectsDisplay
+                                                    title="Language Subjects"
+                                                    subjects={categorizedSubjects.Language}
+                                                    selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                                />
+                                                <SelectedSubjectsDisplay
+                                                    title="Vocational Subjects"
+                                                    subjects={categorizedSubjects.Vocational}
+                                                    selectedSubjects={selectedStudent?.assignedSubjects || {}}
+                                                />
+                                            </>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <DialogFooter className="pt-4 border-t">
@@ -400,6 +461,8 @@ export default function StudentsTable() {
         </Card>
     );
 }
+
+    
 
     
 
