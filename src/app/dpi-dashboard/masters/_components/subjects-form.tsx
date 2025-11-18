@@ -38,7 +38,7 @@ const ExistingSubjectsList = ({ allSubjects, onSave }: { allSubjects: Subject[],
         setEditableSubjects(allSubjects);
     }, [allSubjects]);
 
-    const handleSubjectChange = (id: string, field: 'name' | 'code', value: string) => {
+    const handleSubjectChange = (id: string, field: 'name' | 'code' | 'category', value: string) => {
         setEditableSubjects(prev => prev.map(s => s.id === id ? { ...s, [field]: value } : s));
     };
 
@@ -53,6 +53,20 @@ const ExistingSubjectsList = ({ allSubjects, onSave }: { allSubjects: Subject[],
             description: "Your changes to the existing subjects have been saved.",
         });
     };
+    
+    const mapCategoryForDisplay = (category: 'Core' | 'Language' | 'Vocational'): SubjectInputItem['category'] => {
+        if (category === 'Language') return 'Language';
+        if (category === 'Vocational') return 'Vocational';
+        // This is an assumption based on the add form logic. Might need refinement
+        // if 'Core' needs to be split between Compulsory and Group. For now, defaulting to Compulsory.
+        return 'Compulsory';
+    }
+
+    const mapCategoryForSaving = (category: SubjectInputItem['category']): 'Core' | 'Language' | 'Vocational' => {
+        if (category === 'Language') return 'Language';
+        if (category === 'Vocational') return 'Vocational';
+        return 'Core';
+    }
 
     return (
         <Card>
@@ -64,6 +78,7 @@ const ExistingSubjectsList = ({ allSubjects, onSave }: { allSubjects: Subject[],
                  <div className="flex items-end gap-4 font-medium text-sm text-muted-foreground">
                     <div className="flex-1 space-y-2"><Label>Subject Name</Label></div>
                     <div className="flex-1 space-y-2"><Label>Subject Code</Label></div>
+                    <div className="flex-1 space-y-2"><Label>Subject Category</Label></div>
                     <div className="w-[40px]"></div>
                 </div>
                 <div className="space-y-2">
@@ -80,6 +95,22 @@ const ExistingSubjectsList = ({ allSubjects, onSave }: { allSubjects: Subject[],
                                     value={subject.code}
                                     onChange={(e) => handleSubjectChange(subject.id, 'code', e.target.value)}
                                 />
+                            </div>
+                             <div className="flex-1">
+                                <Select
+                                    value={mapCategoryForDisplay(subject.category)}
+                                    onValueChange={(value: SubjectInputItem['category']) => handleSubjectChange(subject.id, 'category', mapCategoryForSaving(value))}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Compulsory">Compulsory</SelectItem>
+                                        <SelectItem value="Group subjects">Group subjects</SelectItem>
+                                        <SelectItem value="Language">Language</SelectItem>
+                                        <SelectItem value="Vocational">Vocational</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                             <Button
                                 variant="ghost"
@@ -101,7 +132,7 @@ const ExistingSubjectsList = ({ allSubjects, onSave }: { allSubjects: Subject[],
 };
 
 
-const AddSubjectsCard = ({ onSave, onBack, onToggleExisting, showExisting }: { onSave: (newSubjects: Subject[]) => void, onBack: () => void, onToggleExisting: () => void, showExisting: boolean }) => {
+const AddSubjectsCard = ({ onSave }: { onSave: (newSubjects: Subject[]) => void }) => {
     const [subjectRows, setSubjectRows] = useState<SubjectInputItem[]>([{ id: Date.now(), name: '', code: '', category: '' }]);
     const { toast } = useToast();
 
@@ -166,20 +197,8 @@ const AddSubjectsCard = ({ onSave, onBack, onToggleExisting, showExisting }: { o
     return (
         <Card>
             <CardHeader>
-                <div className="flex items-center justify-between">
-                     <div className="flex items-center gap-4">
-                        <Button variant="outline" size="icon" onClick={onBack}>
-                            <ArrowLeft className="h-4 w-4" />
-                        </Button>
-                        <div>
-                            <CardTitle>Add Subjects</CardTitle>
-                            <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
-                        </div>
-                    </div>
-                    <Button variant="outline" onClick={onToggleExisting}>
-                        {showExisting ? 'Hide Existing Subjects' : 'View & Edit Existing Subjects'}
-                    </Button>
-                </div>
+                <CardTitle>Add Subjects</CardTitle>
+                <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -882,12 +901,27 @@ export default function SubjectsForm() {
     if (view === 'add-subjects') {
         return (
              <div className="space-y-6">
-                <AddSubjectsCard 
-                    onSave={handleSaveNewSubjects} 
-                    onBack={handleBack} 
-                    onToggleExisting={() => setShowExistingSubjects(prev => !prev)}
-                    showExisting={showExistingSubjects}
-                />
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <Button variant="outline" size="icon" onClick={handleBack}>
+                                    <ArrowLeft className="h-4 w-4" />
+                                </Button>
+                                <div>
+                                    <CardTitle>Add Subjects</CardTitle>
+                                    <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
+                                </div>
+                            </div>
+                            <Button variant="outline" onClick={() => setShowExistingSubjects(prev => !prev)}>
+                                {showExistingSubjects ? 'Hide Existing Subjects' : 'View & Edit Existing Subjects'}
+                            </Button>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <AddSubjectsCard onSave={handleSaveNewSubjects} />
+                    </CardContent>
+                </Card>
                 {showExistingSubjects && <ExistingSubjectsList allSubjects={allSubjects} onSave={handleUpdateExistingSubjects} />}
             </div>
         );
@@ -946,4 +980,5 @@ export default function SubjectsForm() {
         </div>
     );
 }
+
 
