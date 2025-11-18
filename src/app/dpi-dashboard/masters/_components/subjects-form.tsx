@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { FilePlus2, PlusCircle, Trash2, ChevronRight, ArrowLeft, ChevronDown, Edit } from 'lucide-react';
 import React, { useState, useCallback, useMemo } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { mockClasses, mockSubjects } from '@/lib/data';
+import { mockClasses, mockSubjects, addSubjects } from '@/lib/data';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -65,20 +65,7 @@ const AddSubjectsCard = ({ onBack, onSave }: { onBack: () => void, onSave: (newS
 
     const handleSaveSubjects = () => {
         const newSubjects: Subject[] = [];
-        const allSubjects = [
-            ...inputs.Core,
-            ...inputs.Language,
-            ...inputs.Vocational
-        ];
-        
-        if (allSubjects.every(s => s.name === '' && s.code === '')) {
-             toast({
-                variant: "destructive",
-                title: "No subjects entered",
-                description: "Please enter at least one subject to save.",
-            });
-            return;
-        }
+        let subjectAdded = false;
 
         Object.keys(inputs).forEach(category => {
             inputs[category as keyof SubjectInputs].forEach(subject => {
@@ -88,15 +75,25 @@ const AddSubjectsCard = ({ onBack, onSave }: { onBack: () => void, onSave: (newS
                         name: subject.name,
                         code: subject.code,
                         category: category as 'Core' | 'Language' | 'Vocational',
-                        maxMarks: 100, // Default value
-                        minMarks: 0, // Default value
-                        passingMarks: 33, // Default value
+                        maxMarks: 100,
+                        minMarks: 0,
+                        passingMarks: 33,
                         hasPractical: false,
                         hasProject: false,
                     });
+                    subjectAdded = true;
                 }
             });
         });
+        
+        if (!subjectAdded) {
+             toast({
+                variant: "destructive",
+                title: "No subjects entered",
+                description: "Please enter at least one subject with both name and code to save.",
+            });
+            return;
+        }
 
         onSave(newSubjects);
         toast({
@@ -109,37 +106,46 @@ const AddSubjectsCard = ({ onBack, onSave }: { onBack: () => void, onSave: (newS
     const renderCategory = (category: keyof SubjectInputs, title: string) => (
         <div className="space-y-4 rounded-lg border p-4">
             <h3 className="font-medium">{title}</h3>
-            {inputs[category].map(item => (
-                <div key={item.id} className="flex items-end gap-4">
-                    <div className="flex-1 space-y-2">
-                        <Label htmlFor={`name-${category}-${item.id}`}>Subject Name</Label>
-                        <Input
-                            id={`name-${category}-${item.id}`}
-                            value={item.name}
-                            onChange={(e) => handleInputChange(category, item.id, 'name', e.target.value)}
-                            placeholder="e.g. Mathematics"
-                        />
-                    </div>
-                    <div className="flex-1 space-y-2">
-                        <Label htmlFor={`code-${category}-${item.id}`}>Subject Code</Label>
-                        <Input
-                            id={`code-${category}-${item.id}`}
-                            value={item.code}
-                            onChange={(e) => handleInputChange(category, item.id, 'code', e.target.value)}
-                            placeholder="e.g. M-101"
-                        />
-                    </div>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => handleRemoveItem(category, item.id)}
-                        disabled={inputs[category].length === 1}
-                    >
-                        <Trash2 className="h-4 w-4" />
-                    </Button>
+            <div className="flex items-end gap-4">
+                 <div className="flex-1 space-y-2">
+                    <Label>Subject Name</Label>
                 </div>
-            ))}
+                <div className="flex-1 space-y-2">
+                    <Label>Subject Code</Label>
+                </div>
+                 <div className="w-[40px]"></div>
+            </div>
+            <div className="space-y-2">
+                {inputs[category].map(item => (
+                    <div key={item.id} className="flex items-end gap-4">
+                        <div className="flex-1">
+                            <Input
+                                id={`name-${category}-${item.id}`}
+                                value={item.name}
+                                onChange={(e) => handleInputChange(category, item.id, 'name', e.target.value)}
+                                placeholder="e.g. Mathematics"
+                            />
+                        </div>
+                        <div className="flex-1">
+                            <Input
+                                id={`code-${category}-${item.id}`}
+                                value={item.code}
+                                onChange={(e) => handleInputChange(category, item.id, 'code', e.target.value)}
+                                placeholder="e.g. M-101"
+                            />
+                        </div>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-destructive hover:text-destructive"
+                            onClick={() => handleRemoveItem(category, item.id)}
+                            disabled={inputs[category].length === 1}
+                        >
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
+                ))}
+            </div>
             <Button variant="outline" size="sm" onClick={() => handleAddItem(category)}>
                 <PlusCircle className="mr-2 h-4 w-4" /> Add Subject
             </Button>
@@ -403,7 +409,7 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
                                                                 <SelectValue placeholder="Select category" />
                                                             </SelectTrigger>
                                                             <SelectContent>
-                                                                <SelectItem value="Core">Mandatory</SelectItem>
+                                                                <SelectItem value="Core">Mandatory and group subjects</SelectItem>
                                                                 <SelectItem value="Language">Language</SelectItem>
                                                                 <SelectItem value="Vocational">Vocational</SelectItem>
                                                             </SelectContent>
@@ -662,7 +668,7 @@ const AssignSubjectsToClassCard = ({ onBack }: { onBack: () => void }) => {
                                     <h3 className="font-semibold">{sortedClasses.find(c => c.id === config.selectedClassId)?.name} - {config.selectedMedium}</h3>
                                     <div className="mt-2 space-y-2 text-sm">
                                         <div>
-                                            <h4 className="font-medium text-muted-foreground">Mandatory Subjects</h4>
+                                            <h4 className="font-medium text-muted-foreground">Mandatory and group subjects</h4>
                                             <p>{Object.keys(config.selectedSubjects).filter(key => config.selectedSubjects[key] && categorizedSubjects.Mandatory.some(s => s.id === key)).map(getSubjectName).join(', ') || 'None'}</p>
                                         </div>
                                         <div>
@@ -819,7 +825,6 @@ export default function SubjectsForm() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const view = searchParams.get('view');
-    const [subjects, setSubjects] = useState<Subject[]>(mockSubjects);
 
     const handleNavigate = (view: string) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -834,10 +839,7 @@ export default function SubjectsForm() {
     }
 
     const handleSaveSubjects = (newSubjects: Subject[]) => {
-        setSubjects(prev => [...prev, ...newSubjects]);
-        // In a real app this would be an API call. 
-        // For now, we just update the state. The data isn't persisted.
-        console.log('New subjects to save:', newSubjects);
+        addSubjects(newSubjects);
     };
 
     if (view === 'add-subjects') {
@@ -906,3 +908,6 @@ export default function SubjectsForm() {
 
 
 
+
+
+    
