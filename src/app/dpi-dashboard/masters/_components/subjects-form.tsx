@@ -716,7 +716,7 @@ const AssignSubjectsToClassCard = ({ onBack, allSubjects }: { onBack: () => void
 
 type SubjectConfigRow = {
     id: number;
-    subjectCategory: 'Compulsory' | 'Language' | 'Vocational' | 'CWSN' | '';
+    subjectCategory: 'Compulsory' | 'Language' | 'Vocational' | 'CWSN' | 'Group subjects' | '';
     subjectId: string;
     theorySubTypes: {
         basic: boolean;
@@ -869,6 +869,7 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
             }
             if (className === 'Class 11' || className === 'Class 12') {
                  return [
+                    { value: 'Group subjects', label: 'Group subjects' },
                     { value: 'Language', label: 'Language' },
                     { value: 'Vocational', label: 'Vocational' },
                     { value: 'CWSN', label: 'CWSN' },
@@ -884,7 +885,7 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
             <Accordion type="single" collapsible defaultValue="item-1" className="w-full">
                 <AccordionItem value="item-1" className="border-none">
                     <Card>
-                        <div className="flex items-center justify-between p-4 w-full cursor-pointer">
+                        <div className="flex items-center justify-between p-4 w-full">
                             <AccordionTrigger className="w-full p-0 hover:no-underline flex-1">
                                 <div className="flex items-center justify-between w-full">
                                     <div className="flex-1 text-lg font-semibold text-left">
@@ -896,7 +897,6 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                                 <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); handleRemoveClassConfig(config.id); }}>
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
-                                <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
                             </div>
                         </div>
                         <AccordionContent className="p-4 pt-0">
@@ -938,7 +938,7 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                                                         <Label>Subject Category</Label>
                                                         <Select 
                                                             value={subject.subjectCategory} 
-                                                            onValueChange={(value: 'Compulsory' | 'Language' | 'Vocational' | 'CWSN') => handleSubjectChange(config.id, subject.id, 'subjectCategory', value)}
+                                                            onValueChange={(value: 'Compulsory' | 'Language' | 'Vocational' | 'CWSN' | 'Group subjects') => handleSubjectChange(config.id, subject.id, 'subjectCategory', value)}
                                                             disabled={!config.classId}
                                                         >
                                                             <SelectTrigger>
@@ -962,7 +962,7 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                                                                 <SelectValue placeholder="Select subject" />
                                                             </SelectTrigger>
                                                             <SelectContent>
-                                                                {subject.subjectCategory && categorizedClassSubjects[subject.subjectCategory === 'Compulsory' ? 'Core' : subject.subjectCategory].map(s => (
+                                                                {subject.subjectCategory && categorizedClassSubjects[subject.subjectCategory === 'Compulsory' || subject.subjectCategory === 'Group subjects' ? 'Core' : subject.subjectCategory].map(s => (
                                                                     <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
                                                                 ))}
                                                             </SelectContent>
