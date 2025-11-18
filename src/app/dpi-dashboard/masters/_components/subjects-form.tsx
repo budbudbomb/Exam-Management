@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { FilePlus2, PlusCircle, Trash2, ChevronRight, ArrowLeft } from 'lucide-react';
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { mockClasses, getSubjects, addSubjects, updateSubjectsInData } from '@/lib/data';
 import { Label } from '@/components/ui/label';
@@ -1033,6 +1033,7 @@ export default function SubjectsForm() {
 
 
     
+
 
 
 
