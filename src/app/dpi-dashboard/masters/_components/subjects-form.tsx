@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -142,6 +141,7 @@ const AddSubjectsCard = ({ onBack, onSave }: { onBack: () => void, onSave: (newS
         Vocational: [{ id: 1, name: '', code: '' }],
     });
     const { toast } = useToast();
+    const [showExistingSubjects, setShowExistingSubjects] = useState(false);
 
     const handleInputChange = (category: keyof SubjectInputs, id: number, field: 'name' | 'code', value: string) => {
         setInputs(prev => ({
@@ -272,6 +272,9 @@ const AddSubjectsCard = ({ onBack, onSave }: { onBack: () => void, onSave: (newS
                                 <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
                             </div>
                         </div>
+                        <Button variant="outline" onClick={() => setShowExistingSubjects(prev => !prev)}>
+                            {showExistingSubjects ? 'Hide Existing Subjects' : 'View & Edit Existing Subjects'}
+                        </Button>
                     </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -936,6 +939,7 @@ export default function SubjectsForm() {
     const searchParams = useSearchParams();
     const view = searchParams.get('view');
     const [allSubjects, setAllSubjects] = useState(() => getSubjects());
+    const [showExistingSubjects, setShowExistingSubjects] = useState(false);
 
     const handleNavigate = (view: string) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -947,6 +951,7 @@ export default function SubjectsForm() {
         const params = new URLSearchParams(searchParams.toString());
         params.delete('view');
         router.push(`${pathname}?${params.toString()}`);
+        setShowExistingSubjects(false);
     }
 
     const handleSaveNewSubjects = (newSubjects: Subject[]) => {
@@ -962,8 +967,28 @@ export default function SubjectsForm() {
     if (view === 'add-subjects') {
         return (
             <div className="space-y-6">
-                <AddSubjectsCard onBack={handleBack} onSave={handleSaveNewSubjects} />
-                <ExistingSubjectsList allSubjects={allSubjects} onSave={handleUpdateExistingSubjects} />
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <Button variant="outline" size="icon" onClick={handleBack}>
+                                    <ArrowLeft className="h-4 w-4" />
+                                </Button>
+                                <div>
+                                    <CardTitle>Add & Edit Subjects</CardTitle>
+                                    <CardDescription>Add new subjects or view and edit existing ones.</CardDescription>
+                                </div>
+                            </div>
+                            <Button variant="outline" onClick={() => setShowExistingSubjects(prev => !prev)}>
+                                {showExistingSubjects ? 'Hide Existing Subjects' : 'View & Edit Existing Subjects'}
+                            </Button>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <AddSubjectsCard onBack={handleBack} onSave={handleSaveNewSubjects} />
+                    </CardContent>
+                </Card>
+                {showExistingSubjects && <ExistingSubjectsList allSubjects={allSubjects} onSave={handleUpdateExistingSubjects} />}
             </div>
         );
     }
@@ -1033,6 +1058,7 @@ export default function SubjectsForm() {
 
 
     
+
 
 
 
