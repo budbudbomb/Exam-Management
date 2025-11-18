@@ -134,7 +134,7 @@ const ExistingSubjectsList = ({ allSubjects, onSave }: { allSubjects: Subject[],
 };
 
 
-const AddSubjectsCard = ({ onSave }: { onSave: (newSubjects: Subject[]) => void }) => {
+const AddSubjectsCard = ({ onSave, onBack, onToggleExisting, showExisting }: { onSave: (newSubjects: Subject[]) => void, onBack: () => void, onToggleExisting: () => void, showExisting: boolean }) => {
     const [inputs, setInputs] = useState<SubjectInputs>({
         Core: [{ id: 1, name: '', code: '' }],
         Language: [{ id: 1, name: '', code: '' }],
@@ -260,8 +260,20 @@ const AddSubjectsCard = ({ onSave }: { onSave: (newSubjects: Subject[]) => void 
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Add Subjects</CardTitle>
-                <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <Button variant="outline" size="icon" onClick={onBack}>
+                            <ArrowLeft className="h-4 w-4" />
+                        </Button>
+                        <div>
+                            <CardTitle>Add Subjects</CardTitle>
+                            <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
+                        </div>
+                    </div>
+                    <Button variant="outline" onClick={onToggleExisting}>
+                        {showExisting ? 'Hide Existing Subjects' : 'View & Edit Existing Subjects'}
+                    </Button>
+                </div>
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -952,27 +964,12 @@ export default function SubjectsForm() {
     if (view === 'add-subjects') {
         return (
              <div className="space-y-6">
-                <Card>
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <Button variant="outline" size="icon" onClick={handleBack}>
-                                    <ArrowLeft className="h-4 w-4" />
-                                </Button>
-                                <div>
-                                    <CardTitle>Add &amp; Edit Subjects</CardTitle>
-                                    <CardDescription>Add new subjects or view and edit existing ones.</CardDescription>
-                                </div>
-                            </div>
-                            <Button variant="outline" onClick={() => setShowExistingSubjects(prev => !prev)}>
-                                {showExistingSubjects ? 'Hide Existing Subjects' : 'View &amp; Edit Existing Subjects'}
-                            </Button>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <AddSubjectsCard onSave={handleSaveNewSubjects} />
-                    </CardContent>
-                </Card>
+                <AddSubjectsCard 
+                    onSave={handleSaveNewSubjects} 
+                    onBack={handleBack} 
+                    onToggleExisting={() => setShowExistingSubjects(prev => !prev)}
+                    showExisting={showExistingSubjects}
+                />
                 {showExistingSubjects && <ExistingSubjectsList allSubjects={allSubjects} onSave={handleUpdateExistingSubjects} />}
             </div>
         );
