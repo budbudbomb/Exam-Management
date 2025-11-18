@@ -358,7 +358,7 @@ const MultiSelectDropdown = ({ title, options, selectedOptions, onSelectionChang
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full justify-between">
+                <Button variant="outline" className="w-full justify-between rounded-full">
                     <span>{selectedCount > 0 ? `${selectedCount} selected` : `Select subjects`}</span>
                     <ChevronDown className="h-4 w-4 opacity-50" />
                 </Button>
@@ -461,7 +461,7 @@ const AddSubjectsToGroupForm = ({ onBack }: { onBack: () => void }) => {
                             <div className="flex-1 space-y-1">
                                 {index === 0 && <Label>Group</Label>}
                                 <Select value={row.groupId} onValueChange={(value) => handleGroupChange(row.id, value)}>
-                                    <SelectTrigger>
+                                    <SelectTrigger className="rounded-full">
                                         <SelectValue placeholder="Select a group" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -1229,6 +1229,7 @@ export default function SubjectsForm() {
         </div>
     );
 }
+
 
 
 
