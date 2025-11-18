@@ -337,10 +337,10 @@ const SubjectGroupForm = ({ onBack, allSubjects, subjectGroups, setSubjectGroups
                         </div>
                     ))}
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center pt-2">
                     <Button variant="outline" onClick={handleAddGroup}>
                         <PlusCircle className="mr-2 h-4 w-4" />
-                        Add another group
+                        Create new group
                     </Button>
                     <Button onClick={handleSave}>Save All Groups</Button>
                 </div>
@@ -676,8 +676,8 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
             <Accordion type="single" collapsible defaultValue="item-1" className="w-full">
                 <AccordionItem value="item-1" className="border-none">
                     <Card>
-                        <div className="flex items-center justify-between p-4 w-full">
-                           <AccordionTrigger asChild className="w-full p-0 hover:no-underline flex-1">
+                         <div className="flex items-center justify-between p-4 w-full">
+                           <AccordionTrigger className="w-full p-0 hover:no-underline flex-1">
                                 <div className="flex items-center justify-between w-full cursor-pointer">
                                     <div className="flex-1 text-lg font-semibold text-left">
                                        {headerTitle}
@@ -1004,5 +1004,6 @@ export default function SubjectsForm() {
     
 
     
+
 
 
