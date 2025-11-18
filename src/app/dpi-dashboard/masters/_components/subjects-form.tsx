@@ -661,22 +661,6 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="p-4 pt-0">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                                <div className="space-y-2">
-                                    <Label>Class</Label>
-                                    <Select value={config.classId} onValueChange={(value) => handleClassConfigChange(config.id, 'classId', value)}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a class" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {mockClasses.map(cls => (
-                                                <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-
                              <Accordion type="multiple" className="space-y-4" defaultValue={config.subjects.map(s => `item-${s.id}`)}>
                                 {config.subjects.map((subject, index) => (
                                     <AccordionItem key={subject.id} value={`item-${subject.id}`} className="border-none">
@@ -697,7 +681,20 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                                                 </div>
                                             </AccordionTrigger>
                                             <AccordionContent className="p-4 pt-0">
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                                    <div className="space-y-2">
+                                                        <Label>Class</Label>
+                                                        <Select value={config.classId} onValueChange={(value) => handleClassConfigChange(config.id, 'classId', value)}>
+                                                            <SelectTrigger>
+                                                                <SelectValue placeholder="Select a class" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {mockClasses.map(cls => (
+                                                                    <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
                                                     <div className="space-y-2">
                                                         <Label>Subject Category</Label>
                                                         <Select 
@@ -1210,10 +1207,3 @@ export default function SubjectsForm() {
         </div>
     );
 }
-
-
-
-
-
-
-
