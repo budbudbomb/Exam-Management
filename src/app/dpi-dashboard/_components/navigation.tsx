@@ -134,7 +134,7 @@ export default function DpiNavigation() {
                     </SidebarMenuButton>
                 </AccordionTrigger>
               <AccordionContent className="p-0">
-                <SidebarMenuSub>
+                <SidebarMenuSub className="gap-1">
                   {renderNav(link.subLinks, level + 1)}
                 </SidebarMenuSub>
               </AccordionContent>
