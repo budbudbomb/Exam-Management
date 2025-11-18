@@ -5,7 +5,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { FilePlus2, PlusCircle, Trash2, ChevronRight, ArrowLeft } from 'lucide-react';
+import { FilePlus2, PlusCircle, Trash2, ChevronRight, ArrowLeft, Edit } from 'lucide-react';
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { mockClasses, getSubjects, addSubjects, updateSubjectsInData } from '@/lib/data';
@@ -349,13 +349,13 @@ const SubjectGroupForm = ({ onBack, allSubjects, subjectGroups, setSubjectGroups
     );
 };
 
-const MultiSelectDropdown = ({ title, options, selectedOptions, onSelectionChange }: { title: string, options: {id: string, name: string}[], selectedOptions: { [key: string]: boolean }, onSelectionChange: (subjectId: string, checked: boolean) => void }) => {
+const MultiSelectDropdown = ({ title, options, selectedOptions, onSelectionChange, disabled = false }: { title: string, options: {id: string, name: string}[], selectedOptions: { [key: string]: boolean }, onSelectionChange: (subjectId: string, checked: boolean) => void, disabled?: boolean }) => {
     const selectedCount = Object.values(selectedOptions).filter(Boolean).length;
     
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full justify-between rounded-full">
+                <Button variant="outline" className="w-full justify-between rounded-full" disabled={disabled}>
                     <span>{selectedCount > 0 ? `${selectedCount} selected` : `Select subjects`}</span>
                     <ChevronDown className="h-4 w-4 opacity-50" />
                 </Button>
@@ -378,18 +378,17 @@ const MultiSelectDropdown = ({ title, options, selectedOptions, onSelectionChang
     );
 };
 
-
 const AddSubjectsToGroupForm = ({ onBack }: { onBack: () => void }) => {
-    type GroupRow = {
+    type Assignment = {
         id: number;
         groupId: string;
         selectedSubjects: { [key: string]: boolean };
+        isSaved: boolean;
     };
-
-    const [groupRows, setGroupRows] = useState<GroupRow[]>([
-        { id: Date.now(), groupId: '', selectedSubjects: {} }
+    
+    const [assignments, setAssignments] = useState<Assignment[]>([
+        { id: Date.now(), groupId: 'humanities', selectedSubjects: { 'physics': true, 'chemistry': true, 'maths': true }, isSaved: true }
     ]);
-
     const { toast } = useToast();
 
     const groupOptions = [
@@ -409,89 +408,133 @@ const AddSubjectsToGroupForm = ({ onBack }: { onBack: () => void }) => {
         { id: 'accounts', name: 'Accounts' },
     ];
 
-    const handleAddRow = () => {
-        setGroupRows(prev => [...prev, { id: Date.now(), groupId: '', selectedSubjects: {} }]);
+    const handleAddAssignment = () => {
+        setAssignments(prev => [...prev, { id: Date.now(), groupId: '', selectedSubjects: {}, isSaved: false }]);
     };
 
-    const handleRemoveRow = (id: number) => {
-        setGroupRows(prev => prev.filter(row => row.id !== id));
+    const handleRemoveAssignment = (id: number) => {
+        setAssignments(prev => prev.filter(a => a.id !== id));
     };
 
-    const handleGroupChange = (id: number, groupId: string) => {
-        setGroupRows(prev => prev.map(row => row.id === id ? { ...row, groupId } : row));
+    const handleAssignmentChange = (updatedAssignment: Assignment) => {
+        setAssignments(prev => prev.map(a => a.id === updatedAssignment.id ? updatedAssignment : a));
     };
 
-    const handleSubjectSelection = (id: number, subjectId: string, checked: boolean) => {
-        setGroupRows(prev => prev.map(row => {
-            if (row.id === id) {
-                const newSelectedSubjects = { ...row.selectedSubjects, [subjectId]: checked };
-                return { ...row, selectedSubjects: newSelectedSubjects };
-            }
-            return row;
-        }));
-    };
+    const AssignmentCard = ({ assignment, onAssignmentChange, onRemove }: { assignment: Assignment, onAssignmentChange: (updated: Assignment) => void, onRemove: () => void }) => {
+        const [isEditing, setIsEditing] = useState(!assignment.isSaved);
 
-    const handleSave = () => {
-        toast({
-            title: 'Assignments Saved',
-            description: `Successfully saved subject assignments.`,
-        });
+        const handleSave = () => {
+            onAssignmentChange({ ...assignment, isSaved: true });
+            setIsEditing(false);
+            toast({ title: 'Assignment Saved' });
+        };
+        
+        const handleEdit = () => setIsEditing(true);
+
+        const handleGroupChange = (groupId: string) => {
+            onAssignmentChange({ ...assignment, groupId, selectedSubjects: {} });
+        };
+
+        const handleSubjectSelection = (subjectId: string, checked: boolean) => {
+            const newSelectedSubjects = { ...assignment.selectedSubjects, [subjectId]: checked };
+            onAssignmentChange({ ...assignment, selectedSubjects: newSelectedSubjects });
+        };
+
+        const selectedGroupName = groupOptions.find(g => g.id === assignment.groupId)?.name || 'New Assignment';
+        const selectedSubjectsCount = Object.values(assignment.selectedSubjects).filter(Boolean).length;
+        const selectedSubjectsText = subjectOptions
+            .filter(s => assignment.selectedSubjects[s.id])
+            .map(s => s.name)
+            .join(', ');
+
+        return (
+            <Accordion type="single" collapsible defaultValue="item-1" className="w-full border-none">
+                <AccordionItem value="item-1" className="border rounded-lg overflow-hidden">
+                    <div className="flex items-center justify-between p-4 bg-muted/50 data-[state=open]:border-b">
+                        <AccordionTrigger className="p-0 hover:no-underline flex-1">
+                            <div className="flex items-center justify-between w-full">
+                                <span className="font-semibold text-lg text-left">{selectedGroupName}</span>
+                                <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+                            </div>
+                        </AccordionTrigger>
+                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive ml-2" onClick={(e) => { e.stopPropagation(); onRemove(); }}>
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
+                    <AccordionContent className="p-4">
+                        {isEditing ? (
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4 items-end">
+                                    <div className="space-y-1">
+                                        <Label>Group</Label>
+                                        <Select value={assignment.groupId} onValueChange={handleGroupChange}>
+                                            <SelectTrigger className="rounded-full">
+                                                <SelectValue placeholder="Select a group" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {groupOptions.map(group => <SelectItem key={group.id} value={group.id}>{group.name}</SelectItem>)}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Label>Add Subjects</Label>
+                                        <MultiSelectDropdown
+                                            title="Subjects"
+                                            options={subjectOptions}
+                                            selectedOptions={assignment.selectedSubjects}
+                                            onSelectionChange={handleSubjectSelection}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex justify-end">
+                                    <Button onClick={handleSave}>Save Assignment</Button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                               <div className="flex justify-between items-start">
+                                    <div>
+                                        <Label className="text-xs text-muted-foreground">Subjects</Label>
+                                        <p className="font-medium">{selectedSubjectsText || "No subjects assigned."}</p>
+                                    </div>
+                                    <Button variant="outline" onClick={handleEdit}><Edit className="mr-2 h-4 w-4" /> Edit</Button>
+                               </div>
+                            </div>
+                        )}
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+        );
     };
 
     return (
         <Card>
             <CardHeader>
-                <div className="flex items-center gap-4">
-                    <Button variant="outline" size="icon" onClick={onBack}>
-                        <ArrowLeft className="h-4 w-4" />
-                    </Button>
-                    <div>
-                        <CardTitle>Add subjects in Subject groups</CardTitle>
-                        <CardDescription>Populate the created subject groups with specific subjects.</CardDescription>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <Button variant="outline" size="icon" onClick={onBack}>
+                            <ArrowLeft className="h-4 w-4" />
+                        </Button>
+                        <div>
+                            <CardTitle>Add subjects in Subject groups</CardTitle>
+                            <CardDescription>Populate the created subject groups with specific subjects.</CardDescription>
+                        </div>
                     </div>
+                     <Button onClick={handleAddAssignment}>
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Add Assignment
+                    </Button>
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div className="space-y-4">
-                    {groupRows.map((row, index) => (
-                        <div key={row.id} className="flex items-end gap-2">
-                            <div className="flex-1 space-y-1">
-                                {index === 0 && <Label>Group</Label>}
-                                <Select value={row.groupId} onValueChange={(value) => handleGroupChange(row.id, value)}>
-                                    <SelectTrigger className="rounded-full">
-                                        <SelectValue placeholder="Select a group" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {groupOptions.map(group => (
-                                            <SelectItem key={group.id} value={group.id}>
-                                                {group.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="flex-1 space-y-1">
-                                {index === 0 && <Label>Add Subjects</Label>}
-                                <MultiSelectDropdown
-                                    title="Subjects"
-                                    options={subjectOptions}
-                                    selectedOptions={row.selectedSubjects}
-                                    onSelectionChange={(subjectId, checked) => handleSubjectSelection(row.id, subjectId, checked)}
-                                />
-                            </div>
-                            <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleRemoveRow(row.id)} disabled={groupRows.length === 1}>
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    ))}
-                </div>
-                <div className="flex justify-between items-center pt-2">
-                    <Button variant="outline" onClick={handleAddRow}>
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Add another group
-                    </Button>
-                    <Button onClick={handleSave}>Save Assignments</Button>
-                </div>
+                {assignments.map(assignment => (
+                    <AssignmentCard
+                        key={assignment.id}
+                        assignment={assignment}
+                        onAssignmentChange={handleAssignmentChange}
+                        onRemove={() => handleRemoveAssignment(assignment.id)}
+                    />
+                ))}
             </CardContent>
         </Card>
     );
@@ -686,7 +729,7 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                                 </div>
                             </AccordionTrigger>
                            <div className="flex items-center gap-2 pl-4">
-                               <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); handleRemoveClassConfig(config.id); }}>
+                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); handleRemoveClassConfig(config.id); }}>
                                    <Trash2 className="h-4 w-4" />
                                </Button>
                            </div>
@@ -713,7 +756,7 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                                                 )}
                                             </div>
                                             <AccordionContent className="p-4 pt-0">
-                                                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 items-end">
+                                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 items-end">
                                                     <div className="space-y-2">
                                                         <Label>Class</Label>
                                                         <Select value={config.classId} onValueChange={(value) => handleClassConfigChange(config.id, 'classId', value)}>
@@ -1000,10 +1043,3 @@ export default function SubjectsForm() {
         </div>
     );
 }
-
-    
-
-    
-
-
-
