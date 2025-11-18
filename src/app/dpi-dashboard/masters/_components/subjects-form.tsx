@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -719,8 +720,7 @@ type SubjectConfigRow = {
     groupId?: string;
     subjectId: string;
     theorySubTypes: {
-        basic: boolean;
-        standard: boolean;
+        basicStandard: boolean;
         none: boolean;
     };
     theoryMinMarks: string;
@@ -739,13 +739,13 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
     };
     
     const [classConfigs, setClassConfigs] = useState<ClassConfig[]>([
-        { id: Date.now(), classId: '', subjects: [{ id: Date.now(), subjectCategory: '', groupId: '', subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }] }
+        { id: Date.now(), classId: '', subjects: [{ id: Date.now(), subjectCategory: '', groupId: '', subjectId: '', theorySubTypes: { basicStandard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }] }
     ]);
     
     const handleAddClassConfig = () => {
         setClassConfigs(prev => [
             ...prev,
-            { id: Date.now(), classId: '', subjects: [{ id: Date.now(), subjectCategory: '', groupId: '', subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }] }
+            { id: Date.now(), classId: '', subjects: [{ id: Date.now(), subjectCategory: '', groupId: '', subjectId: '', theorySubTypes: { basicStandard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }] }
         ]);
     };
     
@@ -764,7 +764,7 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                     ...c,
                     subjects: [
                         ...c.subjects,
-                        { id: Date.now(), subjectCategory: '', groupId: '', subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }
+                        { id: Date.now(), subjectCategory: '', groupId: '', subjectId: '', theorySubTypes: { basicStandard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }
                     ]
                 };
             }
@@ -804,7 +804,7 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
         }));
     };
     
-    const handleTheorySubTypeChange = (classConfigId: number, subjectId: number, subType: 'basic' | 'standard' | 'none') => {
+    const handleTheorySubTypeChange = (classConfigId: number, subjectId: number, subType: 'basicStandard' | 'none') => {
         setClassConfigs(prev => prev.map(c => {
             if (c.id === classConfigId) {
                 return {
@@ -814,13 +814,10 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                             const newSubTypes = { ...s.theorySubTypes };
                             if (subType === 'none') {
                                 newSubTypes.none = !newSubTypes.none;
-                                newSubTypes.basic = false;
-                                newSubTypes.standard = false;
-                            } else {
-                                newSubTypes[subType] = !newSubTypes[subType];
-                                if (newSubTypes.basic || newSubTypes.standard) {
-                                    newSubTypes.none = false;
-                                }
+                                newSubTypes.basicStandard = !newSubTypes.none;
+                            } else { // basicStandard
+                                newSubTypes.basicStandard = !newSubTypes.basicStandard;
+                                newSubTypes.none = !newSubTypes.basicStandard;
                             }
                             return { ...s, theorySubTypes: newSubTypes };
                         }
@@ -1004,25 +1001,15 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                                                             <Label>Sub-type</Label>
                                                             <div className="flex gap-4 items-center h-10">
                                                                 <div className="flex items-center space-x-2">
-                                                                    <Checkbox 
-                                                                        id={`basic-${subject.id}`} 
-                                                                        checked={subject.theorySubTypes.basic}
-                                                                        onCheckedChange={() => handleTheorySubTypeChange(config.id, subject.id, 'basic')}
-                                                                        disabled={subject.theorySubTypes.none}
+                                                                    <Checkbox
+                                                                        id={`basic-standard-${subject.id}`}
+                                                                        checked={subject.theorySubTypes.basicStandard}
+                                                                        onCheckedChange={() => handleTheorySubTypeChange(config.id, subject.id, 'basicStandard')}
                                                                     />
-                                                                    <Label htmlFor={`basic-${subject.id}`} className="font-normal">Basic</Label>
+                                                                    <Label htmlFor={`basic-standard-${subject.id}`} className="font-normal">Basic - Standard</Label>
                                                                 </div>
                                                                 <div className="flex items-center space-x-2">
-                                                                    <Checkbox 
-                                                                        id={`standard-${subject.id}`} 
-                                                                        checked={subject.theorySubTypes.standard}
-                                                                        onCheckedChange={() => handleTheorySubTypeChange(config.id, subject.id, 'standard')}
-                                                                        disabled={subject.theorySubTypes.none}
-                                                                    />
-                                                                    <Label htmlFor={`standard-${subject.id}`} className="font-normal">Standard</Label>
-                                                                </div>
-                                                                 <div className="flex items-center space-x-2">
-                                                                    <Checkbox 
+                                                                    <Checkbox
                                                                         id={`none-${subject.id}`}
                                                                         checked={subject.theorySubTypes.none}
                                                                         onCheckedChange={() => handleTheorySubTypeChange(config.id, subject.id, 'none')}
@@ -1260,5 +1247,7 @@ export default function SubjectsForm() {
         </div>
     );
 }
+
+    
 
     
