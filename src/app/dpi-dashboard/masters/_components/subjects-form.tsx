@@ -5,7 +5,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { FilePlus2, PlusCircle, Trash2, ChevronRight, ArrowLeft, ChevronDown, Edit } from 'lucide-react';
+import { FilePlus2, PlusCircle, Trash2, ChevronRight, ArrowLeft, ChevronDown, Edit, List } from 'lucide-react';
 import React, { useState, useCallback, useMemo } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { mockClasses, getSubjects, addSubjects } from '@/lib/data';
@@ -18,6 +18,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import SubjectGroupForm from './subject-group-form';
 import { useToast } from '@/hooks/use-toast';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Separator } from '@/components/ui/separator';
 
 
 type SubjectInputItem = {
@@ -32,7 +34,7 @@ type SubjectInputs = {
     Vocational: SubjectInputItem[];
 }
 
-const AddSubjectsCard = ({ onBack, onSave }: { onBack: () => void, onSave: (newSubjects: Subject[]) => void }) => {
+const AddSubjectsCard = ({ onBack, onSave, allSubjects }: { onBack: () => void, onSave: (newSubjects: Subject[]) => void, allSubjects: Subject[] }) => {
     const [inputs, setInputs] = useState<SubjectInputs>({
         Core: [{ id: 1, name: '', code: '' }],
         Language: [{ id: 1, name: '', code: '' }],
@@ -103,10 +105,16 @@ const AddSubjectsCard = ({ onBack, onSave }: { onBack: () => void, onSave: (newS
         onBack();
     };
 
+    const categorizedSubjects = useMemo(() => ({
+        Core: allSubjects.filter(s => s.category === 'Core'),
+        Language: allSubjects.filter(s => s.category === 'Language'),
+        Vocational: allSubjects.filter(s => s.category === 'Vocational'),
+    }), [allSubjects]);
+
     const renderCategory = (category: keyof SubjectInputs, title: string) => (
         <div className="space-y-4 rounded-lg border p-4">
             <h3 className="font-medium">{title}</h3>
-            <div className="flex items-end gap-4">
+             <div className="flex items-end gap-4">
                  <div className="flex-1 space-y-2">
                     <Label>Subject Name</Label>
                 </div>
@@ -120,7 +128,6 @@ const AddSubjectsCard = ({ onBack, onSave }: { onBack: () => void, onSave: (newS
                     <div key={item.id} className="flex items-end gap-4">
                         <div className="flex-1">
                             <Input
-                                id={`name-${category}-${item.id}`}
                                 value={item.name}
                                 onChange={(e) => handleInputChange(category, item.id, 'name', e.target.value)}
                                 placeholder="e.g. Mathematics"
@@ -128,7 +135,6 @@ const AddSubjectsCard = ({ onBack, onSave }: { onBack: () => void, onSave: (newS
                         </div>
                         <div className="flex-1">
                             <Input
-                                id={`code-${category}-${item.id}`}
                                 value={item.code}
                                 onChange={(e) => handleInputChange(category, item.id, 'code', e.target.value)}
                                 placeholder="e.g. M-101"
@@ -155,14 +161,54 @@ const AddSubjectsCard = ({ onBack, onSave }: { onBack: () => void, onSave: (newS
     return (
         <Card>
             <CardHeader>
-                <div className="flex items-center gap-4">
-                    <Button variant="outline" size="icon" onClick={onBack}>
-                        <ArrowLeft className="h-4 w-4" />
-                    </Button>
-                    <div>
-                        <CardTitle>Add Subjects</CardTitle>
-                        <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <Button variant="outline" size="icon" onClick={onBack}>
+                            <ArrowLeft className="h-4 w-4" />
+                        </Button>
+                        <div>
+                            <CardTitle>Add Subjects</CardTitle>
+                            <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
+                        </div>
                     </div>
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button variant="outline">
+                                <List className="mr-2 h-4 w-4" />
+                                View All Subjects
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent className="sm:max-w-md">
+                            <SheetHeader>
+                                <SheetTitle>Existing Subjects</SheetTitle>
+                                <SheetDescription>
+                                    A list of all subjects currently in the system.
+                                </SheetDescription>
+                            </SheetHeader>
+                            <div className="space-y-6 py-4">
+                                <div>
+                                    <h4 className="font-semibold text-lg mb-2">Mandatory and group subjects</h4>
+                                    <ul className="space-y-1 text-sm text-muted-foreground list-disc pl-5">
+                                        {categorizedSubjects.Core.map(s => <li key={s.id}>{s.name} ({s.code})</li>)}
+                                    </ul>
+                                </div>
+                                <Separator />
+                                <div>
+                                    <h4 className="font-semibold text-lg mb-2">Language Subjects</h4>
+                                     <ul className="space-y-1 text-sm text-muted-foreground list-disc pl-5">
+                                        {categorizedSubjects.Language.map(s => <li key={s.id}>{s.name} ({s.code})</li>)}
+                                    </ul>
+                                </div>
+                                 <Separator />
+                                <div>
+                                    <h4 className="font-semibold text-lg mb-2">Vocational Subjects</h4>
+                                    <ul className="space-y-1 text-sm text-muted-foreground list-disc pl-5">
+                                        {categorizedSubjects.Vocational.map(s => <li key={s.id}>{s.name} ({s.code})</li>)}
+                                    </ul>
+                                </div>
+                            </div>
+                        </SheetContent>
+                    </Sheet>
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -845,7 +891,7 @@ export default function SubjectsForm() {
     };
 
     if (view === 'add-subjects') {
-        return <AddSubjectsCard onBack={handleBack} onSave={handleSaveSubjects} />;
+        return <AddSubjectsCard onBack={handleBack} onSave={handleSaveSubjects} allSubjects={allSubjects} />;
     }
 
     if (view === 'subject-groups') {
@@ -913,3 +959,4 @@ export default function SubjectsForm() {
 
 
     
+
