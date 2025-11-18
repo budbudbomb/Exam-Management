@@ -4,7 +4,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { FilePlus2, PlusCircle, Trash2, ChevronRight, ArrowLeft } from 'lucide-react';
+import { FilePlus2, PlusCircle, Trash2, ChevronRight, ArrowLeft, ChevronDown } from 'lucide-react';
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { mockClasses, getSubjects, addSubjects, updateSubjectsInData } from '@/lib/data';
@@ -791,7 +791,7 @@ const AssignSubjectsToClassCard = ({ onBack, allSubjects }: { onBack: () => void
                                         </div>
                                     </div>
                                 </div>
-                                <Button variant="outline" size="sm" onClick={() => setEditingConfig([config])}><Edit className="mr-2 h-4 w-4" />Edit</Button>
+                                <Button variant="outline" size="sm" onClick={() => setEditingConfig([config])}><ChevronRight className="mr-2 h-4 w-4" />Edit</Button>
                             </div>
                         </Card>
                     ))
@@ -992,7 +992,7 @@ export default function SubjectsForm() {
             <Card className="cursor-pointer hover:bg-muted/50" onClick={() => handleNavigate('add-subjects')}>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
-                        <CardTitle>Add &amp; Edit Subjects</CardTitle>
+                        <CardTitle>Add & Edit Subjects</CardTitle>
                         <CardDescription>Add new subjects to the system or edit existing ones.</CardDescription>
                     </div>
                     <ChevronRight className="h-6 w-6 text-muted-foreground" />
