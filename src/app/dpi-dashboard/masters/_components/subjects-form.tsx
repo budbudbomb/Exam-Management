@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -717,6 +716,7 @@ const AssignSubjectsToClassCard = ({ onBack, allSubjects }: { onBack: () => void
 type SubjectConfigRow = {
     id: number;
     subjectCategory: 'Compulsory' | 'Language' | 'Vocational' | 'CWSN' | 'Group subjects' | '';
+    groupId?: string;
     subjectId: string;
     theorySubTypes: {
         basic: boolean;
@@ -739,13 +739,13 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
     };
     
     const [classConfigs, setClassConfigs] = useState<ClassConfig[]>([
-        { id: Date.now(), classId: '', subjects: [{ id: Date.now(), subjectCategory: '', subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }] }
+        { id: Date.now(), classId: '', subjects: [{ id: Date.now(), subjectCategory: '', groupId: '', subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }] }
     ]);
     
     const handleAddClassConfig = () => {
         setClassConfigs(prev => [
             ...prev,
-            { id: Date.now(), classId: '', subjects: [{ id: Date.now(), subjectCategory: '', subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }] }
+            { id: Date.now(), classId: '', subjects: [{ id: Date.now(), subjectCategory: '', groupId: '', subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }] }
         ]);
     };
     
@@ -764,7 +764,7 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                     ...c,
                     subjects: [
                         ...c.subjects,
-                        { id: Date.now(), subjectCategory: '', subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }
+                        { id: Date.now(), subjectCategory: '', groupId: '', subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }
                     ]
                 };
             }
@@ -789,7 +789,10 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                     subjects: c.subjects.map(s => {
                         if (s.id === subjectId) {
                             if(field === 'subjectCategory') {
-                                return { ...s, subjectCategory: value, subjectId: '' }; // Reset subject when category changes
+                                return { ...s, subjectCategory: value, subjectId: '', groupId: '' }; // Reset subject and group when category changes
+                            }
+                             if(field === 'groupId') {
+                                return { ...s, groupId: value, subjectId: '' }; // Reset subject when group changes
                             }
                             return { ...s, [field]: value };
                         }
@@ -879,6 +882,12 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
         };
 
         const subjectCategoryOptions = getSubjectCategoryOptions();
+        
+        const groupOptions = [
+            { id: 'science', name: 'Science' },
+            { id: 'commerce', name: 'Commerce' },
+            { id: 'arts', name: 'Arts' },
+        ];
 
 
         return (
@@ -904,23 +913,24 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                                 {config.subjects.map((subject, index) => (
                                     <AccordionItem key={subject.id} value={`item-${subject.id}`} className="border-none">
                                         <Card className="bg-muted/30">
-                                            <AccordionTrigger className="w-full p-0 hover:no-underline">
-                                                <div className="flex items-center justify-between p-4 w-full cursor-pointer">
-                                                    <div className="flex-1 text-lg font-semibold text-left">
-                                                        {index + 1}. {getSubjectName(subject, config.classId)}
+                                            <div className="flex items-center p-4">
+                                                <AccordionTrigger className="w-full p-0 hover:no-underline flex-1">
+                                                    <div className="flex items-center justify-between w-full">
+                                                        <div className="flex-1 text-lg font-semibold text-left">
+                                                            {index + 1}. {getSubjectName(subject, config.classId)}
+                                                        </div>
                                                     </div>
-                                                    <div className="flex items-center gap-2">
-                                                        {config.subjects.length > 1 && (
-                                                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); handleRemoveSubject(config.id, subject.id); }}>
-                                                                <Trash2 className="h-4 w-4" />
-                                                            </Button>
-                                                        )}
-                                                        <ChevronDown className="h-5 w-5 shrink-0 transition-transform duration-200" />
-                                                    </div>
+                                                </AccordionTrigger>
+                                                <div className="flex items-center gap-2 pl-4">
+                                                    {config.subjects.length > 1 && (
+                                                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); handleRemoveSubject(config.id, subject.id); }}>
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    )}
                                                 </div>
-                                            </AccordionTrigger>
+                                            </div>
                                             <AccordionContent className="p-4 pt-0">
-                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 items-end">
                                                     <div className="space-y-2">
                                                         <Label>Class</Label>
                                                         <Select value={config.classId} onValueChange={(value) => handleClassConfigChange(config.id, 'classId', value)}>
@@ -951,12 +961,30 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                                                             </SelectContent>
                                                         </Select>
                                                     </div>
+                                                    {subject.subjectCategory === 'Group subjects' && (
+                                                        <div className="space-y-2">
+                                                            <Label>Group</Label>
+                                                            <Select 
+                                                                value={subject.groupId}
+                                                                onValueChange={(value) => handleSubjectChange(config.id, subject.id, 'groupId', value)}
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Select group" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {groupOptions.map(option => (
+                                                                        <SelectItem key={option.id} value={option.id}>{option.name}</SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+                                                    )}
                                                     <div className="space-y-2">
                                                         <Label>Subject Name</Label>
                                                         <Select 
                                                             value={subject.subjectId} 
                                                             onValueChange={(value) => handleSubjectChange(config.id, subject.id, 'subjectId', value)}
-                                                            disabled={!subject.subjectCategory}
+                                                            disabled={!subject.subjectCategory || (subject.subjectCategory === 'Group subjects' && !subject.groupId)}
                                                         >
                                                             <SelectTrigger>
                                                                 <SelectValue placeholder="Select subject" />
@@ -1232,3 +1260,5 @@ export default function SubjectsForm() {
         </div>
     );
 }
+
+    
