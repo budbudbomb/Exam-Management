@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { mockSubjects, mockClasses } from '@/lib/data';
+import { mockClasses } from '@/lib/data';
 import { Subject as SubjectType } from '@/lib/types';
 import { ArrowLeft, ChevronDown, PlusCircle, Edit, Trash2 } from 'lucide-react';
 import React, { useState, useMemo } from 'react';
@@ -76,16 +76,16 @@ const SelectedSubjectsDisplay = ({ title, allSubjects, selectedSubjects }: { tit
     );
 };
 
-const GroupCard = ({ group, onGroupChange, onRemoveGroup }: { group: SubjectGroup, onGroupChange: (updatedGroup: SubjectGroup) => void, onRemoveGroup: () => void }) => {
+const GroupCard = ({ group, onGroupChange, onRemoveGroup, allSubjects }: { group: SubjectGroup, onGroupChange: (updatedGroup: SubjectGroup) => void, onRemoveGroup: () => void, allSubjects: SubjectType[] }) => {
     const [isEditing, setIsEditing] = useState(!group.isSaved);
 
     const categorizedSubjects = useMemo(() => {
         return {
-          Mandatory: mockSubjects.filter((s) => s.category === 'Core'),
-          Language: mockSubjects.filter((s) => s.category === 'Language'),
-          Vocational: mockSubjects.filter((s) => s.category === 'Vocational'),
+          Mandatory: allSubjects.filter((s) => s.category === 'Core'),
+          Language: allSubjects.filter((s) => s.category === 'Language'),
+          Vocational: allSubjects.filter((s) => s.category === 'Vocational'),
         };
-    }, []);
+    }, [allSubjects]);
 
     const handleFieldChange = (field: keyof Omit<SubjectGroup, 'id' | 'mandatorySubjects' | 'languageSubjects' | 'vocationalSubjects' | 'isSaved'>, value: string) => {
         onGroupChange({ ...group, [field]: value });
@@ -201,7 +201,7 @@ const GroupCard = ({ group, onGroupChange, onRemoveGroup }: { group: SubjectGrou
     )
 }
 
-export default function SubjectGroupForm({ onBack }: { onBack: () => void }) {
+export default function SubjectGroupForm({ onBack, allSubjects }: { onBack: () => void, allSubjects: SubjectType[] }) {
     const [groups, setGroups] = useState<SubjectGroup[]>([
         { id: Date.now(), classId: '', groupName: '', groupCode: '', mandatorySubjects: {}, languageSubjects: {}, vocationalSubjects: {}, isSaved: false }
     ]);
@@ -244,6 +244,7 @@ export default function SubjectGroupForm({ onBack }: { onBack: () => void }) {
                         group={group}
                         onGroupChange={handleGroupChange}
                         onRemoveGroup={() => handleRemoveGroup(group.id)}
+                        allSubjects={allSubjects}
                     />
                 ))}
             </CardContent>

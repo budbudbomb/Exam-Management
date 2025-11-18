@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { FilePlus2, PlusCircle, Trash2, ChevronRight, ArrowLeft, ChevronDown, Edit } from 'lucide-react';
 import React, { useState, useCallback, useMemo } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { mockClasses, mockSubjects, addSubjects } from '@/lib/data';
+import { mockClasses, getSubjects, addSubjects } from '@/lib/data';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -198,7 +198,7 @@ type SubjectConfigRow = {
     assessmentMaxMarks: string;
 };
 
-const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
+const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, allSubjects: Subject[] }) => {
     
     type ClassConfig = {
         id: number;
@@ -302,7 +302,7 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
         if (!subject.subjectId || !subject.subjectCategory) return 'New Subject';
         
         const selectedClass = mockClasses.find(c => c.id === classId);
-        const classSubjects = selectedClass?.subjects.length ? selectedClass.subjects : mockSubjects;
+        const classSubjects = selectedClass?.subjects.length ? selectedClass.subjects : allSubjects;
 
         return classSubjects.find(s => s.id === subject.subjectId)?.name || 'New Subject';
     };
@@ -320,7 +320,7 @@ const SubjectManagementCard = ({ onBack }: { onBack: () => void }) => {
         const categorizedClassSubjects = useMemo(() => {
             if (!config.classId) return { Core: [], Language: [], Vocational: [] };
             const selectedClass = mockClasses.find(c => c.id === config.classId);
-            const classSubjects = selectedClass?.subjects.length ? selectedClass.subjects : mockSubjects;
+            const classSubjects = selectedClass?.subjects.length ? selectedClass.subjects : allSubjects;
             
             return {
               Core: classSubjects.filter((s) => s.category === 'Core'),
@@ -616,17 +616,17 @@ type ClassConfig = {
     selectedSubjects: SelectedSubjects;
 }
 
-const AssignSubjectsToClassCard = ({ onBack }: { onBack: () => void }) => {
+const AssignSubjectsToClassCard = ({ onBack, allSubjects }: { onBack: () => void, allSubjects: Subject[] }) => {
     const [savedConfigs, setSavedConfigs] = useState<ClassConfig[]>([]);
     const [editingConfig, setEditingConfig] = useState<ClassConfig[] | null>(null);
 
     const categorizedSubjects = useMemo(() => {
         return {
-          Mandatory: mockSubjects.filter((s) => s.category === 'Core'),
-          Language: mockSubjects.filter((s) => s.category === 'Language'),
-          Vocational: mockSubjects.filter((s) => s.category === 'Vocational'),
+          Mandatory: allSubjects.filter((s) => s.category === 'Core'),
+          Language: allSubjects.filter((s) => s.category === 'Language'),
+          Vocational: allSubjects.filter((s) => s.category === 'Vocational'),
         };
-    }, []);
+    }, [allSubjects]);
 
     const sortedClasses = useMemo(() => [...mockClasses].sort((a, b) => {
         const aNum = parseInt(a.name.split(' ')[1]);
@@ -634,7 +634,7 @@ const AssignSubjectsToClassCard = ({ onBack }: { onBack: () => void }) => {
         return aNum - bNum;
     }), []);
     
-    const getSubjectName = (id: string) => mockSubjects.find(s => s.id === id)?.name || id;
+    const getSubjectName = (id: string) => allSubjects.find(s => s.id === id)?.name || id;
 
     // View component for saved configurations
     const ViewSavedConfigs = () => (
@@ -825,6 +825,7 @@ export default function SubjectsForm() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const view = searchParams.get('view');
+    const [allSubjects, setAllSubjects] = useState(() => getSubjects());
 
     const handleNavigate = (view: string) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -840,6 +841,7 @@ export default function SubjectsForm() {
 
     const handleSaveSubjects = (newSubjects: Subject[]) => {
         addSubjects(newSubjects);
+        setAllSubjects(getSubjects()); // Re-fetch the subjects to update state
     };
 
     if (view === 'add-subjects') {
@@ -847,15 +849,15 @@ export default function SubjectsForm() {
     }
 
     if (view === 'subject-groups') {
-        return <SubjectGroupForm onBack={handleBack} />;
+        return <SubjectGroupForm onBack={handleBack} allSubjects={allSubjects} />;
     }
 
     if (view === 'assign-subjects') {
-        return <AssignSubjectsToClassCard onBack={handleBack} />;
+        return <AssignSubjectsToClassCard onBack={handleBack} allSubjects={allSubjects} />;
     }
     
     if (view === 'subject-management') {
-        return <SubjectManagementCard onBack={handleBack} />;
+        return <SubjectManagementCard onBack={handleBack} allSubjects={allSubjects} />;
     }
 
     return (

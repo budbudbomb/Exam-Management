@@ -1,6 +1,6 @@
 import type { Student, Subject, Class, Exam, Grade, Remark, ExamSchedule } from './types';
 
-export const mockStudents: Student[] = [
+let mockStudents: Student[] = [
   { id: '1', name: 'Aarav Sharma', rollNumber: '10A-01', class: '10', section: 'A', medium: 'English', fatherName: 'Suresh Sharma', motherName: 'Sunita Sharma', dob: '15-04-2008', category: 'General', gender: 'Male', samagraId: '123456789', enrollmentNumber: 'ENR-2024-12345', photoUrl: 'https://i.pravatar.cc/96?u=1', schoolUdideCode: 'SCH001', scholarNumber: 'SN001' },
   { id: '2', name: 'Vivaan Singh', rollNumber: '10A-02', class: '10', section: 'A', medium: 'English', fatherName: 'Rajesh Singh', motherName: 'Priya Singh', dob: '22-08-2008', category: 'General', gender: 'Male', samagraId: '234567890', enrollmentNumber: 'ENR-2024-12346', photoUrl: 'https://i.pravatar.cc/96?u=2', schoolUdideCode: 'SCH001', scholarNumber: 'SN002' },
   { id: '3', name: 'Aditya Kumar', rollNumber: '10A-03', class: '10', section: 'A', medium: 'English', fatherName: 'Manoj Kumar', motherName: 'Rina Kumar', dob: '05-11-2008', category: 'OBC', gender: 'Male', samagraId: '345678901', enrollmentNumber: 'ENR-2024-12347', photoUrl: 'https://i.pravatar.cc/96?u=3', schoolUdideCode: 'SCH001', scholarNumber: 'SN003' },
@@ -13,7 +13,7 @@ export const mockStudents: Student[] = [
   { id: '10', name: 'Kavya Mishra', rollNumber: '12B-01', class: '12', section: 'B', medium: 'Hindi', fatherName: 'Rakesh Mishra', motherName: 'Poonam Mishra', dob: '19-05-2006', category: 'General', gender: 'Female', samagraId: '012345678', enrollmentNumber: 'ENR-2024-12354', photoUrl: 'https://i.pravatar.cc/96?u=10', schoolUdideCode: 'SCH004', scholarNumber: 'SN010' },
 ];
 
-export let mockSubjects: Subject[] = [
+let mockSubjects: Subject[] = [
   { id: 'S1', name: 'Mathematics', category: 'Core', subCategory: 'Standard', code: 'M-101', minMarks: 0, maxMarks: 100, passingMarks: 33, hasPractical: false, hasProject: true, projectMinMarks: 0, projectMaxMarks: 20, projectPassingMarks: 7 },
   { id: 'S2', name: 'Science', category: 'Core', code: 'S-101', minMarks: 0, maxMarks: 75, passingMarks: 25, hasPractical: true, practicalMinMarks: 0, practicalMaxMarks: 25, practicalPassingMarks: 8, hasProject: false },
   { id: 'S3', name: 'English', category: 'Language', code: 'E-101', minMarks: 0, maxMarks: 100, passingMarks: 33, hasPractical: false, hasProject: true, projectMinMarks: 0, projectMaxMarks: 20, projectPassingMarks: 7 },
@@ -21,8 +21,11 @@ export let mockSubjects: Subject[] = [
   { id: 'S5', name: 'Computer Science', category: 'Vocational', code: 'CS-101', minMarks: 0, maxMarks: 50, passingMarks: 17, hasPractical: true, practicalMinMarks: 0, practicalMaxMarks: 50, practicalPassingMarks: 17, hasProject: false },
 ];
 
+export const getStudents = () => mockStudents;
+export const getSubjects = () => [...mockSubjects];
+
 export function addSubjects(newSubjects: Subject[]) {
-  mockSubjects = [...mockSubjects, ...newSubjects];
+  mockSubjects.push(...newSubjects);
 }
 
 export const mockClasses: Class[] = [
@@ -85,4 +88,3 @@ export const mockSchedules: ExamSchedule[] = [
         ]
     }
 ];
-

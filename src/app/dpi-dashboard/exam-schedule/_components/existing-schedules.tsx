@@ -6,10 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { mockClasses, mockSubjects } from '@/lib/data';
-import { ExamSchedule } from '@/lib/types';
+import { mockClasses, getSubjects } from '@/lib/data';
+import { ExamSchedule, Subject } from '@/lib/types';
 import { Pencil, Trash2 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface ExistingSchedulesProps {
     schedules: ExamSchedule[];
@@ -19,11 +19,16 @@ interface ExistingSchedulesProps {
 
 export default function ExistingSchedules({ schedules, onDeleteSchedule, isReadOnly = false }: ExistingSchedulesProps) {
     const [selectedClass, setSelectedClass] = useState('');
+    const [allSubjects, setAllSubjects] = useState<Subject[]>([]);
+
+    useEffect(() => {
+        setAllSubjects(getSubjects());
+    }, []);
 
     const filteredSchedules = selectedClass ? schedules.filter(s => s.classId === selectedClass) : [];
 
     const getSubjectName = (id: string) => {
-        return mockSubjects.find(s => s.id === id)?.name || 'Unknown Subject';
+        return allSubjects.find(s => s.id === id)?.name || 'Unknown Subject';
     }
     
     const sortedClasses = [...mockClasses].sort((a, b) => {

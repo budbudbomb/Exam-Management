@@ -16,9 +16,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { mockStudents, mockClasses, mockSubjects } from '@/lib/data';
+import { mockStudents, mockClasses, getSubjects } from '@/lib/data';
 import { ChevronDown, FilePlus2, Search, Upload, User as UserIcon, CheckCircle, Edit } from 'lucide-react';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Student, Subject as SubjectType } from '@/lib/types';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
@@ -79,20 +79,25 @@ const SelectedSubjectsDisplay = ({ title, subjects, selectedSubjects }: { title:
 export default function StudentsTable() {
     const [students, setStudents] = useState<Student[]>(mockStudents);
     const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
+    const [allSubjects, setAllSubjects] = useState<SubjectType[]>([]);
     const [selectedClassId, setSelectedClassId] = useState<string>('');
     const [selectedYear, setSelectedYear] = useState<string>('');
     const [showTable, setShowTable] = useState(false);
     const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
     const [isEditing, setIsEditing] = useState(false);
+    
+    useEffect(() => {
+        setAllSubjects(getSubjects());
+    }, []);
 
     const categorizedSubjects = useMemo(() => {
         return {
-          Mandatory: mockSubjects.filter((s) => s.category === 'Core'),
-          Language: mockSubjects.filter((s) => s.category === 'Language'),
-          Vocational: mockSubjects.filter((s) => s.category === 'Vocational'),
+          Mandatory: allSubjects.filter((s) => s.category === 'Core'),
+          Language: allSubjects.filter((s) => s.category === 'Language'),
+          Vocational: allSubjects.filter((s) => s.category === 'Vocational'),
         };
-    }, []);
+    }, [allSubjects]);
 
     const handleSearch = () => {
         if (selectedClassId) {

@@ -27,14 +27,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { mockClasses, mockExams, mockSubjects } from '@/lib/data';
+import { mockClasses, mockExams, getSubjects } from '@/lib/data';
 import { CalendarIcon, PlusCircle, Trash2 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { ExamSchedule } from '@/lib/types';
+import { ExamSchedule, Subject } from '@/lib/types';
 
 type ScheduleRow = {
   id: number;
@@ -53,6 +53,11 @@ export default function ExamScheduleForm({ onAddSchedule }: ExamScheduleFormProp
   const [selectedClass, setSelectedClass] = useState('');
   const [isModalOpen, setModalOpen] = useState(false);
   const [scheduleRows, setScheduleRows] = useState<ScheduleRow[]>([]);
+  const [allSubjects, setAllSubjects] = useState<Subject[]>([]);
+
+  useEffect(() => {
+    setAllSubjects(getSubjects());
+  }, []);
 
   const handleOpenModal = () => {
     if (selectedExamType && selectedClass) {
@@ -95,7 +100,7 @@ export default function ExamScheduleForm({ onAddSchedule }: ExamScheduleFormProp
     setModalOpen(false);
   }
 
-  const classSubjects = mockClasses.find(c => c.id === selectedClass)?.subjects || mockSubjects;
+  const classSubjects = mockClasses.find(c => c.id === selectedClass)?.subjects || allSubjects;
   
   const sortedClasses = [...mockClasses].sort((a, b) => {
       const aNum = parseInt(a.name.split(' ')[1]);
