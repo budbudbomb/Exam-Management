@@ -28,6 +28,10 @@ export function addSubjects(newSubjects: Subject[]) {
   mockSubjects.push(...newSubjects);
 }
 
+export function updateSubjectsInData(updatedSubjects: Subject[]) {
+  mockSubjects = updatedSubjects;
+}
+
 export const mockClasses: Class[] = [
   { id: 'C1', name: 'Class 10', sections: ['A', 'B'], subjects: mockSubjects.slice(0, 5) },
   { id: 'C2', name: 'Class 9', sections: ['A'], subjects: mockSubjects.slice(0, 4) },

@@ -5,10 +5,10 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { FilePlus2, PlusCircle, Trash2, ChevronRight, ArrowLeft, ChevronDown, Edit, List } from 'lucide-react';
+import { FilePlus2, PlusCircle, Trash2, ChevronRight, ArrowLeft } from 'lucide-react';
 import React, { useState, useCallback, useMemo } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { mockClasses, getSubjects, addSubjects } from '@/lib/data';
+import { mockClasses, getSubjects, addSubjects, updateSubjects as updateSubjectsInData } from '@/lib/data';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -34,7 +34,108 @@ type SubjectInputs = {
     Vocational: SubjectInputItem[];
 }
 
-const AddSubjectsCard = ({ onBack, onSave, allSubjects }: { onBack: () => void, onSave: (newSubjects: Subject[]) => void, allSubjects: Subject[] }) => {
+const ExistingSubjectsList = ({ allSubjects, onSave }: { allSubjects: Subject[], onSave: (updatedSubjects: Subject[]) => void }) => {
+    const [editableSubjects, setEditableSubjects] = useState<Subject[]>(allSubjects);
+    const { toast } = useToast();
+
+    useEffect(() => {
+        setEditableSubjects(allSubjects);
+    }, [allSubjects]);
+
+    const handleSubjectChange = (id: string, field: 'name' | 'code', value: string) => {
+        setEditableSubjects(prev => prev.map(s => s.id === id ? { ...s, [field]: value } : s));
+    };
+
+    const handleDeleteSubject = (id: string) => {
+        setEditableSubjects(prev => prev.filter(s => s.id !== id));
+    };
+
+    const handleSaveChanges = () => {
+        onSave(editableSubjects);
+        toast({
+            title: "Subjects Updated",
+            description: "Your changes to the existing subjects have been saved.",
+        });
+    };
+
+    const categorizedSubjects = useMemo(() => {
+        const categories: { [key in Subject['category']]: Subject[] } = {
+            Core: [],
+            Language: [],
+            Vocational: [],
+        };
+        editableSubjects.forEach(subject => {
+            if (categories[subject.category]) {
+                categories[subject.category].push(subject);
+            }
+        });
+        return categories;
+    }, [editableSubjects]);
+
+    const renderCategory = (category: Subject['category'], title: string) => {
+        const subjects = categorizedSubjects[category];
+        if (subjects.length === 0) return null;
+
+        return (
+            <div key={category} className="space-y-4 rounded-lg border p-4">
+                <h3 className="font-medium">{title}</h3>
+                <div className="flex items-end gap-4">
+                    <div className="flex-1 space-y-2"><Label>Subject Name</Label></div>
+                    <div className="flex-1 space-y-2"><Label>Subject Code</Label></div>
+                    <div className="w-[40px]"></div>
+                </div>
+                <div className="space-y-2">
+                    {subjects.map(subject => (
+                        <div key={subject.id} className="flex items-end gap-4">
+                            <div className="flex-1">
+                                <Input
+                                    value={subject.name}
+                                    onChange={(e) => handleSubjectChange(subject.id, 'name', e.target.value)}
+                                />
+                            </div>
+                            <div className="flex-1">
+                                <Input
+                                    value={subject.code}
+                                    onChange={(e) => handleSubjectChange(subject.id, 'code', e.target.value)}
+                                />
+                            </div>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-destructive hover:text-destructive"
+                                onClick={() => handleDeleteSubject(subject.id)}
+                            >
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Existing Subjects</CardTitle>
+                <CardDescription>Edit or remove subjects that are already in the system.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {renderCategory('Core', 'Mandatory and group subjects')}
+                    {renderCategory('Language', 'Language Subjects')}
+                    {renderCategory('Vocational', 'Vocational Subjects')}
+                </div>
+                <div className="flex justify-end">
+                    <Button onClick={handleSaveChanges}>Save Changes</Button>
+                </div>
+            </CardContent>
+        </Card>
+    );
+};
+
+
+const AddSubjectsCard = ({ onBack, onSave }: { onBack: () => void, onSave: (newSubjects: Subject[]) => void }) => {
     const [inputs, setInputs] = useState<SubjectInputs>({
         Core: [{ id: 1, name: '', code: '' }],
         Language: [{ id: 1, name: '', code: '' }],
@@ -102,14 +203,13 @@ const AddSubjectsCard = ({ onBack, onSave, allSubjects }: { onBack: () => void, 
             title: "Subjects Saved",
             description: "The new subjects have been successfully saved.",
         });
-        onBack();
+        // Clear inputs after saving
+        setInputs({
+            Core: [{ id: 1, name: '', code: '' }],
+            Language: [{ id: 1, name: '', code: '' }],
+            Vocational: [{ id: 1, name: '', code: '' }],
+        });
     };
-
-    const categorizedSubjects = useMemo(() => ({
-        Core: allSubjects.filter(s => s.category === 'Core'),
-        Language: allSubjects.filter(s => s.category === 'Language'),
-        Vocational: allSubjects.filter(s => s.category === 'Vocational'),
-    }), [allSubjects]);
 
     const renderCategory = (category: keyof SubjectInputs, title: string) => (
         <div className="space-y-4 rounded-lg border p-4">
@@ -159,71 +259,35 @@ const AddSubjectsCard = ({ onBack, onSave, allSubjects }: { onBack: () => void, 
     );
 
     return (
-        <Card>
-            <CardHeader>
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <Button variant="outline" size="icon" onClick={onBack}>
-                            <ArrowLeft className="h-4 w-4" />
-                        </Button>
-                        <div>
-                            <CardTitle>Add Subjects</CardTitle>
-                            <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
+        <div className="space-y-6">
+            <Card>
+                <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <Button variant="outline" size="icon" onClick={onBack}>
+                                <ArrowLeft className="h-4 w-4" />
+                            </Button>
+                            <div>
+                                <CardTitle>Add Subjects</CardTitle>
+                                <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
+                            </div>
                         </div>
                     </div>
-                    <Sheet>
-                        <SheetTrigger asChild>
-                            <Button variant="outline">
-                                <List className="mr-2 h-4 w-4" />
-                                View All Subjects
-                            </Button>
-                        </SheetTrigger>
-                        <SheetContent className="sm:max-w-md">
-                            <SheetHeader>
-                                <SheetTitle>Existing Subjects</SheetTitle>
-                                <SheetDescription>
-                                    A list of all subjects currently in the system.
-                                </SheetDescription>
-                            </SheetHeader>
-                            <div className="space-y-6 py-4">
-                                <div>
-                                    <h4 className="font-semibold text-lg mb-2">Mandatory and group subjects</h4>
-                                    <ul className="space-y-1 text-sm text-muted-foreground list-disc pl-5">
-                                        {categorizedSubjects.Core.map(s => <li key={s.id}>{s.name} ({s.code})</li>)}
-                                    </ul>
-                                </div>
-                                <Separator />
-                                <div>
-                                    <h4 className="font-semibold text-lg mb-2">Language Subjects</h4>
-                                     <ul className="space-y-1 text-sm text-muted-foreground list-disc pl-5">
-                                        {categorizedSubjects.Language.map(s => <li key={s.id}>{s.name} ({s.code})</li>)}
-                                    </ul>
-                                </div>
-                                 <Separator />
-                                <div>
-                                    <h4 className="font-semibold text-lg mb-2">Vocational Subjects</h4>
-                                    <ul className="space-y-1 text-sm text-muted-foreground list-disc pl-5">
-                                        {categorizedSubjects.Vocational.map(s => <li key={s.id}>{s.name} ({s.code})</li>)}
-                                    </ul>
-                                </div>
-                            </div>
-                        </SheetContent>
-                    </Sheet>
-                </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {renderCategory('Core', 'Mandatory and group subjects')}
-                    {renderCategory('Language', 'Language Subjects')}
-                    {renderCategory('Vocational', 'Vocational Subjects')}
-                </div>
-                <div className="flex justify-end">
-                    <Button onClick={handleSaveSubjects}>
-                        <FilePlus2 className="mr-2 h-4 w-4" /> Save Subjects
-                    </Button>
-                </div>
-            </CardContent>
-        </Card>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {renderCategory('Core', 'Mandatory and group subjects')}
+                        {renderCategory('Language', 'Language Subjects')}
+                        {renderCategory('Vocational', 'Vocational Subjects')}
+                    </div>
+                    <div className="flex justify-end">
+                        <Button onClick={handleSaveSubjects}>
+                            <FilePlus2 className="mr-2 h-4 w-4" /> Save Subjects
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
     );
 };
 
@@ -885,13 +949,23 @@ export default function SubjectsForm() {
         router.push(`${pathname}?${params.toString()}`);
     }
 
-    const handleSaveSubjects = (newSubjects: Subject[]) => {
+    const handleSaveNewSubjects = (newSubjects: Subject[]) => {
         addSubjects(newSubjects);
-        setAllSubjects(getSubjects()); // Re-fetch the subjects to update state
+        setAllSubjects(getSubjects()); 
     };
 
+    const handleUpdateExistingSubjects = (updatedSubjects: Subject[]) => {
+        updateSubjectsInData(updatedSubjects);
+        setAllSubjects(getSubjects());
+    }
+
     if (view === 'add-subjects') {
-        return <AddSubjectsCard onBack={handleBack} onSave={handleSaveSubjects} allSubjects={allSubjects} />;
+        return (
+            <div className="space-y-6">
+                <AddSubjectsCard onBack={handleBack} onSave={handleSaveNewSubjects} />
+                <ExistingSubjectsList allSubjects={allSubjects} onSave={handleUpdateExistingSubjects} />
+            </div>
+        );
     }
 
     if (view === 'subject-groups') {
@@ -911,8 +985,8 @@ export default function SubjectsForm() {
             <Card className="cursor-pointer hover:bg-muted/50" onClick={() => handleNavigate('add-subjects')}>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
-                        <CardTitle>Add Subjects</CardTitle>
-                        <CardDescription>Add new subjects and their codes to the system.</CardDescription>
+                        <CardTitle>Add & Edit Subjects</CardTitle>
+                        <CardDescription>Add new subjects to the system or edit existing ones.</CardDescription>
                     </div>
                     <ChevronRight className="h-6 w-6 text-muted-foreground" />
                 </CardHeader>
@@ -959,4 +1033,5 @@ export default function SubjectsForm() {
 
 
     
+
 
