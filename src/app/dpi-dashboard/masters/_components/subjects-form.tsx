@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -577,15 +578,17 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
         classId: string;
         subjects: SubjectConfigRow[];
     };
+
+    const newSubjectRow = { id: Date.now(), subjectCategory: '' as const, groupId: '', subjectId: '', theorySubTypes: { basicStandard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical' as const, assessmentMinMarks: '', assessmentMaxMarks: '' };
     
     const [classConfigs, setClassConfigs] = useState<ClassConfig[]>([
-        { id: Date.now(), classId: '', subjects: [{ id: Date.now(), subjectCategory: '', groupId: '', subjectId: '', theorySubTypes: { basicStandard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }] }
+        { id: Date.now(), classId: '', subjects: [newSubjectRow] }
     ]);
     
     const handleAddClassConfig = () => {
         setClassConfigs(prev => [
             ...prev,
-            { id: Date.now(), classId: '', subjects: [{ id: Date.now(), subjectCategory: '', groupId: '', subjectId: '', theorySubTypes: { basicStandard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }] }
+            { id: Date.now(), classId: '', subjects: [newSubjectRow] }
         ]);
     };
     
@@ -594,7 +597,7 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
     };
 
     const handleClassConfigChange = (id: number, field: 'classId', value: string) => {
-        setClassConfigs(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c));
+        setClassConfigs(prev => prev.map(c => c.id === id ? { ...c, [field]: value, subjects: [newSubjectRow] } : c));
     };
     
     const handleAddSubject = (classConfigId: number) => {
@@ -1049,7 +1052,17 @@ export default function SubjectsForm() {
                     <ChevronRight className="h-6 w-6 text-muted-foreground" />
                 </CardHeader>
             </Card>
+            <Card className="cursor-pointer hover:bg-muted/50" onClick={() => handleNavigate('subject-management')}>
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                        <CardTitle>Subject &amp; Marks Configuration</CardTitle>
+                        <CardDescription>Assign subjects to classes and define their marks structure.</CardDescription>
+                    </div>
+                    <ChevronRight className="h-6 w-6 text-muted-foreground" />
+                </CardHeader>
+            </Card>
         </div>
     );
 }
+
 
