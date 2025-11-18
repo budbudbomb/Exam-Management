@@ -13,7 +13,6 @@ import {
   CircleUser,
   ChevronDown,
 } from 'lucide-react';
-import { Logo } from '@/components/icons/logo';
 import {
   Accordion,
   AccordionContent,
@@ -161,7 +160,7 @@ export default function DpiNavigation() {
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
       <div className="flex h-16 items-center px-4 lg:px-6 border-b border-sidebar-border bg-accent">
          <Link href="/dpi-dashboard" className="flex items-center gap-2 font-semibold text-sidebar-foreground">
-          <Logo className="h-8 w-8 text-primary" />
+          
            {state === 'expanded' && <span className="text-lg font-bold text-sidebar-foreground">MP Education Portal 3.0</span>}
         </Link>
       </div>
