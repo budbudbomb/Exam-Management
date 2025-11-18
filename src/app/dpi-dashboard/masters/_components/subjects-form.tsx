@@ -884,19 +884,21 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
             <Accordion type="single" collapsible defaultValue="item-1" className="w-full">
                 <AccordionItem value="item-1" className="border-none">
                     <Card>
-                        <AccordionTrigger className="w-full p-0 hover:no-underline">
-                            <div className="flex items-center justify-between p-4 w-full cursor-pointer">
-                                <div className="flex-1 text-lg font-semibold text-left">
-                                   {headerTitle}
+                        <div className="flex items-center justify-between p-4 w-full cursor-pointer">
+                            <AccordionTrigger className="w-full p-0 hover:no-underline flex-1">
+                                <div className="flex items-center justify-between w-full">
+                                    <div className="flex-1 text-lg font-semibold text-left">
+                                       {headerTitle}
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); handleRemoveClassConfig(config.id); }}>
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                    <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
-                                </div>
+                            </AccordionTrigger>
+                            <div className="flex items-center gap-2 pl-4">
+                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); handleRemoveClassConfig(config.id); }}>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                                <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
                             </div>
-                        </AccordionTrigger>
+                        </div>
                         <AccordionContent className="p-4 pt-0">
                              <Accordion type="multiple" className="space-y-4" defaultValue={config.subjects.map(s => `item-${s.id}`)}>
                                 {config.subjects.map((subject, index) => (
