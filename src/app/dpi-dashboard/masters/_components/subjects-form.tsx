@@ -131,8 +131,9 @@ const ExistingSubjectsList = ({ allSubjects, onSave }: { allSubjects: Subject[],
 };
 
 
-const AddSubjectsCard = ({ onSave }: { onSave: (newSubjects: Subject[]) => void }) => {
+const AddSubjectsCard = ({ onSave, allSubjects, onUpdateExisting }: { onSave: (newSubjects: Subject[]) => void, allSubjects: Subject[], onUpdateExisting: (updatedSubjects: Subject[]) => void }) => {
     const [subjectRows, setSubjectRows] = useState<SubjectInputItem[]>([{ id: Date.now(), name: '', code: '', category: '' }]);
+    const [showExisting, setShowExisting] = useState(false);
     const { toast } = useToast();
 
     const handleInputChange = (id: number, field: keyof Omit<SubjectInputItem, 'id'>, value: string) => {
@@ -194,82 +195,78 @@ const AddSubjectsCard = ({ onSave }: { onSave: (newSubjects: Subject[]) => void 
     };
 
     return (
-        <Card>
-            <CardHeader>
-                <div className="flex items-center justify-between">
-                     <div>
-                        <CardTitle>Add Subjects</CardTitle>
-                        <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Button variant="outline" onClick={() => (document.getElementById('existing-subjects-trigger') as HTMLButtonElement)?.click()}>
-                            View & Edit Existing Subjects
-                        </Button>
-                         <Button variant="outline" size="icon" onClick={() => {
-                            const params = new URLSearchParams(window.location.search);
-                            params.delete('view');
-                            window.history.pushState(null, '', `${window.location.pathname}?${params.toString()}`);
-                         }}>
-                            <ArrowLeft className="h-4 w-4" />
-                        </Button>
-                    </div>
-                </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="space-y-2">
-                    {subjectRows.map((row, index) => (
-                        <div key={row.id} className="flex items-end gap-2">
-                            <div className="flex-1 space-y-1">
-                                {index === 0 && <Label>Subject Name</Label>}
-                                <Input 
-                                    placeholder="Enter subject name" 
-                                    value={row.name}
-                                    onChange={(e) => handleInputChange(row.id, 'name', e.target.value)}
-                                />
-                            </div>
-                             <div className="flex-1 space-y-1">
-                                {index === 0 && <Label>Subject Code</Label>}
-                                <Input 
-                                    placeholder="Enter subject code"
-                                    value={row.code}
-                                    onChange={(e) => handleInputChange(row.id, 'code', e.target.value)}
-                                />
-                            </div>
-                            <div className="flex-1 space-y-1">
-                                {index === 0 && <Label>Subject Category</Label>}
-                                <Select
-                                    value={row.category}
-                                    onValueChange={(value: SubjectInputItem['category']) => handleInputChange(row.id, 'category', value)}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select category" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Compulsory">Compulsory</SelectItem>
-                                        <SelectItem value="Group subjects">Group subjects</SelectItem>
-                                        <SelectItem value="Language">Language</SelectItem>
-                                        <SelectItem value="Vocational">Vocational</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleRemoveRow(row.id)} disabled={subjectRows.length === 1}>
-                                <Trash2 className="h-4 w-4" />
+        <div className="space-y-6">
+            <Card>
+                <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <CardTitle>Add Subjects</CardTitle>
+                            <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Button variant="outline" onClick={() => setShowExisting(prev => !prev)}>
+                                {showExisting ? 'Hide Existing Subjects' : 'View & Edit Existing Subjects'}
                             </Button>
                         </div>
-                    ))}
-                </div>
-                 <div className="flex justify-between">
-                    <Button variant="outline" onClick={handleAddRow}>
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Add another subject
-                    </Button>
-                    <Button onClick={handleSaveSubjects}>
-                        <FilePlus2 className="mr-2 h-4 w-4" />
-                        Save Subjects
-                    </Button>
-                </div>
-            </CardContent>
-        </Card>
+                    </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                        {subjectRows.map((row, index) => (
+                            <div key={row.id} className="flex items-end gap-2">
+                                <div className="flex-1 space-y-1">
+                                    {index === 0 && <Label>Subject Name</Label>}
+                                    <Input
+                                        placeholder="Enter subject name"
+                                        value={row.name}
+                                        onChange={(e) => handleInputChange(row.id, 'name', e.target.value)}
+                                    />
+                                </div>
+                                <div className="flex-1 space-y-1">
+                                    {index === 0 && <Label>Subject Code</Label>}
+                                    <Input
+                                        placeholder="Enter subject code"
+                                        value={row.code}
+                                        onChange={(e) => handleInputChange(row.id, 'code', e.target.value)}
+                                    />
+                                </div>
+                                <div className="flex-1 space-y-1">
+                                    {index === 0 && <Label>Subject Category</Label>}
+                                    <Select
+                                        value={row.category}
+                                        onValueChange={(value: SubjectInputItem['category']) => handleInputChange(row.id, 'category', value)}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select category" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Compulsory">Compulsory</SelectItem>
+                                            <SelectItem value="Group subjects">Group subjects</SelectItem>
+                                            <SelectItem value="Language">Language</SelectItem>
+                                            <SelectItem value="Vocational">Vocational</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleRemoveRow(row.id)} disabled={subjectRows.length === 1}>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="flex justify-between">
+                        <Button variant="outline" onClick={handleAddRow}>
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            Add another subject
+                        </Button>
+                        <Button onClick={handleSaveSubjects}>
+                            <FilePlus2 className="mr-2 h-4 w-4" />
+                            Save Subjects
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+            {showExisting && <ExistingSubjectsList allSubjects={allSubjects} onSave={onUpdateExisting} />}
+        </div>
     );
 };
 
@@ -449,8 +446,8 @@ const AddSubjectsToGroupForm = ({ onBack }: { onBack: () => void }) => {
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
                     <div>
-                        <CardTitle>Add Subjects in Subject Groups</CardTitle>
-                        <CardDescription>Assign subjects to the groups you have created.</CardDescription>
+                        <CardTitle>Add subjects in Subject groups</CardTitle>
+                        <CardDescription>Populate the created subject groups with specific subjects.</CardDescription>
                     </div>
                 </div>
             </CardHeader>
@@ -680,15 +677,14 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                 <AccordionItem value="item-1" className="border-none">
                     <Card>
                         <div className="flex items-center justify-between p-4 w-full">
-                           <div className="flex-1">
-                             <AccordionTrigger className="w-full p-0 hover:no-underline">
-                                <div className="flex items-center justify-between w-full">
+                           <AccordionTrigger asChild className="w-full p-0 hover:no-underline flex-1">
+                                <div className="flex items-center justify-between w-full cursor-pointer">
                                     <div className="flex-1 text-lg font-semibold text-left">
                                        {headerTitle}
                                     </div>
+                                     <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
                                 </div>
                             </AccordionTrigger>
-                           </div>
                            <div className="flex items-center gap-2 pl-4">
                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); handleRemoveClassConfig(config.id); }}>
                                    <Trash2 className="h-4 w-4" />
@@ -948,27 +944,7 @@ export default function SubjectsForm() {
     }
 
     if (view === 'add-subjects') {
-        return (
-             <div className="space-y-6">
-                <Sheet>
-                    <AddSubjectsCard onSave={handleSaveNewSubjects} />
-                    <SheetTrigger asChild>
-                        <button id="existing-subjects-trigger" className="hidden">View & Edit Existing Subjects</button>
-                    </SheetTrigger>
-                    <SheetContent className="sm:max-w-2xl">
-                        <SheetHeader>
-                            <SheetTitle>Existing Subjects</SheetTitle>
-                            <SheetDescription>
-                                Edit or remove subjects that are already in the system.
-                            </SheetDescription>
-                        </SheetHeader>
-                        <div className="mt-4">
-                            <ExistingSubjectsList allSubjects={allSubjects} onSave={handleUpdateExistingSubjects} />
-                        </div>
-                    </SheetContent>
-                </Sheet>
-            </div>
-        );
+        return <AddSubjectsCard onSave={handleSaveNewSubjects} allSubjects={allSubjects} onUpdateExisting={handleUpdateExistingSubjects} />;
     }
 
     if (view === 'subject-groups') {
@@ -998,7 +974,7 @@ export default function SubjectsForm() {
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
                         <CardTitle>Create subject groups</CardTitle>
-                        <CardDescription>Define valid subject combinations (e.g. PCM, PCB) for higher secondary classes.</CardDescription>
+                        <CardDescription>Define valid subject combinations for higher secondary classes (11th and 12th).</CardDescription>
                     </div>
                     <ChevronRight className="h-6 w-6 text-muted-foreground" />
                 </CardHeader>
@@ -1028,3 +1004,5 @@ export default function SubjectsForm() {
     
 
     
+
+
