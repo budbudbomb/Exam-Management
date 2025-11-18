@@ -162,7 +162,7 @@ export default function DpiNavigation() {
       <div className="flex h-16 items-center px-4 lg:px-6 border-b border-sidebar-border">
          <Link href="/dpi-dashboard" className="flex items-center gap-2 font-semibold text-sidebar-primary-foreground">
           <Logo className="h-8 w-8 text-primary" />
-           {state === 'expanded' && <span className="text-lg font-bold">EduReport Pro (DPI)</span>}
+           {state === 'expanded' && <span className="text-lg font-bold">MP Education Portal 3.0</span>}
         </Link>
       </div>
 
