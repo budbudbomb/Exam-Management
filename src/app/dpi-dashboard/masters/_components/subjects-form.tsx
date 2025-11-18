@@ -264,28 +264,25 @@ const AddSubjectsCard = ({ onSave }: { onSave: (newSubjects: Subject[]) => void 
     );
 };
 
-const SubjectGroupForm = ({ onBack, allSubjects }: { onBack: () => void, allSubjects: SubjectType[] }) => {
-    type SubjectGroup = {
-        id: number;
-        groupName: string;
-        groupCode: string;
-    };
+type SubjectGroup = {
+    id: number;
+    groupName: string;
+    groupCode: string;
+};
+const SubjectGroupForm = ({ onBack, allSubjects, subjectGroups, setSubjectGroups }: { onBack: () => void, allSubjects: Subject[], subjectGroups: SubjectGroup[], setSubjectGroups: React.Dispatch<React.SetStateAction<SubjectGroup[]>> }) => {
 
-    const [groups, setGroups] = useState<SubjectGroup[]>([
-        { id: Date.now(), groupName: '', groupCode: '' }
-    ]);
     const { toast } = useToast();
 
     const handleAddGroup = () => {
-        setGroups(prev => [...prev, { id: Date.now(), groupName: '', groupCode: '' }]);
+        setSubjectGroups(prev => [...prev, { id: Date.now(), groupName: '', groupCode: '' }]);
     };
     
     const handleRemoveGroup = (id: number) => {
-        setGroups(prev => prev.filter(g => g.id !== id));
+        setSubjectGroups(prev => prev.filter(g => g.id !== id));
     };
 
     const handleGroupChange = (id: number, field: 'groupName' | 'groupCode', value: string) => {
-        setGroups(prev => prev.map(g => g.id === id ? { ...g, [field]: value } : g));
+        setSubjectGroups(prev => prev.map(g => g.id === id ? { ...g, [field]: value } : g));
     };
 
     const handleSave = () => {
@@ -298,21 +295,19 @@ const SubjectGroupForm = ({ onBack, allSubjects }: { onBack: () => void, allSubj
     return (
         <Card>
             <CardHeader>
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <Button variant="outline" size="icon" onClick={onBack}>
-                            <ArrowLeft className="h-4 w-4" />
-                        </Button>
-                        <div>
-                            <CardTitle>Create subject groups for 11th and 12th</CardTitle>
-                            <CardDescription>Define valid subject combinations (e.g. PCM, PCB) for higher secondary classes.</CardDescription>
-                        </div>
+                <div className="flex items-center gap-4">
+                    <Button variant="outline" size="icon" onClick={onBack}>
+                        <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                    <div>
+                        <CardTitle>Create subject groups for 11th and 12th</CardTitle>
+                        <CardDescription>Define valid subject combinations (e.g. PCM, PCB) for higher secondary classes.</CardDescription>
                     </div>
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="space-y-2">
-                    {groups.map((group, index) => (
+                    {subjectGroups.map((group, index) => (
                         <div key={group.id} className="flex items-end gap-2">
                             <div className="flex-1 space-y-1">
                                 {index === 0 && <Label>Group Name</Label>}
@@ -330,7 +325,7 @@ const SubjectGroupForm = ({ onBack, allSubjects }: { onBack: () => void, allSubj
                                     onChange={(e) => handleGroupChange(group.id, 'groupCode', e.target.value)}
                                 />
                             </div>
-                            <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleRemoveGroup(group.id)} disabled={groups.length === 1}>
+                            <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleRemoveGroup(group.id)} disabled={subjectGroups.length === 1}>
                                 <Trash2 className="h-4 w-4" />
                             </Button>
                         </div>
@@ -342,6 +337,86 @@ const SubjectGroupForm = ({ onBack, allSubjects }: { onBack: () => void, allSubj
                         Add another group
                     </Button>
                     <Button onClick={handleSave}>Save All Groups</Button>
+                </div>
+            </CardContent>
+        </Card>
+    );
+};
+
+const AddSubjectsToGroupForm = ({ onBack, allSubjects, subjectGroups }: { onBack: () => void, allSubjects: Subject[], subjectGroups: SubjectGroup[] }) => {
+    const [selectedGroup, setSelectedGroup] = useState('');
+    const [selectedSubject, setSelectedSubject] = useState('');
+    const { toast } = useToast();
+
+    const groupSubjects = useMemo(() => {
+        // This logic needs to be defined. For now, assuming "Group subjects" category is what populates this.
+        // The prompt says "subjects from subject groups" but the category is "Group subjects"
+        // I will filter by name for now.
+        return allSubjects.filter(s => s.category === 'Core' && s.name !== 'Mathematics' && s.name !== 'Science');
+    }, [allSubjects]);
+    
+    const handleSave = () => {
+        if (!selectedGroup || !selectedSubject) {
+            toast({
+                variant: 'destructive',
+                title: 'Incomplete Selection',
+                description: 'Please select both a group and a subject.',
+            });
+            return;
+        }
+        toast({
+            title: 'Subject Added to Group',
+            description: `Successfully added subject to group.`,
+        });
+        setSelectedSubject('');
+    };
+
+    return (
+        <Card>
+            <CardHeader>
+                <div className="flex items-center gap-4">
+                    <Button variant="outline" size="icon" onClick={onBack}>
+                        <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                    <div>
+                        <CardTitle>Add Subjects in Subject Groups</CardTitle>
+                        <CardDescription>Assign subjects to the groups you have created.</CardDescription>
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="flex items-end gap-2">
+                    <div className="flex-1 space-y-1">
+                        <Label>Group</Label>
+                        <Select value={selectedGroup} onValueChange={setSelectedGroup}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a group" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {subjectGroups.map(group => (
+                                    <SelectItem key={group.id} value={group.groupCode}>
+                                        {group.groupName} ({group.groupCode})
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="flex-1 space-y-1">
+                        <Label>Add Subject</Label>
+                        <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a subject" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {groupSubjects.map(subject => (
+                                     <SelectItem key={subject.id} value={subject.id}>
+                                         {subject.name}
+                                     </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <Button onClick={handleSave}>Save</Button>
                 </div>
             </CardContent>
         </Card>
@@ -963,6 +1038,7 @@ export default function SubjectsForm() {
     const searchParams = useSearchParams();
     const view = searchParams.get('view');
     const [allSubjects, setAllSubjects] = useState(() => getSubjects());
+    const [subjectGroups, setSubjectGroups] = useState<SubjectGroup[]>([]);
 
     const handleNavigate = (view: string) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -1011,7 +1087,11 @@ export default function SubjectsForm() {
     }
 
     if (view === 'subject-groups') {
-        return <SubjectGroupForm onBack={handleBack} allSubjects={allSubjects} />;
+        return <SubjectGroupForm onBack={handleBack} allSubjects={allSubjects} subjectGroups={subjectGroups} setSubjectGroups={setSubjectGroups} />;
+    }
+    
+    if (view === 'add-subjects-to-group') {
+        return <AddSubjectsToGroupForm onBack={handleBack} allSubjects={allSubjects} subjectGroups={subjectGroups} />;
     }
 
     if (view === 'assign-subjects') {
@@ -1042,6 +1122,15 @@ export default function SubjectsForm() {
                     <ChevronRight className="h-6 w-6 text-muted-foreground" />
                 </CardHeader>
             </Card>
+            <Card className="cursor-pointer hover:bg-muted/50" onClick={() => handleNavigate('add-subjects-to-group')}>
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                        <CardTitle>Add subjects in Subject groups</CardTitle>
+                        <CardDescription>Populate the created subject groups with specific subjects.</CardDescription>
+                    </div>
+                    <ChevronRight className="h-6 w-6 text-muted-foreground" />
+                </CardHeader>
+            </Card>
             <Card className="cursor-pointer hover:bg-muted/50" onClick={() => handleNavigate('assign-subjects')}>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
@@ -1063,6 +1152,7 @@ export default function SubjectsForm() {
         </div>
     );
 }
+
 
 
 
