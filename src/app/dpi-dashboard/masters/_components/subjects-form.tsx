@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -534,7 +533,7 @@ const AddSubjectsToGroupForm = ({ onBack }: { onBack: () => void }) => {
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
-                 <AssignmentCard
+                <AssignmentCard
                     isNew={true}
                     assignment={newAssignment}
                     onAssignmentChange={setNewAssignment}
@@ -679,6 +678,12 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
         return classSubjects.find(s => s.id === subject.subjectId)?.name || 'New Subject';
     };
 
+    const sortedClasses = [...mockClasses].sort((a, b) => {
+        const aNum = parseInt(a.name.split(' ')[1]);
+        const bNum = parseInt(b.name.split(' ')[1]);
+        return aNum - bNum;
+    });
+
     const ClassConfigCard = ({ config }: { config: ClassConfig }) => {
         const selectedClass = mockClasses.find(c => c.id === config.classId);
         const selectedClassName = selectedClass?.name;
@@ -733,7 +738,7 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                 <AccordionItem value="item-1" className="border-none">
                     <Card>
                          <div className="flex items-center justify-between p-4 w-full">
-                           <AccordionTrigger asChild>
+                           <AccordionTrigger className="w-full p-0 hover:no-underline flex-1" asChild>
                                 <div className="flex items-center justify-between w-full cursor-pointer flex-1">
                                     <div className="flex-1 text-lg font-semibold text-left">
                                        {headerTitle}
@@ -777,7 +782,7 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                                                                 <SelectValue placeholder="Select a class" />
                                                             </SelectTrigger>
                                                             <SelectContent>
-                                                                {mockClasses.map(cls => (
+                                                                {sortedClasses.map(cls => (
                                                                     <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
                                                                 ))}
                                                             </SelectContent>
@@ -945,7 +950,7 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
                     <div>
-                        <CardTitle>Subject & Marks Configuration</CardTitle>
+                        <CardTitle>Subject &amp; Marks Configuration</CardTitle>
                         <CardDescription>Assign subjects to classes and define their marks structure.</CardDescription>
                     </div>
                 </div>
@@ -1040,15 +1045,6 @@ export default function SubjectsForm() {
                     <div>
                         <CardTitle>Add subjects in Subject groups</CardTitle>
                         <CardDescription>Populate the created subject groups with specific subjects.</CardDescription>
-                    </div>
-                    <ChevronRight className="h-6 w-6 text-muted-foreground" />
-                </CardHeader>
-            </Card>
-            <Card className="cursor-pointer hover:bg-muted/50" onClick={() => handleNavigate('subject-management')}>
-                <CardHeader className="flex flex-row items-center justify-between">
-                    <div>
-                        <CardTitle>Subject & Marks Configuration</CardTitle>
-                        <CardDescription>Assign subjects to classes and define their marks structure.</CardDescription>
                     </div>
                     <ChevronRight className="h-6 w-6 text-muted-foreground" />
                 </CardHeader>
