@@ -89,7 +89,7 @@ export default function Navigation() {
   return (
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
       <div className="flex h-16 shrink-0 items-center border-b border-sidebar-border group-data-[collapsible=icon]:justify-center">
-         <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-sidebar-primary-foreground px-4">
+         <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-sidebar-foreground px-4">
           <Logo className="h-8 w-8 text-primary shrink-0" />
           {state === 'expanded' && <span className="text-lg font-bold">MP Education Portal 3.0</span>}
         </Link>
