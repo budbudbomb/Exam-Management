@@ -16,7 +16,6 @@ import { Subject } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import SubjectGroupForm from './subject-group-form';
 import { useToast } from '@/hooks/use-toast';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
@@ -197,8 +196,15 @@ const AddSubjectsCard = ({ onSave }: { onSave: (newSubjects: Subject[]) => void 
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Add Subjects</CardTitle>
-                <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
+                <div className="flex items-center justify-between">
+                     <div>
+                        <CardTitle>Add Subjects</CardTitle>
+                        <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
+                    </div>
+                    <Button variant="outline" onClick={() => (document.getElementById('existing-subjects-trigger') as HTMLButtonElement)?.click()}>
+                        View & Edit Existing Subjects
+                    </Button>
+                </div>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -252,6 +258,90 @@ const AddSubjectsCard = ({ onSave }: { onSave: (newSubjects: Subject[]) => void 
                         <FilePlus2 className="mr-2 h-4 w-4" />
                         Save Subjects
                     </Button>
+                </div>
+            </CardContent>
+        </Card>
+    );
+};
+
+const SubjectGroupForm = ({ onBack, allSubjects }: { onBack: () => void, allSubjects: SubjectType[] }) => {
+    type SubjectGroup = {
+        id: number;
+        groupName: string;
+        groupCode: string;
+    };
+
+    const [groups, setGroups] = useState<SubjectGroup[]>([
+        { id: Date.now(), groupName: '', groupCode: '' }
+    ]);
+    const { toast } = useToast();
+
+    const handleAddGroup = () => {
+        setGroups(prev => [...prev, { id: Date.now(), groupName: '', groupCode: '' }]);
+    };
+    
+    const handleRemoveGroup = (id: number) => {
+        setGroups(prev => prev.filter(g => g.id !== id));
+    };
+
+    const handleGroupChange = (id: number, field: 'groupName' | 'groupCode', value: string) => {
+        setGroups(prev => prev.map(g => g.id === id ? { ...g, [field]: value } : g));
+    };
+
+    const handleSave = () => {
+        toast({
+            title: "Groups Saved",
+            description: "The subject groups have been saved.",
+        });
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <Button variant="outline" size="icon" onClick={onBack}>
+                            <ArrowLeft className="h-4 w-4" />
+                        </Button>
+                        <div>
+                            <CardTitle>Create subject groups for 11th and 12th</CardTitle>
+                            <CardDescription>Define valid subject combinations (e.g. PCM, PCB) for higher secondary classes.</CardDescription>
+                        </div>
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="space-y-2">
+                    {groups.map((group, index) => (
+                        <div key={group.id} className="flex items-end gap-2">
+                            <div className="flex-1 space-y-1">
+                                {index === 0 && <Label>Group Name</Label>}
+                                <Input 
+                                    placeholder="e.g. Science (Biology)" 
+                                    value={group.groupName}
+                                    onChange={(e) => handleGroupChange(group.id, 'groupName', e.target.value)}
+                                />
+                            </div>
+                            <div className="flex-1 space-y-1">
+                                {index === 0 && <Label>Group Code</Label>}
+                                <Input 
+                                    placeholder="e.g. SCI-BIO"
+                                    value={group.groupCode}
+                                    onChange={(e) => handleGroupChange(group.id, 'groupCode', e.target.value)}
+                                />
+                            </div>
+                            <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleRemoveGroup(group.id)} disabled={groups.length === 1}>
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    ))}
+                </div>
+                <div className="flex justify-between items-center">
+                    <Button variant="outline" onClick={handleAddGroup}>
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Add another group
+                    </Button>
+                    <Button onClick={handleSave}>Save All Groups</Button>
                 </div>
             </CardContent>
         </Card>
@@ -873,7 +963,6 @@ export default function SubjectsForm() {
     const searchParams = useSearchParams();
     const view = searchParams.get('view');
     const [allSubjects, setAllSubjects] = useState(() => getSubjects());
-    const [showExistingSubjects, setShowExistingSubjects] = useState(false);
 
     const handleNavigate = (view: string) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -885,7 +974,6 @@ export default function SubjectsForm() {
         const params = new URLSearchParams(searchParams.toString());
         params.delete('view');
         router.push(`${pathname}?${params.toString()}`);
-        setShowExistingSubjects(false);
     }
 
     const handleSaveNewSubjects = (newSubjects: Subject[]) => {
@@ -901,28 +989,23 @@ export default function SubjectsForm() {
     if (view === 'add-subjects') {
         return (
              <div className="space-y-6">
-                <Card>
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <Button variant="outline" size="icon" onClick={handleBack}>
-                                    <ArrowLeft className="h-4 w-4" />
-                                </Button>
-                                <div>
-                                    <CardTitle>Add Subjects</CardTitle>
-                                    <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
-                                </div>
-                            </div>
-                            <Button variant="outline" onClick={() => setShowExistingSubjects(prev => !prev)}>
-                                {showExistingSubjects ? 'Hide Existing Subjects' : 'View & Edit Existing Subjects'}
-                            </Button>
+                <Sheet>
+                    <AddSubjectsCard onSave={handleSaveNewSubjects} />
+                    <SheetTrigger asChild>
+                        <button id="existing-subjects-trigger" className="hidden">View & Edit Existing Subjects</button>
+                    </SheetTrigger>
+                    <SheetContent className="sm:max-w-2xl">
+                        <SheetHeader>
+                            <SheetTitle>Existing Subjects</SheetTitle>
+                            <SheetDescription>
+                                Edit or remove subjects that are already in the system.
+                            </SheetDescription>
+                        </SheetHeader>
+                        <div className="mt-4">
+                            <ExistingSubjectsList allSubjects={allSubjects} onSave={handleUpdateExistingSubjects} />
                         </div>
-                    </CardHeader>
-                    <CardContent>
-                        <AddSubjectsCard onSave={handleSaveNewSubjects} />
-                    </CardContent>
-                </Card>
-                {showExistingSubjects && <ExistingSubjectsList allSubjects={allSubjects} onSave={handleUpdateExistingSubjects} />}
+                    </SheetContent>
+                </Sheet>
             </div>
         );
     }
@@ -980,5 +1063,6 @@ export default function SubjectsForm() {
         </div>
     );
 }
+
 
 
