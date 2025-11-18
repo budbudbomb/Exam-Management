@@ -20,7 +20,7 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { mockClasses, mockSubjects } from '@/lib/data';
+import { mockClasses, getSubjects } from '@/lib/data';
 import { Subject } from '@/lib/types';
 import React, { useState, useMemo } from 'react';
 import { ChevronDown, PlusCircle, Trash2 } from 'lucide-react';
@@ -69,10 +69,11 @@ const MultiSelectDropdown = ({ title, subjects, selectedSubjects, onSubjectSelec
 const ConfigCard = ({ config, onConfigChange, onRemove, classList }: { config: Config, onConfigChange: (newConfig: Config) => void, onRemove: () => void, classList: any[] }) => {
     
     const categorizedSubjects = useMemo(() => {
+        const allSubjects = getSubjects();
         return {
-          Mandatory: mockSubjects.filter((s) => s.category === 'Core'),
-          Language: mockSubjects.filter((s) => s.category === 'Language'),
-          Vocational: mockSubjects.filter((s) => s.category === 'Vocational'),
+          Mandatory: allSubjects.filter((s) => s.category === 'Core'),
+          Language: allSubjects.filter((s) => s.category === 'Language'),
+          Vocational: allSubjects.filter((s) => s.category === 'Vocational'),
         };
       }, []);
 
