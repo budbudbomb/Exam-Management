@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -53,41 +54,20 @@ const ExistingSubjectsList = ({ allSubjects, onSave }: { allSubjects: Subject[],
         });
     };
 
-    const categorizedSubjects = useMemo(() => {
-        const categories: { [key in Subject['category']]: Subject[] } = {
-            Core: [],
-            Language: [],
-            Vocational: [],
-        };
-        editableSubjects.forEach(subject => {
-            if (categories[subject.category]) {
-                categories[subject.category].push(subject);
-            }
-        });
-        // Remap "Compulsory" and "Group subjects" to "Core" for display
-        const displayCategories: { [key: string]: Subject[] } = {
-            'Compulsory': editableSubjects.filter(s => s.category === 'Core'), // Assuming Compulsory maps to Core
-            'Group subjects': [], // You might need a different property to distinguish these
-            'Language': categories.Language,
-            'Vocational': categories.Vocational,
-        };
-        return displayCategories;
-    }, [editableSubjects]);
-
-    const renderCategory = (category: string, title: string) => {
-        const subjects = categorizedSubjects[category];
-        if (!subjects || subjects.length === 0) return null;
-
-        return (
-            <div key={category} className="space-y-4 rounded-lg border p-4">
-                <h3 className="font-medium">{title}</h3>
-                <div className="flex items-end gap-4">
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Existing Subjects</CardTitle>
+                <CardDescription>Edit or remove subjects that are already in the system.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                 <div className="flex items-end gap-4 font-medium text-sm text-muted-foreground">
                     <div className="flex-1 space-y-2"><Label>Subject Name</Label></div>
                     <div className="flex-1 space-y-2"><Label>Subject Code</Label></div>
                     <div className="w-[40px]"></div>
                 </div>
                 <div className="space-y-2">
-                    {subjects.map(subject => (
+                    {editableSubjects.map(subject => (
                         <div key={subject.id} className="flex items-end gap-4">
                             <div className="flex-1">
                                 <Input
@@ -112,24 +92,7 @@ const ExistingSubjectsList = ({ allSubjects, onSave }: { allSubjects: Subject[],
                         </div>
                     ))}
                 </div>
-            </div>
-        );
-    };
-
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Existing Subjects</CardTitle>
-                <CardDescription>Edit or remove subjects that are already in the system.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {renderCategory('Compulsory', 'Compulsory')}
-                    {renderCategory('Group subjects', 'Group subjects')}
-                    {renderCategory('Language', 'Language Subjects')}
-                    {renderCategory('Vocational', 'Vocational Subjects')}
-                </div>
-                <div className="flex justify-end">
+                <div className="flex justify-end pt-4">
                     <Button onClick={handleSaveChanges}>Save Changes</Button>
                 </div>
             </CardContent>
@@ -983,3 +946,4 @@ export default function SubjectsForm() {
         </div>
     );
 }
+
