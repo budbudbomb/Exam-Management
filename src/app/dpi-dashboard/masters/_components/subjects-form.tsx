@@ -522,18 +522,17 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
     type ClassConfig = {
         id: number;
         classId: string;
-        medium: string;
         subjects: SubjectConfigRow[];
     };
     
     const [classConfigs, setClassConfigs] = useState<ClassConfig[]>([
-        { id: Date.now(), classId: '', medium: '', subjects: [{ id: Date.now(), subjectCategory: '', subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }] }
+        { id: Date.now(), classId: '', subjects: [{ id: Date.now(), subjectCategory: '', subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }] }
     ]);
     
     const handleAddClassConfig = () => {
         setClassConfigs(prev => [
             ...prev,
-            { id: Date.now(), classId: '', medium: '', subjects: [{ id: Date.now(), subjectCategory: '', subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }] }
+            { id: Date.now(), classId: '', subjects: [{ id: Date.now(), subjectCategory: '', subjectId: '', theorySubTypes: { basic: false, standard: true, none: false }, theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }] }
         ]);
     };
     
@@ -541,7 +540,7 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
         setClassConfigs(prev => prev.filter(c => c.id !== id));
     };
 
-    const handleClassConfigChange = (id: number, field: 'classId' | 'medium', value: string) => {
+    const handleClassConfigChange = (id: number, field: 'classId', value: string) => {
         setClassConfigs(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c));
     };
     
@@ -630,11 +629,7 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
         const selectedClass = mockClasses.find(c => c.id === config.classId);
         const selectedClassName = selectedClass?.name;
         
-        const headerTitleParts = [];
-        if (selectedClassName) headerTitleParts.push(selectedClassName);
-        if (config.medium) headerTitleParts.push(config.medium);
-        
-        const headerTitle = headerTitleParts.length > 0 ? headerTitleParts.join(' - ') : "New Class Configuration";
+        const headerTitle = selectedClassName || "New Class Configuration";
 
         const categorizedClassSubjects = useMemo(() => {
             if (!config.classId) return { Core: [], Language: [], Vocational: [] };
@@ -666,7 +661,7 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="p-4 pt-0">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                                 <div className="space-y-2">
                                     <Label>Class</Label>
                                     <Select value={config.classId} onValueChange={(value) => handleClassConfigChange(config.id, 'classId', value)}>
@@ -677,20 +672,6 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                                             {mockClasses.map(cls => (
                                                 <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
                                             ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Medium</Label>
-                                     <Select value={config.medium} onValueChange={(value) => handleClassConfigChange(config.id, 'medium', value)}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a medium" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="English">English</SelectItem>
-                                            <SelectItem value="Hindi">Hindi</SelectItem>
-                                            <SelectItem value="Urdu">Urdu</SelectItem>
-                                            <SelectItem value="Sanskrit">Sanskrit</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -1229,6 +1210,7 @@ export default function SubjectsForm() {
         </div>
     );
 }
+
 
 
 
