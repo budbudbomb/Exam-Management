@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { mockClasses, mockSubjects } from '@/lib/data';
+import { mockClasses } from '@/lib/data';
 import { Subject as SubjectType } from '@/lib/types';
 import { ArrowLeft, ChevronDown, PlusCircle, Edit, Trash2 } from 'lucide-react';
 import React, { useState, useMemo } from 'react';
@@ -116,17 +116,17 @@ const GroupCard = ({ group, onGroupChange, onRemoveGroup, allSubjects }: { group
     return (
         <Accordion type="single" collapsible defaultValue="item-1" className="w-full border-none">
             <AccordionItem value="item-1" className="border rounded-lg overflow-hidden">
-                <AccordionTrigger className="p-4 hover:no-underline bg-muted/50 data-[state=open]:border-b">
-                    <div className="flex items-center justify-between w-full">
-                        <span className="font-semibold text-lg">{headerTitle}</span>
-                        <div className="flex items-center gap-2">
-                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); onRemoveGroup(); }}>
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                             <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+                 <div className="flex items-center justify-between p-4 bg-muted/50 data-[state=open]:border-b">
+                    <AccordionTrigger className="p-0 hover:no-underline flex-1">
+                        <div className="flex items-center justify-between w-full">
+                            <span className="font-semibold text-lg text-left">{headerTitle}</span>
+                            <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
                         </div>
-                    </div>
-                </AccordionTrigger>
+                    </AccordionTrigger>
+                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive ml-2" onClick={(e) => { e.stopPropagation(); onRemoveGroup(); }}>
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                </div>
                 <AccordionContent className="p-4">
                     <div className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
