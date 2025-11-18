@@ -134,14 +134,13 @@ const ExistingSubjectsList = ({ allSubjects, onSave }: { allSubjects: Subject[],
 };
 
 
-const AddSubjectsCard = ({ onBack, onSave }: { onBack: () => void, onSave: (newSubjects: Subject[]) => void }) => {
+const AddSubjectsCard = ({ onSave }: { onSave: (newSubjects: Subject[]) => void }) => {
     const [inputs, setInputs] = useState<SubjectInputs>({
         Core: [{ id: 1, name: '', code: '' }],
         Language: [{ id: 1, name: '', code: '' }],
         Vocational: [{ id: 1, name: '', code: '' }],
     });
     const { toast } = useToast();
-    const [showExistingSubjects, setShowExistingSubjects] = useState(false);
 
     const handleInputChange = (category: keyof SubjectInputs, id: number, field: 'name' | 'code', value: string) => {
         setInputs(prev => ({
@@ -259,38 +258,24 @@ const AddSubjectsCard = ({ onBack, onSave }: { onBack: () => void, onSave: (newS
     );
 
     return (
-        <div className="space-y-6">
-            <Card>
-                <CardHeader>
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <Button variant="outline" size="icon" onClick={onBack}>
-                                <ArrowLeft className="h-4 w-4" />
-                            </Button>
-                            <div>
-                                <CardTitle>Add Subjects</CardTitle>
-                                <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
-                            </div>
-                        </div>
-                        <Button variant="outline" onClick={() => setShowExistingSubjects(prev => !prev)}>
-                            {showExistingSubjects ? 'Hide Existing Subjects' : 'View & Edit Existing Subjects'}
-                        </Button>
-                    </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {renderCategory('Core', 'Mandatory and group subjects')}
-                        {renderCategory('Language', 'Language Subjects')}
-                        {renderCategory('Vocational', 'Vocational Subjects')}
-                    </div>
-                    <div className="flex justify-end">
-                        <Button onClick={handleSaveSubjects}>
-                            <FilePlus2 className="mr-2 h-4 w-4" /> Save Subjects
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
+        <Card>
+            <CardHeader>
+                <CardTitle>Add Subjects</CardTitle>
+                <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {renderCategory('Core', 'Mandatory and group subjects')}
+                    {renderCategory('Language', 'Language Subjects')}
+                    {renderCategory('Vocational', 'Vocational Subjects')}
+                </div>
+                <div className="flex justify-end">
+                    <Button onClick={handleSaveSubjects}>
+                        <FilePlus2 className="mr-2 h-4 w-4" /> Save Subjects
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
     );
 };
 
@@ -966,7 +951,7 @@ export default function SubjectsForm() {
 
     if (view === 'add-subjects') {
         return (
-            <div className="space-y-6">
+             <div className="space-y-6">
                 <Card>
                     <CardHeader>
                         <div className="flex items-center justify-between">
@@ -975,17 +960,17 @@ export default function SubjectsForm() {
                                     <ArrowLeft className="h-4 w-4" />
                                 </Button>
                                 <div>
-                                    <CardTitle>Add & Edit Subjects</CardTitle>
+                                    <CardTitle>Add &amp; Edit Subjects</CardTitle>
                                     <CardDescription>Add new subjects or view and edit existing ones.</CardDescription>
                                 </div>
                             </div>
                             <Button variant="outline" onClick={() => setShowExistingSubjects(prev => !prev)}>
-                                {showExistingSubjects ? 'Hide Existing Subjects' : 'View & Edit Existing Subjects'}
+                                {showExistingSubjects ? 'Hide Existing Subjects' : 'View &amp; Edit Existing Subjects'}
                             </Button>
                         </div>
                     </CardHeader>
-                    <CardContent className="space-y-6">
-                        <AddSubjectsCard onBack={handleBack} onSave={handleSaveNewSubjects} />
+                    <CardContent>
+                        <AddSubjectsCard onSave={handleSaveNewSubjects} />
                     </CardContent>
                 </Card>
                 {showExistingSubjects && <ExistingSubjectsList allSubjects={allSubjects} onSave={handleUpdateExistingSubjects} />}
@@ -1010,7 +995,7 @@ export default function SubjectsForm() {
             <Card className="cursor-pointer hover:bg-muted/50" onClick={() => handleNavigate('add-subjects')}>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
-                        <CardTitle>Add & Edit Subjects</CardTitle>
+                        <CardTitle>Add &amp; Edit Subjects</CardTitle>
                         <CardDescription>Add new subjects to the system or edit existing ones.</CardDescription>
                     </div>
                     <ChevronRight className="h-6 w-6 text-muted-foreground" />
@@ -1046,20 +1031,3 @@ export default function SubjectsForm() {
         </div>
     );
 }
-
-
-
-
-
-    
-
-
-
-
-
-    
-
-
-
-
-
