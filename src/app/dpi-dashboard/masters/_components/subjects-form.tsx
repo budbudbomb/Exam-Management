@@ -309,8 +309,8 @@ const SubjectGroupForm = ({ onBack, allSubjects, subjectGroups, setSubjectGroups
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
                     <div>
-                        <CardTitle>Create subject groups for 11th and 12th</CardTitle>
-                        <CardDescription>Define valid subject combinations (e.g. PCM, PCB) for higher secondary classes.</CardDescription>
+                        <CardTitle>Create subject groups</CardTitle>
+                        <CardDescription>Define valid subject combinations for 11th and 12th classes.</CardDescription>
                     </div>
                 </div>
             </CardHeader>
@@ -689,11 +689,11 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                                 </div>
                             </AccordionTrigger>
                            </div>
-                            <div className="flex items-center gap-2 pl-4">
-                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); handleRemoveClassConfig(config.id); }}>
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
-                            </div>
+                           <div className="flex items-center gap-2 pl-4">
+                               <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); handleRemoveClassConfig(config.id); }}>
+                                   <Trash2 className="h-4 w-4" />
+                               </Button>
+                           </div>
                         </div>
                         <AccordionContent className="p-4 pt-0">
                              <Accordion type="multiple" className="space-y-4" defaultValue={config.subjects.map(s => `item-${s.id}`)}>
@@ -708,13 +708,13 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                                                         </div>
                                                     </div>
                                                 </AccordionTrigger>
-                                                <div className="flex items-center gap-2 pl-4">
-                                                    {config.subjects.length > 1 && (
+                                                {config.subjects.length > 1 && (
+                                                    <div className="flex items-center gap-2 pl-4">
                                                         <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); handleRemoveSubject(config.id, subject.id); }}>
                                                             <Trash2 className="h-4 w-4" />
                                                         </Button>
-                                                    )}
-                                                </div>
+                                                    </div>
+                                                )}
                                             </div>
                                             <AccordionContent className="p-4 pt-0">
                                                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 items-end">
@@ -893,8 +893,8 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
                     <div>
-                        <CardTitle>Subject Management</CardTitle>
-                        <CardDescription>Add, edit, or remove existing subjects taught in the school.</CardDescription>
+                        <CardTitle>Subject & Marks Configuration</CardTitle>
+                        <CardDescription>Assign subjects to classes and define their marks structure.</CardDescription>
                     </div>
                 </div>
             </CardHeader>
@@ -988,7 +988,7 @@ export default function SubjectsForm() {
             <Card className="cursor-pointer hover:bg-muted/50" onClick={() => handleNavigate('add-subjects')}>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
-                        <CardTitle>Add & Edit Subjects</CardTitle>
+                        <CardTitle>Add Subjects</CardTitle>
                         <CardDescription>Add new subjects to the system or edit existing ones.</CardDescription>
                     </div>
                     <ChevronRight className="h-6 w-6 text-muted-foreground" />
@@ -997,7 +997,7 @@ export default function SubjectsForm() {
             <Card className="cursor-pointer hover:bg-muted/50" onClick={() => handleNavigate('subject-groups')}>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
-                        <CardTitle>Create subject groups for 11th and 12th</CardTitle>
+                        <CardTitle>Create subject groups</CardTitle>
                         <CardDescription>Define valid subject combinations (e.g. PCM, PCB) for higher secondary classes.</CardDescription>
                     </div>
                     <ChevronRight className="h-6 w-6 text-muted-foreground" />
@@ -1015,8 +1015,8 @@ export default function SubjectsForm() {
             <Card className="cursor-pointer hover:bg-muted/50" onClick={() => handleNavigate('subject-management')}>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
-                        <CardTitle>Subject Management</CardTitle>
-                        <CardDescription>Edit, or remove existing subjects taught in the school.</CardDescription>
+                        <CardTitle>Subject & Marks Configuration</CardTitle>
+                        <CardDescription>Assign subjects to classes and define their marks structure.</CardDescription>
                     </div>
                     <ChevronRight className="h-6 w-6 text-muted-foreground" />
                 </CardHeader>
