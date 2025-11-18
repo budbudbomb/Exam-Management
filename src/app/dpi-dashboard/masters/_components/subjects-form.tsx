@@ -386,9 +386,12 @@ const AddSubjectsToGroupForm = ({ onBack }: { onBack: () => void }) => {
         isSaved: boolean;
     };
     
-    const [assignments, setAssignments] = useState<Assignment[]>([
-        { id: Date.now(), groupId: 'humanities', selectedSubjects: { 'physics': true, 'chemistry': true, 'maths': true }, isSaved: true }
+    const [savedAssignments, setSavedAssignments] = useState<Assignment[]>([
+        { id: 1, groupId: 'humanities', selectedSubjects: { 'physics': true, 'chemistry': true, 'maths': true }, isSaved: true }
     ]);
+    
+    const [newAssignment, setNewAssignment] = useState<Omit<Assignment, 'id' | 'isSaved'>>({ groupId: '', selectedSubjects: {} });
+
     const { toast } = useToast();
 
     const groupOptions = [
@@ -408,23 +411,32 @@ const AddSubjectsToGroupForm = ({ onBack }: { onBack: () => void }) => {
         { id: 'accounts', name: 'Accounts' },
     ];
 
-    const handleAddAssignment = () => {
-        setAssignments(prev => [...prev, { id: Date.now(), groupId: '', selectedSubjects: {}, isSaved: false }]);
-    };
-
     const handleRemoveAssignment = (id: number) => {
-        setAssignments(prev => prev.filter(a => a.id !== id));
+        setSavedAssignments(prev => prev.filter(a => a.id !== id));
     };
 
-    const handleAssignmentChange = (updatedAssignment: Assignment) => {
-        setAssignments(prev => prev.map(a => a.id === updatedAssignment.id ? updatedAssignment : a));
+    const handleSavedAssignmentChange = (updatedAssignment: Assignment) => {
+        setSavedAssignments(prev => prev.map(a => a.id === updatedAssignment.id ? updatedAssignment : a));
+    };
+    
+    const handleSaveNewAssignment = () => {
+        if (!newAssignment.groupId || Object.keys(newAssignment.selectedSubjects).length === 0) {
+            toast({ variant: 'destructive', title: 'Please select a group and subjects' });
+            return;
+        }
+        const newSavedAssignment = { ...newAssignment, id: Date.now(), isSaved: true };
+        setSavedAssignments(prev => [...prev, newSavedAssignment]);
+        setNewAssignment({ groupId: '', selectedSubjects: {} }); // Reset form
+        toast({ title: 'Assignment Saved' });
     };
 
-    const AssignmentCard = ({ assignment, onAssignmentChange, onRemove }: { assignment: Assignment, onAssignmentChange: (updated: Assignment) => void, onRemove: () => void }) => {
-        const [isEditing, setIsEditing] = useState(!assignment.isSaved);
+    const AssignmentCard = ({ assignment, onAssignmentChange, onRemove, isNew = false }: { assignment: Assignment | Omit<Assignment, 'id' | 'isSaved'>, onAssignmentChange: (updated: any) => void, onRemove?: () => void, isNew?: boolean }) => {
+        const [isEditing, setIsEditing] = useState(isNew);
+        
+        const fullAssignment = isNew ? { ...assignment, id: 0, isSaved: false } : assignment as Assignment;
 
         const handleSave = () => {
-            onAssignmentChange({ ...assignment, isSaved: true });
+            onAssignmentChange({ ...fullAssignment, isSaved: true });
             setIsEditing(false);
             toast({ title: 'Assignment Saved' });
         };
@@ -432,18 +444,17 @@ const AddSubjectsToGroupForm = ({ onBack }: { onBack: () => void }) => {
         const handleEdit = () => setIsEditing(true);
 
         const handleGroupChange = (groupId: string) => {
-            onAssignmentChange({ ...assignment, groupId, selectedSubjects: {} });
+            onAssignmentChange({ ...fullAssignment, groupId, selectedSubjects: {} });
         };
 
         const handleSubjectSelection = (subjectId: string, checked: boolean) => {
-            const newSelectedSubjects = { ...assignment.selectedSubjects, [subjectId]: checked };
-            onAssignmentChange({ ...assignment, selectedSubjects: newSelectedSubjects });
+            const newSelectedSubjects = { ...fullAssignment.selectedSubjects, [subjectId]: checked };
+            onAssignmentChange({ ...fullAssignment, selectedSubjects: newSelectedSubjects });
         };
 
-        const selectedGroupName = groupOptions.find(g => g.id === assignment.groupId)?.name || 'New Assignment';
-        const selectedSubjectsCount = Object.values(assignment.selectedSubjects).filter(Boolean).length;
+        const selectedGroupName = groupOptions.find(g => g.id === fullAssignment.groupId)?.name || 'New Assignment';
         const selectedSubjectsText = subjectOptions
-            .filter(s => assignment.selectedSubjects[s.id])
+            .filter(s => fullAssignment.selectedSubjects[s.id])
             .map(s => s.name)
             .join(', ');
 
@@ -457,9 +468,9 @@ const AddSubjectsToGroupForm = ({ onBack }: { onBack: () => void }) => {
                                 <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
                             </div>
                         </AccordionTrigger>
-                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive ml-2" onClick={(e) => { e.stopPropagation(); onRemove(); }}>
+                        {onRemove && <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive ml-2" onClick={(e) => { e.stopPropagation(); onRemove(); }}>
                             <Trash2 className="h-4 w-4" />
-                        </Button>
+                        </Button>}
                     </div>
                     <AccordionContent className="p-4">
                         {isEditing ? (
@@ -467,7 +478,7 @@ const AddSubjectsToGroupForm = ({ onBack }: { onBack: () => void }) => {
                                 <div className="grid grid-cols-2 gap-4 items-end">
                                     <div className="space-y-1">
                                         <Label>Group</Label>
-                                        <Select value={assignment.groupId} onValueChange={handleGroupChange}>
+                                        <Select value={fullAssignment.groupId} onValueChange={handleGroupChange}>
                                             <SelectTrigger className="rounded-full">
                                                 <SelectValue placeholder="Select a group" />
                                             </SelectTrigger>
@@ -481,13 +492,13 @@ const AddSubjectsToGroupForm = ({ onBack }: { onBack: () => void }) => {
                                         <MultiSelectDropdown
                                             title="Subjects"
                                             options={subjectOptions}
-                                            selectedOptions={assignment.selectedSubjects}
+                                            selectedOptions={fullAssignment.selectedSubjects}
                                             onSelectionChange={handleSubjectSelection}
                                         />
                                     </div>
                                 </div>
                                 <div className="flex justify-end">
-                                    <Button onClick={handleSave}>Save Assignment</Button>
+                                    <Button onClick={isNew ? handleSaveNewAssignment : handleSave}>Save Assignment</Button>
                                 </div>
                             </div>
                         ) : (
@@ -520,18 +531,20 @@ const AddSubjectsToGroupForm = ({ onBack }: { onBack: () => void }) => {
                             <CardDescription>Populate the created subject groups with specific subjects.</CardDescription>
                         </div>
                     </div>
-                     <Button onClick={handleAddAssignment}>
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Add Assignment
-                    </Button>
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
-                {assignments.map(assignment => (
+                 <AssignmentCard
+                    isNew={true}
+                    assignment={newAssignment}
+                    onAssignmentChange={setNewAssignment}
+                />
+                
+                {savedAssignments.map(assignment => (
                     <AssignmentCard
                         key={assignment.id}
                         assignment={assignment}
-                        onAssignmentChange={handleAssignmentChange}
+                        onAssignmentChange={handleSavedAssignmentChange}
                         onRemove={() => handleRemoveAssignment(assignment.id)}
                     />
                 ))}
@@ -720,8 +733,8 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                 <AccordionItem value="item-1" className="border-none">
                     <Card>
                          <div className="flex items-center justify-between p-4 w-full">
-                           <AccordionTrigger className="w-full p-0 hover:no-underline flex-1">
-                                <div className="flex items-center justify-between w-full cursor-pointer">
+                           <AccordionTrigger asChild>
+                                <div className="flex items-center justify-between w-full cursor-pointer flex-1">
                                     <div className="flex-1 text-lg font-semibold text-left">
                                        {headerTitle}
                                     </div>
@@ -757,7 +770,7 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                                             </div>
                                             <AccordionContent className="p-4 pt-0">
                                                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 items-end">
-                                                    <div className="space-y-2">
+                                                    <div className="space-y-2 col-span-1">
                                                         <Label>Class</Label>
                                                         <Select value={config.classId} onValueChange={(value) => handleClassConfigChange(config.id, 'classId', value)}>
                                                             <SelectTrigger>
@@ -1008,7 +1021,7 @@ export default function SubjectsForm() {
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
                         <CardTitle>Add Subjects</CardTitle>
-                        <CardDescription>Add new subjects to the system or edit existing ones.</CardDescription>
+                        <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
                     </div>
                     <ChevronRight className="h-6 w-6 text-muted-foreground" />
                 </CardHeader>
@@ -1043,3 +1056,4 @@ export default function SubjectsForm() {
         </div>
     );
 }
+
