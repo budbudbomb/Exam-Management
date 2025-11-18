@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -18,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { mockStudents, mockClasses } from '@/lib/data';
+import { getStudents, mockClasses } from '@/lib/data';
 import { Student } from '@/lib/types';
 
 // Mock data for supplementary students, linking to mockStudents
@@ -124,7 +125,7 @@ export default function SupplementaryList({ selectedClass }: SupplementaryListPr
     
     const className = classInfo.name.split(' ')[1];
     
-    return mockStudents
+    return getStudents()
       .filter(student => student.class === className && supplementaryData[student.id])
       .map(student => ({
         ...student,
@@ -224,3 +225,5 @@ export default function SupplementaryList({ selectedClass }: SupplementaryListPr
     </>
   );
 }
+
+    

@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { mockStudents, mockClasses, getSubjects } from '@/lib/data';
+import { getStudents, mockClasses, getSubjects } from '@/lib/data';
 import { ChevronDown, FilePlus2, Search, Upload, User as UserIcon, CheckCircle, Edit } from 'lucide-react';
 import React, { useState, useMemo, useEffect } from 'react';
 import { Student, Subject as SubjectType } from '@/lib/types';
@@ -77,7 +77,7 @@ const SelectedSubjectsDisplay = ({ title, subjects, selectedSubjects }: { title:
 
 
 export default function StudentsTable() {
-    const [students, setStudents] = useState<Student[]>(mockStudents);
+    const [students, setStudents] = useState<Student[]>([]);
     const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
     const [allSubjects, setAllSubjects] = useState<SubjectType[]>([]);
     const [selectedClassId, setSelectedClassId] = useState<string>('');
@@ -89,6 +89,7 @@ export default function StudentsTable() {
     
     useEffect(() => {
         setAllSubjects(getSubjects());
+        setStudents(getStudents());
     }, []);
 
     const categorizedSubjects = useMemo(() => {
@@ -399,6 +400,8 @@ export default function StudentsTable() {
         </Card>
     );
 }
+
+    
 
     
 

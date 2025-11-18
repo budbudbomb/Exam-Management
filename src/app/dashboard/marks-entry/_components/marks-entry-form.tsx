@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { mockClasses, mockStudents, mockSubjects, mockExams } from '@/lib/data';
+import { mockClasses, getStudents, mockSubjects, mockExams } from '@/lib/data';
 import { Student, Subject } from '@/lib/types';
 import { Save } from 'lucide-react';
 import React, { useState, useMemo } from 'react';
@@ -131,7 +132,7 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
             const classInfo = mockClasses.find(c => c.id === selectedClass);
             if (classInfo) {
                 const className = classInfo.name.split(' ')[1];
-                const filteredStudents = mockStudents.filter(s => s.class === className && s.section === selectedSection);
+                const filteredStudents = getStudents().filter(s => s.class === className && s.section === selectedSection);
                 setClassStudents(filteredStudents);
                 
                 const studentSubjects = classInfo.subjects;
@@ -596,6 +597,8 @@ export default function MarksEntryForm({ showDiseCode = false, userRole = 'schoo
 }
 
     
+    
+
     
 
     

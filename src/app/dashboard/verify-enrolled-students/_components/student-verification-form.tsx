@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { mockClasses, mockStudents } from '@/lib/data';
+import { mockClasses, getStudents } from '@/lib/data';
 import { Student } from '@/lib/types';
 import React, { useState } from 'react';
 
@@ -23,7 +24,7 @@ export default function StudentVerificationForm() {
             const classInfo = mockClasses.find(c => c.id === selectedClass);
             if (classInfo) {
                 const className = classInfo.name.split(' ')[1];
-                const filteredStudents = mockStudents.filter(s => s.class === className);
+                const filteredStudents = getStudents().filter(s => s.class === className);
                 setClassStudents(filteredStudents);
                 setShowTable(true);
             }
@@ -133,3 +134,5 @@ export default function StudentVerificationForm() {
         </div>
     );
 }
+
+    
