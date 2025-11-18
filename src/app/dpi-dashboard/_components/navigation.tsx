@@ -161,7 +161,7 @@ export default function DpiNavigation() {
       <div className="flex h-16 items-center px-4 lg:px-6 border-b border-sidebar-border bg-accent">
          <Link href="/dpi-dashboard" className="flex items-center gap-2 font-semibold text-sidebar-foreground">
           
-           {state === 'expanded' && <span className="text-lg font-bold text-sidebar-foreground">MP Education Portal 3.0</span>}
+           {state === 'expanded' && <span className="text-lg font-bold text-sidebar-foreground whitespace-nowrap">MP Education Portal 3.0</span>}
         </Link>
       </div>
 

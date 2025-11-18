@@ -90,7 +90,7 @@ export default function Navigation() {
       <div className="flex h-16 shrink-0 items-center border-b border-sidebar-border group-data-[collapsible=icon]:justify-center bg-accent">
          <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-sidebar-foreground px-4">
           
-          {state === 'expanded' && <span className="text-lg font-bold text-sidebar-foreground">MP Education Portal 3.0</span>}
+          {state === 'expanded' && <span className="text-lg font-bold text-sidebar-foreground whitespace-nowrap">MP Education Portal 3.0</span>}
         </Link>
       </div>
       
