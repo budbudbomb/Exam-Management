@@ -264,7 +264,7 @@ const AddSubjectsCard = ({ onSave, onBack, onToggleExisting, showExisting }: { o
                  <div className="flex justify-between">
                     <Button variant="outline" onClick={handleAddRow}>
                         <PlusCircle className="mr-2 h-4 w-4" />
-                        Add another
+                        Add another subject
                     </Button>
                     <Button onClick={handleSaveSubjects}>
                         <FilePlus2 className="mr-2 h-4 w-4" />
@@ -627,7 +627,8 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
 
                              <div className="flex justify-between items-center pt-4 mt-4 border-t">
                                 <Button variant="outline" onClick={() => handleAddSubject(config.id)}>
-                                    <PlusCircle className="mr-2 h-4 w-4" /> Add Another Subject
+                                    <PlusCircle className="mr-2 h-4 w-4" />
+                                    Add Another Subject
                                 </Button>
                             </div>
                         </AccordionContent>
