@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { mockClasses } from '@/lib/data';
+import { mockClasses, mockSubjects } from '@/lib/data';
 import { Subject as SubjectType } from '@/lib/types';
 import { ArrowLeft, ChevronDown, PlusCircle, Edit, Trash2 } from 'lucide-react';
 import React, { useState, useMemo } from 'react';
