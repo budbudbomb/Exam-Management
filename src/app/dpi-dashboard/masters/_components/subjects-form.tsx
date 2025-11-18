@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { FilePlus2, PlusCircle, Trash2, ChevronRight, ArrowLeft } from 'lucide-react';
 import React, { useState, useCallback, useMemo } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { mockClasses, getSubjects, addSubjects, updateSubjects as updateSubjectsInData } from '@/lib/data';
+import { mockClasses, getSubjects, addSubjects, updateSubjectsInData } from '@/lib/data';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -1033,5 +1033,6 @@ export default function SubjectsForm() {
 
 
     
+
 
 
