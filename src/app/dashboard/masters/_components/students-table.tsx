@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -333,7 +334,7 @@ export default function StudentsTable() {
                                     {isEditing ? (
                                         <>
                                             <MultiSelectDropdown 
-                                                title="Mandatory Subjects"
+                                                title="Mandatory and group subjects"
                                                 subjects={categorizedSubjects.Mandatory}
                                                 selectedSubjects={selectedStudent?.assignedSubjects || {}}
                                                 onSubjectSelection={handleSubjectSelection}
@@ -357,7 +358,7 @@ export default function StudentsTable() {
                                     ) : (
                                         <>
                                             <SelectedSubjectsDisplay
-                                                title="Mandatory Subjects"
+                                                title="Mandatory and group subjects"
                                                 subjects={categorizedSubjects.Mandatory}
                                                 selectedSubjects={selectedStudent?.assignedSubjects || {}}
                                             />

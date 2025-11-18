@@ -158,7 +158,7 @@ const GroupCard = ({ group, onGroupChange, onRemoveGroup }: { group: SubjectGrou
                             {isEditing ? (
                                 <>
                                     <MultiSelectDropdown 
-                                        title="Mandatory Subjects"
+                                        title="Mandatory and group subjects"
                                         subjects={categorizedSubjects.Mandatory}
                                         selectedSubjects={group.mandatorySubjects}
                                         onSubjectSelection={(subjectId, checked) => handleSubjectSelection('mandatorySubjects', subjectId, checked)}
@@ -181,7 +181,7 @@ const GroupCard = ({ group, onGroupChange, onRemoveGroup }: { group: SubjectGrou
                                 </>
                             ) : (
                                 <>
-                                    <SelectedSubjectsDisplay title="Mandatory Subjects" allSubjects={categorizedSubjects.Mandatory} selectedSubjects={group.mandatorySubjects} />
+                                    <SelectedSubjectsDisplay title="Mandatory and group subjects" allSubjects={categorizedSubjects.Mandatory} selectedSubjects={group.mandatorySubjects} />
                                     <SelectedSubjectsDisplay title="Language Subjects" allSubjects={categorizedSubjects.Language} selectedSubjects={group.languageSubjects} />
                                     <SelectedSubjectsDisplay title="Vocational Subjects" allSubjects={categorizedSubjects.Vocational} selectedSubjects={group.vocationalSubjects} />
                                 </>

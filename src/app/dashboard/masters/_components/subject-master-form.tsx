@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -128,7 +129,7 @@ const ConfigCard = ({ config, onConfigChange, onRemove, classList }: { config: C
                             
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <MultiSelectDropdown 
-                                    title="Mandatory Subjects"
+                                    title="Mandatory and group subjects"
                                     subjects={categorizedSubjects.Mandatory}
                                     selectedSubjects={config.selectedSubjects}
                                     onSubjectSelection={handleSubjectSelection}

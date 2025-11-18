@@ -116,7 +116,7 @@ const AddSubjectsCard = ({ onBack }: { onBack: () => void }) => {
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {renderCategory('mandatory', 'Mandatory Subjects')}
+                    {renderCategory('mandatory', 'Mandatory and group subjects')}
                     {renderCategory('language', 'Language Subjects')}
                     {renderCategory('vocational', 'Vocational Subjects')}
                 </div>
@@ -733,7 +733,7 @@ const AssignSubjectsToClassCard = ({ onBack }: { onBack: () => void }) => {
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <MultiSelectDropdown 
-                                    title="Mandatory Subjects"
+                                    title="Mandatory and group subjects"
                                     subjects={categorizedSubjects.Mandatory}
                                     selectedSubjects={config.selectedSubjects}
                                     onSubjectSelection={(subjectId, checked) => handleSubjectSelection(config.id, subjectId, checked)}
@@ -850,4 +850,5 @@ export default function SubjectsForm() {
 
 
     
+
 
