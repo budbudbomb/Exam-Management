@@ -4,7 +4,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { FilePlus2, PlusCircle, Trash2, ChevronRight, ArrowLeft, ChevronDown } from 'lucide-react';
+import { FilePlus2, PlusCircle, Trash2, ChevronRight, ArrowLeft } from 'lucide-react';
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { mockClasses, getSubjects, addSubjects, updateSubjectsInData } from '@/lib/data';
@@ -19,18 +19,14 @@ import SubjectGroupForm from './subject-group-form';
 import { useToast } from '@/hooks/use-toast';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
+import { ChevronDown } from 'lucide-react';
 
 
 type SubjectInputItem = {
     id: number;
     name: string;
     code: string;
-}
-
-type SubjectInputs = {
-    Core: SubjectInputItem[];
-    Language: SubjectInputItem[];
-    Vocational: SubjectInputItem[];
+    category: 'Compulsory' | 'Group subjects' | 'Language' | 'Vocational' | '';
 }
 
 const ExistingSubjectsList = ({ allSubjects, onSave }: { allSubjects: Subject[], onSave: (updatedSubjects: Subject[]) => void }) => {
@@ -68,12 +64,19 @@ const ExistingSubjectsList = ({ allSubjects, onSave }: { allSubjects: Subject[],
                 categories[subject.category].push(subject);
             }
         });
-        return categories;
+        // Remap "Compulsory" and "Group subjects" to "Core" for display
+        const displayCategories: { [key: string]: Subject[] } = {
+            'Compulsory': editableSubjects.filter(s => s.category === 'Core'), // Assuming Compulsory maps to Core
+            'Group subjects': [], // You might need a different property to distinguish these
+            'Language': categories.Language,
+            'Vocational': categories.Vocational,
+        };
+        return displayCategories;
     }, [editableSubjects]);
 
-    const renderCategory = (category: Subject['category'], title: string) => {
+    const renderCategory = (category: string, title: string) => {
         const subjects = categorizedSubjects[category];
-        if (subjects.length === 0) return null;
+        if (!subjects || subjects.length === 0) return null;
 
         return (
             <div key={category} className="space-y-4 rounded-lg border p-4">
@@ -121,7 +124,8 @@ const ExistingSubjectsList = ({ allSubjects, onSave }: { allSubjects: Subject[],
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {renderCategory('Core', 'Mandatory and group subjects')}
+                    {renderCategory('Compulsory', 'Compulsory')}
+                    {renderCategory('Group subjects', 'Group subjects')}
                     {renderCategory('Language', 'Language Subjects')}
                     {renderCategory('Vocational', 'Vocational Subjects')}
                 </div>
@@ -135,64 +139,54 @@ const ExistingSubjectsList = ({ allSubjects, onSave }: { allSubjects: Subject[],
 
 
 const AddSubjectsCard = ({ onSave, onBack, onToggleExisting, showExisting }: { onSave: (newSubjects: Subject[]) => void, onBack: () => void, onToggleExisting: () => void, showExisting: boolean }) => {
-    const [inputs, setInputs] = useState<SubjectInputs>({
-        Core: [{ id: 1, name: '', code: '' }],
-        Language: [{ id: 1, name: '', code: '' }],
-        Vocational: [{ id: 1, name: '', code: '' }],
-    });
+    const [subjectRows, setSubjectRows] = useState<SubjectInputItem[]>([{ id: Date.now(), name: '', code: '', category: '' }]);
     const { toast } = useToast();
 
-    const handleInputChange = (category: keyof SubjectInputs, id: number, field: 'name' | 'code', value: string) => {
-        setInputs(prev => ({
-            ...prev,
-            [category]: prev[category].map(item =>
-                item.id === id ? { ...item, [field]: value } : item
-            ),
-        }));
+    const handleInputChange = (id: number, field: keyof Omit<SubjectInputItem, 'id'>, value: string) => {
+        setSubjectRows(prev => prev.map(item =>
+            item.id === id ? { ...item, [field]: value } : item
+        ));
     };
 
-    const handleAddItem = (category: keyof SubjectInputs) => {
-        setInputs(prev => ({
-            ...prev,
-            [category]: [...prev[category], { id: Date.now(), name: '', code: '' }],
-        }));
+    const handleAddRow = () => {
+        setSubjectRows(prev => [...prev, { id: Date.now(), name: '', code: '', category: '' }]);
     };
     
-    const handleRemoveItem = (category: keyof SubjectInputs, id: number) => {
-        setInputs(prev => ({
-            ...prev,
-            [category]: prev[category].filter(item => item.id !== id),
-        }));
+    const handleRemoveRow = (id: number) => {
+        setSubjectRows(prev => prev.filter(item => item.id !== id));
     };
 
     const handleSaveSubjects = () => {
         const newSubjects: Subject[] = [];
         let subjectAdded = false;
 
-        Object.keys(inputs).forEach(category => {
-            inputs[category as keyof SubjectInputs].forEach(subject => {
-                if (subject.name && subject.code) {
-                    newSubjects.push({
-                        id: `S${Date.now()}-${subject.code}`,
-                        name: subject.name,
-                        code: subject.code,
-                        category: category as 'Core' | 'Language' | 'Vocational',
-                        maxMarks: 100,
-                        minMarks: 0,
-                        passingMarks: 33,
-                        hasPractical: false,
-                        hasProject: false,
-                    });
-                    subjectAdded = true;
-                }
-            });
+        subjectRows.forEach(subject => {
+            if (subject.name && subject.code && subject.category) {
+                 let cat: 'Core' | 'Language' | 'Vocational' = 'Core';
+                 if (subject.category === 'Language' || subject.category === 'Vocational') {
+                     cat = subject.category;
+                 }
+                
+                newSubjects.push({
+                    id: `S${Date.now()}-${subject.code}`,
+                    name: subject.name,
+                    code: subject.code,
+                    category: cat,
+                    maxMarks: 100,
+                    minMarks: 0,
+                    passingMarks: 33,
+                    hasPractical: false,
+                    hasProject: false,
+                });
+                subjectAdded = true;
+            }
         });
         
         if (!subjectAdded) {
              toast({
                 variant: "destructive",
-                title: "No subjects entered",
-                description: "Please enter at least one subject with both name and code to save.",
+                title: "Incomplete Information",
+                description: "Please fill out all fields for at least one subject to save.",
             });
             return;
         }
@@ -203,65 +197,14 @@ const AddSubjectsCard = ({ onSave, onBack, onToggleExisting, showExisting }: { o
             description: "The new subjects have been successfully saved.",
         });
         // Clear inputs after saving
-        setInputs({
-            Core: [{ id: 1, name: '', code: '' }],
-            Language: [{ id: 1, name: '', code: '' }],
-            Vocational: [{ id: 1, name: '', code: '' }],
-        });
+        setSubjectRows([{ id: Date.now(), name: '', code: '', category: '' }]);
     };
-
-    const renderCategory = (category: keyof SubjectInputs, title: string) => (
-        <div className="space-y-4 rounded-lg border p-4">
-            <h3 className="font-medium">{title}</h3>
-             <div className="flex items-end gap-4">
-                 <div className="flex-1 space-y-2">
-                    <Label>Subject Name</Label>
-                </div>
-                <div className="flex-1 space-y-2">
-                    <Label>Subject Code</Label>
-                </div>
-                 <div className="w-[40px]"></div>
-            </div>
-            <div className="space-y-2">
-                {inputs[category].map(item => (
-                    <div key={item.id} className="flex items-end gap-4">
-                        <div className="flex-1">
-                            <Input
-                                value={item.name}
-                                onChange={(e) => handleInputChange(category, item.id, 'name', e.target.value)}
-                                placeholder="e.g. Mathematics"
-                            />
-                        </div>
-                        <div className="flex-1">
-                            <Input
-                                value={item.code}
-                                onChange={(e) => handleInputChange(category, item.id, 'code', e.target.value)}
-                                placeholder="e.g. M-101"
-                            />
-                        </div>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-destructive hover:text-destructive"
-                            onClick={() => handleRemoveItem(category, item.id)}
-                            disabled={inputs[category].length === 1}
-                        >
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </div>
-                ))}
-            </div>
-            <Button variant="outline" size="sm" onClick={() => handleAddItem(category)}>
-                <PlusCircle className="mr-2 h-4 w-4" /> Add Subject
-            </Button>
-        </div>
-    );
 
     return (
         <Card>
             <CardHeader>
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
+                     <div className="flex items-center gap-4">
                         <Button variant="outline" size="icon" onClick={onBack}>
                             <ArrowLeft className="h-4 w-4" />
                         </Button>
@@ -275,15 +218,57 @@ const AddSubjectsCard = ({ onSave, onBack, onToggleExisting, showExisting }: { o
                     </Button>
                 </div>
             </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {renderCategory('Core', 'Mandatory and group subjects')}
-                    {renderCategory('Language', 'Language Subjects')}
-                    {renderCategory('Vocational', 'Vocational Subjects')}
+            <CardContent className="space-y-4">
+                <div className="space-y-2">
+                    {subjectRows.map((row, index) => (
+                        <div key={row.id} className="flex items-end gap-2">
+                            <div className="flex-1 space-y-1">
+                                {index === 0 && <Label>Subject Name</Label>}
+                                <Input 
+                                    placeholder="Enter subject name" 
+                                    value={row.name}
+                                    onChange={(e) => handleInputChange(row.id, 'name', e.target.value)}
+                                />
+                            </div>
+                             <div className="flex-1 space-y-1">
+                                {index === 0 && <Label>Subject Code</Label>}
+                                <Input 
+                                    placeholder="Enter subject code"
+                                    value={row.code}
+                                    onChange={(e) => handleInputChange(row.id, 'code', e.target.value)}
+                                />
+                            </div>
+                            <div className="flex-1 space-y-1">
+                                {index === 0 && <Label>Subject Category</Label>}
+                                <Select
+                                    value={row.category}
+                                    onValueChange={(value: SubjectInputItem['category']) => handleInputChange(row.id, 'category', value)}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Compulsory">Compulsory</SelectItem>
+                                        <SelectItem value="Group subjects">Group subjects</SelectItem>
+                                        <SelectItem value="Language">Language</SelectItem>
+                                        <SelectItem value="Vocational">Vocational</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleRemoveRow(row.id)} disabled={subjectRows.length === 1}>
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    ))}
                 </div>
-                <div className="flex justify-end">
+                 <div className="flex justify-between">
+                    <Button variant="outline" onClick={handleAddRow}>
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Add another
+                    </Button>
                     <Button onClick={handleSaveSubjects}>
-                        <FilePlus2 className="mr-2 h-4 w-4" /> Save Subjects
+                        <FilePlus2 className="mr-2 h-4 w-4" />
+                        Save Subjects
                     </Button>
                 </div>
             </CardContent>
@@ -687,46 +672,15 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
 
 type SelectedSubjects = { [key: string]: boolean };
 
-const MultiSelectDropdown = ({ title, subjects, selectedSubjects, onSubjectSelection }: { title: string, subjects: Subject[], selectedSubjects: SelectedSubjects, onSubjectSelection: (subjectId: string, checked: boolean) => void }) => {
-    const selectedCount = subjects.filter(s => selectedSubjects[s.id]).length;
-    
-    return (
-      <div className="space-y-2">
-        <Label>{title}</Label>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="w-full justify-between">
-              <span>{selectedCount > 0 ? `${selectedCount} selected` : `Select subjects`}</span>
-              <ChevronDown className="h-4 w-4 opacity-50" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
-            <DropdownMenuLabel>{title}</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {subjects.map((subject) => (
-              <DropdownMenuCheckboxItem
-                key={subject.id}
-                checked={!!selectedSubjects[subject.id]}
-                onCheckedChange={(checked) => onSubjectSelection(subject.id, !!checked)}
-                onSelect={(e) => e.preventDefault()}
-              >
-                {subject.name} ({subject.code})
-              </DropdownMenuCheckboxItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    );
-};
-
-type ClassConfig = {
-    id: number;
-    selectedClassId: string;
-    selectedMedium: string;
-    selectedSubjects: SelectedSubjects;
-}
-
 const AssignSubjectsToClassCard = ({ onBack, allSubjects }: { onBack: () => void, allSubjects: Subject[] }) => {
+    
+    type ClassConfig = {
+        id: number;
+        selectedClassId: string;
+        selectedMedium: string;
+        selectedSubjects: SelectedSubjects;
+    }
+
     const [savedConfigs, setSavedConfigs] = useState<ClassConfig[]>([]);
     const [editingConfig, setEditingConfig] = useState<ClassConfig[] | null>(null);
 
