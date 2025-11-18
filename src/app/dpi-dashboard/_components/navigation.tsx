@@ -146,12 +146,12 @@ export default function DpiNavigation() {
       
       return (
         <li key={index}>
+          <SidebarMenuSubButton asChild isActive={isLinkActive(link.href!)}>
             <Link href={link.href!}>
-                <SidebarMenuSubButton isActive={isLinkActive(link.href!)}>
-                    {link.icon}
-                    {state === 'expanded' && <span>{link.label}</span>}
-                </SidebarMenuSubButton>
+                {link.icon}
+                {state === 'expanded' && <span>{link.label}</span>}
             </Link>
+          </SidebarMenuSubButton>
         </li>
       );
     });
