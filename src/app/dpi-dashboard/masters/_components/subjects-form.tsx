@@ -201,9 +201,18 @@ const AddSubjectsCard = ({ onSave }: { onSave: (newSubjects: Subject[]) => void 
                         <CardTitle>Add Subjects</CardTitle>
                         <CardDescription>Add new subjects and their codes to the system independently of classes.</CardDescription>
                     </div>
-                    <Button variant="outline" onClick={() => (document.getElementById('existing-subjects-trigger') as HTMLButtonElement)?.click()}>
-                        View & Edit Existing Subjects
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" onClick={() => (document.getElementById('existing-subjects-trigger') as HTMLButtonElement)?.click()}>
+                            View & Edit Existing Subjects
+                        </Button>
+                         <Button variant="outline" size="icon" onClick={() => {
+                            const params = new URLSearchParams(window.location.search);
+                            params.delete('view');
+                            window.history.pushState(null, '', `${window.location.pathname}?${params.toString()}`);
+                         }}>
+                            <ArrowLeft className="h-4 w-4" />
+                        </Button>
+                    </div>
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -343,32 +352,93 @@ const SubjectGroupForm = ({ onBack, allSubjects, subjectGroups, setSubjectGroups
     );
 };
 
-const AddSubjectsToGroupForm = ({ onBack, allSubjects, subjectGroups }: { onBack: () => void, allSubjects: Subject[], subjectGroups: SubjectGroup[] }) => {
-    const [selectedGroup, setSelectedGroup] = useState('');
-    const [selectedSubject, setSelectedSubject] = useState('');
+const MultiSelectDropdown = ({ title, options, selectedOptions, onSelectionChange }: { title: string, options: {id: string, name: string}[], selectedOptions: { [key: string]: boolean }, onSelectionChange: (subjectId: string, checked: boolean) => void }) => {
+    const selectedCount = Object.values(selectedOptions).filter(Boolean).length;
+    
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full justify-between">
+                    <span>{selectedCount > 0 ? `${selectedCount} selected` : `Select subjects`}</span>
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
+                <DropdownMenuLabel>{title}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {options.map((option) => (
+                    <DropdownMenuCheckboxItem
+                        key={option.id}
+                        checked={!!selectedOptions[option.id]}
+                        onCheckedChange={(checked) => onSelectionChange(option.id, !!checked)}
+                        onSelect={(e) => e.preventDefault()}
+                    >
+                        {option.name}
+                    </DropdownMenuCheckboxItem>
+                ))}
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+};
+
+
+const AddSubjectsToGroupForm = ({ onBack }: { onBack: () => void }) => {
+    type GroupRow = {
+        id: number;
+        groupId: string;
+        selectedSubjects: { [key: string]: boolean };
+    };
+
+    const [groupRows, setGroupRows] = useState<GroupRow[]>([
+        { id: Date.now(), groupId: '', selectedSubjects: {} }
+    ]);
+
     const { toast } = useToast();
 
-    const groupSubjects = useMemo(() => {
-        // This logic needs to be defined. For now, assuming "Group subjects" category is what populates this.
-        // The prompt says "subjects from subject groups" but the category is "Group subjects"
-        // I will filter by name for now.
-        return allSubjects.filter(s => s.category === 'Core' && s.name !== 'Mathematics' && s.name !== 'Science');
-    }, [allSubjects]);
+    const groupOptions = [
+        { id: 'humanities', name: 'Humanities' },
+        { id: 'science', name: 'Science' },
+        { id: 'commerce', name: 'Commerce' },
+        { id: 'agriculture', name: 'Agriculture' },
+        { id: 'science-maths', name: 'Science Maths' },
+        { id: 'science-bio', name: 'Science Bio' },
+    ];
     
+    const subjectOptions = [
+        { id: 'physics', name: 'Physics' },
+        { id: 'chemistry', name: 'Chemistry' },
+        { id: 'maths', name: 'Maths' },
+        { id: 'biology', name: 'Biology' },
+        { id: 'accounts', name: 'Accounts' },
+    ];
+
+    const handleAddRow = () => {
+        setGroupRows(prev => [...prev, { id: Date.now(), groupId: '', selectedSubjects: {} }]);
+    };
+
+    const handleRemoveRow = (id: number) => {
+        setGroupRows(prev => prev.filter(row => row.id !== id));
+    };
+
+    const handleGroupChange = (id: number, groupId: string) => {
+        setGroupRows(prev => prev.map(row => row.id === id ? { ...row, groupId } : row));
+    };
+
+    const handleSubjectSelection = (id: number, subjectId: string, checked: boolean) => {
+        setGroupRows(prev => prev.map(row => {
+            if (row.id === id) {
+                const newSelectedSubjects = { ...row.selectedSubjects, [subjectId]: checked };
+                return { ...row, selectedSubjects: newSelectedSubjects };
+            }
+            return row;
+        }));
+    };
+
     const handleSave = () => {
-        if (!selectedGroup || !selectedSubject) {
-            toast({
-                variant: 'destructive',
-                title: 'Incomplete Selection',
-                description: 'Please select both a group and a subject.',
-            });
-            return;
-        }
         toast({
-            title: 'Subject Added to Group',
-            description: `Successfully added subject to group.`,
+            title: 'Assignments Saved',
+            description: `Successfully saved subject assignments.`,
         });
-        setSelectedSubject('');
     };
 
     return (
@@ -385,38 +455,45 @@ const AddSubjectsToGroupForm = ({ onBack, allSubjects, subjectGroups }: { onBack
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div className="flex items-end gap-2">
-                    <div className="flex-1 space-y-1">
-                        <Label>Group</Label>
-                        <Select value={selectedGroup} onValueChange={setSelectedGroup}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select a group" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {subjectGroups.map(group => (
-                                    <SelectItem key={group.id} value={group.groupCode}>
-                                        {group.groupName} ({group.groupCode})
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="flex-1 space-y-1">
-                        <Label>Add Subject</Label>
-                        <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select a subject" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {groupSubjects.map(subject => (
-                                     <SelectItem key={subject.id} value={subject.id}>
-                                         {subject.name}
-                                     </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <Button onClick={handleSave}>Save</Button>
+                <div className="space-y-4">
+                    {groupRows.map((row, index) => (
+                        <div key={row.id} className="flex items-end gap-2">
+                            <div className="flex-1 space-y-1">
+                                {index === 0 && <Label>Group</Label>}
+                                <Select value={row.groupId} onValueChange={(value) => handleGroupChange(row.id, value)}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a group" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {groupOptions.map(group => (
+                                            <SelectItem key={group.id} value={group.id}>
+                                                {group.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="flex-1 space-y-1">
+                                {index === 0 && <Label>Add Subjects</Label>}
+                                <MultiSelectDropdown
+                                    title="Subjects"
+                                    options={subjectOptions}
+                                    selectedOptions={row.selectedSubjects}
+                                    onSelectionChange={(subjectId, checked) => handleSubjectSelection(row.id, subjectId, checked)}
+                                />
+                            </div>
+                            <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleRemoveRow(row.id)} disabled={groupRows.length === 1}>
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    ))}
+                </div>
+                <div className="flex justify-between items-center pt-2">
+                    <Button variant="outline" onClick={handleAddRow}>
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Add another group
+                    </Button>
+                    <Button onClick={handleSave}>Save Assignments</Button>
                 </div>
             </CardContent>
         </Card>
@@ -997,21 +1074,21 @@ const AssignSubjectsToClassCard = ({ onBack, allSubjects }: { onBack: () => void
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <MultiSelectDropdown 
                                     title="Mandatory and group subjects"
-                                    subjects={categorizedSubjects.Mandatory}
-                                    selectedSubjects={config.selectedSubjects}
-                                    onSubjectSelection={(subjectId, checked) => handleSubjectSelection(config.id, subjectId, checked)}
+                                    options={categorizedSubjects.Mandatory.map(s => ({id: s.id, name: s.name}))}
+                                    selectedOptions={config.selectedSubjects}
+                                    onSelectionChange={(subjectId, checked) => handleSubjectSelection(config.id, subjectId, checked)}
                                 />
                                 <MultiSelectDropdown 
                                     title="Language Subjects"
-                                    subjects={categorizedSubjects.Language}
-                                    selectedSubjects={config.selectedSubjects}
-                                    onSubjectSelection={(subjectId, checked) => handleSubjectSelection(config.id, subjectId, checked)}
+                                    options={categorizedSubjects.Language.map(s => ({id: s.id, name: s.name}))}
+                                    selectedOptions={config.selectedSubjects}
+                                    onSelectionChange={(subjectId, checked) => handleSubjectSelection(config.id, subjectId, checked)}
                                 />
                                 <MultiSelectDropdown 
                                     title="Vocational Subjects"
-                                    subjects={categorizedSubjects.Vocational}
-                                    selectedSubjects={config.selectedSubjects}
-                                    onSubjectSelection={(subjectId, checked) => handleSubjectSelection(config.id, subjectId, checked)}
+                                    options={categorizedSubjects.Vocational.map(s => ({id: s.id, name: s.name}))}
+                                    selectedOptions={config.selectedSubjects}
+                                    onSelectionChange={(subjectId, checked) => handleSubjectSelection(config.id, subjectId, checked)}
                                 />
                             </div>
                         </Card>
@@ -1091,7 +1168,7 @@ export default function SubjectsForm() {
     }
     
     if (view === 'add-subjects-to-group') {
-        return <AddSubjectsToGroupForm onBack={handleBack} allSubjects={allSubjects} subjectGroups={subjectGroups} />;
+        return <AddSubjectsToGroupForm onBack={handleBack} />;
     }
 
     if (view === 'assign-subjects') {
@@ -1152,6 +1229,7 @@ export default function SubjectsForm() {
         </div>
     );
 }
+
 
 
 
