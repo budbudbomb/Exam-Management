@@ -42,7 +42,7 @@ export default function ParikshaPrabharNavigation() {
       </div>
       
       <div className="flex-1 overflow-y-auto">
-        <SidebarMenu className="grid items-start px-2 text-sm font-medium lg:px-4 py-4 gap-1">
+        <SidebarMenu className="grid items-start px-2 text-sm font-medium lg:px-4 py-4 gap-2">
           {navLinks.map((section, sectionIndex) => (
              <div key={sectionIndex} className="space-y-1">
                 {section.isHeading && state === 'expanded' && (

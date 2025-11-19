@@ -95,7 +95,7 @@ export default function Navigation() {
       </div>
       
       <div className="flex-1 overflow-y-auto">
-        <SidebarMenu className="px-2 lg:px-4 py-4 gap-1 text-sm font-medium">
+        <SidebarMenu className="px-2 lg:px-4 py-4 gap-2 text-sm font-medium">
           {navLinks.map((section, sectionIndex) => (
             <SidebarGroup key={sectionIndex}>
               {section.isHeading && state === 'expanded' && (
