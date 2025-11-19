@@ -102,6 +102,7 @@ export default function Navigation() {
                 <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
               )}
               <SidebarGroupContent>
+                <ul className="flex w-full min-w-0 flex-col gap-2">
                 {section.items.map((link, linkIndex) => {
                   if (link.isAccordion && link.subLinks) {
                     return (
@@ -150,7 +151,7 @@ export default function Navigation() {
                   return (
                     <SidebarMenuItem key={linkIndex}>
                       <Link href={link.href!}>
-                        <SidebarMenuButton isActive={isLinkActive(link.href!)} tooltip={link.tooltip} className="rounded-full">
+                        <SidebarMenuButton isActive={pathname === link.href!} tooltip={link.tooltip} className="rounded-full">
                             <div className="flex flex-grow items-center gap-3">
                               {link.icon}
                               {state === 'expanded' && <span>{link.label}</span>}
@@ -160,6 +161,7 @@ export default function Navigation() {
                     </SidebarMenuItem>
                   );
                 })}
+                </ul>
               </SidebarGroupContent>
             </SidebarGroup>
           ))}
