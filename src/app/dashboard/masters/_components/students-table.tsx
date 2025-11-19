@@ -273,27 +273,6 @@ export default function StudentsTable() {
                                             </SelectContent>
                                         </Select>
                                     </div>
-                                    {(selectedStudent?.class === '11' || selectedStudent?.class === '12') && (
-                                        <div className="space-y-2">
-                                            <Label htmlFor="stream">Stream</Label>
-                                            <Select 
-                                                value={selectedStudent?.stream} 
-                                                onValueChange={(value: 'PCB' | 'PCM' | 'Commerce' | 'Arts' | 'Vocational Courses') => setSelectedStudent(prev => prev ? {...prev, stream: value} : null)}
-                                                disabled={!isEditing}
-                                            >
-                                                <SelectTrigger id="stream">
-                                                    <SelectValue placeholder="Select a stream" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="PCB">PCB</SelectItem>
-                                                    <SelectItem value="PCM">PCM</SelectItem>
-                                                    <SelectItem value="Commerce">Commerce</SelectItem>
-                                                    <SelectItem value="Arts">Arts</SelectItem>
-                                                    <SelectItem value="Vocational Courses">Vocational Courses</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                    )}
                                     <div className="space-y-2">
                                         <Label htmlFor="section">Section</Label>
                                         <Select 
