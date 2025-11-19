@@ -83,7 +83,10 @@ export default function Navigation() {
   const pathname = usePathname();
   const { state } = useSidebar();
 
-  const isLinkActive = (href: string) => pathname.startsWith(href);
+  const isLinkActive = (href: string) => {
+    // Check for exact match or if it's a parent of the current path
+    return pathname === href || pathname.startsWith(`${href}/`);
+  }
 
   return (
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
@@ -95,7 +98,7 @@ export default function Navigation() {
       </div>
       
       <div className="flex-1 overflow-y-auto">
-        <SidebarMenu className="px-2 lg:px-4 py-4 gap-2 text-sm font-medium">
+        <SidebarMenu className="px-2 lg:px-4 py-4 text-sm font-medium">
           {navLinks.map((section, sectionIndex) => (
             <SidebarGroup key={sectionIndex}>
               {section.isHeading && state === 'expanded' && (
