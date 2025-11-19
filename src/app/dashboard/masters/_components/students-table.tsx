@@ -86,6 +86,7 @@ export default function StudentsTable() {
     const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
     const [isEditing, setIsEditing] = useState(false);
+    const [selectedSubjectGroup, setSelectedSubjectGroup] = useState<string>('');
     
     useEffect(() => {
         setAllSubjects(getSubjects());
@@ -97,7 +98,6 @@ export default function StudentsTable() {
           Core: allSubjects.filter((s) => s.category === 'Core'),
           Language: allSubjects.filter((s) => s.category === 'Language'),
           Vocational: allSubjects.filter((s) => s.category === 'Vocational'),
-          Additional: allSubjects.filter((s) => s.category === 'Core'), // Assuming additional are also core for now
         };
     }, [allSubjects]);
 
@@ -116,13 +116,14 @@ export default function StudentsTable() {
     const handleOpenUpdateModal = (student: Student) => {
         setSelectedStudent(student);
         setIsEditing(!student.isUpdated);
+        setSelectedSubjectGroup(student.subjectGroup || '');
         setUpdateModalOpen(true);
     }
     
     const handleUpdateStudent = () => {
         if (!selectedStudent) return;
 
-        const updatedStudent = { ...selectedStudent, isUpdated: true };
+        const updatedStudent = { ...selectedStudent, isUpdated: true, subjectGroup: selectedSubjectGroup };
 
         const newStudents = students.map(s => s.id === updatedStudent.id ? updatedStudent : s);
         setStudents(newStudents);
@@ -343,7 +344,7 @@ export default function StudentsTable() {
                                             <>
                                                 <div className="space-y-2">
                                                     <Label>Subject group</Label>
-                                                    <Select disabled={!isEditing}>
+                                                    <Select value={selectedSubjectGroup} onValueChange={setSelectedSubjectGroup} disabled={!isEditing}>
                                                         <SelectTrigger><SelectValue placeholder="Select group" /></SelectTrigger>
                                                         <SelectContent>
                                                             <SelectItem value="group1">Science</SelectItem>
@@ -357,7 +358,7 @@ export default function StudentsTable() {
                                                     subjects={categorizedSubjects.Core}
                                                     selectedSubjects={selectedStudent?.assignedSubjects || {}}
                                                     onSubjectSelection={handleSubjectSelection}
-                                                    disabled={!isEditing}
+                                                    disabled={!isEditing || !selectedSubjectGroup}
                                                 />
                                                 <MultiSelectDropdown
                                                     title="Language subject"

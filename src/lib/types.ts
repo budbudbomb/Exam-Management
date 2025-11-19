@@ -18,6 +18,7 @@ export interface Student {
     scholarNumber?: string;
     assignedSubjects?: { [key: string]: boolean };
     isUpdated?: boolean;
+    subjectGroup?: string;
   }
   
   export interface Subject {
