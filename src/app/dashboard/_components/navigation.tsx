@@ -97,13 +97,14 @@ export default function Navigation() {
       </div>
       
       <div className="flex-1 overflow-y-auto">
-        <SidebarMenu className="px-2 lg:px-4 py-4 gap-4 text-sm font-medium">
+        <SidebarMenu className="px-2 lg:px-4 py-4 text-sm font-medium">
           {navLinks.map((section, sectionIndex) => (
             <SidebarGroup key={sectionIndex}>
               {section.isHeading && state === 'expanded' && (
                 <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
               )}
               <SidebarGroupContent>
+                <ul className="flex w-full min-w-0 flex-col gap-2">
                 {section.items.map((link, linkIndex) => {
                   if (link.isAccordion && link.subLinks) {
                     return (
@@ -162,6 +163,7 @@ export default function Navigation() {
                     </SidebarMenuItem>
                   );
                 })}
+                </ul>
               </SidebarGroupContent>
             </SidebarGroup>
           ))}
