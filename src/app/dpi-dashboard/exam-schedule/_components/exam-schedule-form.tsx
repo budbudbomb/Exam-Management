@@ -51,6 +51,8 @@ interface ExamScheduleFormProps {
 export default function ExamScheduleForm({ onAddSchedule }: ExamScheduleFormProps) {
   const [selectedExamType, setSelectedExamType] = useState('');
   const [selectedClass, setSelectedClass] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
+  const [selectedMedium, setSelectedMedium] = useState('');
   const [isModalOpen, setModalOpen] = useState(false);
   const [scheduleRows, setScheduleRows] = useState<ScheduleRow[]>([]);
   const [allSubjects, setAllSubjects] = useState<Subject[]>([]);
@@ -60,7 +62,7 @@ export default function ExamScheduleForm({ onAddSchedule }: ExamScheduleFormProp
   }, []);
 
   const handleOpenModal = () => {
-    if (selectedExamType && selectedClass) {
+    if (selectedExamType && selectedClass && selectedYear && selectedMedium) {
         setScheduleRows([{ id: 1, subjectId: '', date: undefined, startTime: '', endTime: '' }]);
         setModalOpen(true);
     }
@@ -110,7 +112,20 @@ export default function ExamScheduleForm({ onAddSchedule }: ExamScheduleFormProp
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+        <div className="space-y-2">
+            <Label>Academic Year</Label>
+            <Select value={selectedYear} onValueChange={setSelectedYear}>
+                <SelectTrigger>
+                    <SelectValue placeholder="Select year" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="2025-2026">2025-2026</SelectItem>
+                    <SelectItem value="2024-2025">2024-2025</SelectItem>
+                    <SelectItem value="2023-2024">2023-2024</SelectItem>
+                </SelectContent>
+            </Select>
+        </div>
         <div className="space-y-2">
           <Label>Exam Type</Label>
           <Select value={selectedExamType} onValueChange={setSelectedExamType}>
@@ -141,7 +156,17 @@ export default function ExamScheduleForm({ onAddSchedule }: ExamScheduleFormProp
             </SelectContent>
           </Select>
         </div>
-        <Button onClick={handleOpenModal} disabled={!selectedExamType || !selectedClass}>
+        <div className="space-y-2">
+            <Label>Medium</Label>
+            <Select value={selectedMedium} onValueChange={setSelectedMedium}>
+                <SelectTrigger><SelectValue placeholder="Select medium" /></SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="English">English</SelectItem>
+                    <SelectItem value="Hindi">Hindi</SelectItem>
+                </SelectContent>
+            </Select>
+        </div>
+        <Button onClick={handleOpenModal} disabled={!selectedExamType || !selectedClass || !selectedYear || !selectedMedium}>
           Set Schedule
         </Button>
       </div>
