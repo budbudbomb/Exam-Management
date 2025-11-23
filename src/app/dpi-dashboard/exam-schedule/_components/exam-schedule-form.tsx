@@ -29,7 +29,7 @@ import {
 } from '@/components/ui/table';
 import { mockClasses, mockExams, getSubjects } from '@/lib/data';
 import { CalendarIcon, PlusCircle, Trash2 } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
@@ -38,6 +38,8 @@ import { ExamSchedule, Subject } from '@/lib/types';
 
 type ScheduleRow = {
   id: number;
+  stream?: string;
+  subjectCategoryId?: string;
   subjectId: string;
   date: Date | undefined;
   startTime: string;
@@ -80,7 +82,19 @@ export default function ExamScheduleForm({ onAddSchedule }: ExamScheduleFormProp
   }
 
   const handleScheduleChange = (id: number, field: keyof Omit<ScheduleRow, 'id'>, value: any) => {
-      setScheduleRows(scheduleRows.map(row => row.id === id ? { ...row, [field]: value } : row));
+      setScheduleRows(scheduleRows.map(row => {
+          if (row.id === id) {
+              const newRow = { ...row, [field]: value };
+              if (field === 'stream') {
+                  newRow.subjectCategoryId = undefined;
+                  newRow.subjectId = '';
+              } else if (field === 'subjectCategoryId') {
+                  newRow.subjectId = '';
+              }
+              return newRow;
+          }
+          return row;
+      }));
   }
   
   const handleSaveSchedule = () => {
@@ -102,13 +116,20 @@ export default function ExamScheduleForm({ onAddSchedule }: ExamScheduleFormProp
     setModalOpen(false);
   }
 
-  const classSubjects = mockClasses.find(c => c.id === selectedClass)?.subjects || allSubjects;
-  
+  const selectedClassInfo = useMemo(() => mockClasses.find(c => c.id === selectedClass), [selectedClass]);
+
   const sortedClasses = [...mockClasses].sort((a, b) => {
       const aNum = parseInt(a.name.split(' ')[1]);
       const bNum = parseInt(b.name.split(' ')[1]);
       return aNum - bNum;
   });
+
+  const streamOptions = ['Science', 'Commerce', 'Humanities', 'Agriculture'];
+  const subjectCategoryOptions = [
+      { id: 'Core', name: 'Core' },
+      { id: 'Language', name: 'Language' },
+      { id: 'Vocational', name: 'Vocational' }
+  ];
 
   return (
     <div className="space-y-4">
@@ -172,12 +193,12 @@ export default function ExamScheduleForm({ onAddSchedule }: ExamScheduleFormProp
       </div>
 
       <Dialog open={isModalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="max-w-7xl">
           <DialogHeader>
             <DialogTitle>Create Exam Schedule</DialogTitle>
             <DialogDescription>
               Add subjects and their corresponding exam dates and times for{' '}
-              <span className="font-semibold text-primary">{mockClasses.find(c => c.id === selectedClass)?.name}</span> -{' '}
+              <span className="font-semibold text-primary">{selectedClassInfo?.name}</span> -{' '}
               <span className="font-semibold text-primary">{selectedExamType}</span>.
             </DialogDescription>
           </DialogHeader>
@@ -185,69 +206,98 @@ export default function ExamScheduleForm({ onAddSchedule }: ExamScheduleFormProp
             <Table>
               <TableHeader>
                 <TableRow className="bg-orange-500 text-white hover:bg-orange-500/90">
-                  <TableHead className="w-[40%] text-white">Subject</TableHead>
-                  <TableHead className="text-white">Date</TableHead>
-                  <TableHead className="text-white">Start Time</TableHead>
-                  <TableHead className="text-white">End Time</TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
+                    {(selectedClassInfo?.name.includes('11') || selectedClassInfo?.name.includes('12')) && <TableHead className="text-white">Stream</TableHead>}
+                    <TableHead className="text-white">Subject Category</TableHead>
+                    <TableHead className="w-[30%] text-white">Subject Name</TableHead>
+                    <TableHead className="text-white">Date</TableHead>
+                    <TableHead className="text-white">Start Time</TableHead>
+                    <TableHead className="text-white">End Time</TableHead>
+                    <TableHead className="w-[50px]"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {scheduleRows.map((row) => (
-                  <TableRow key={row.id}>
-                    <TableCell>
-                      <Select value={row.subjectId} onValueChange={(value) => handleScheduleChange(row.id, 'subjectId', value)}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select subject" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {classSubjects.map((subject) => (
-                            <SelectItem key={subject.id} value={subject.id}>
-                              {subject.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
-                    <TableCell>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant={'outline'}
-                            className={cn(
-                              'w-full justify-start text-left font-normal',
-                              !row.date && 'text-muted-foreground'
+                {scheduleRows.map((row) => {
+                    const isSeniorClass = selectedClassInfo?.name.includes('11') || selectedClassInfo?.name.includes('12');
+                    
+                    const filteredSubjects = allSubjects.filter(subject => {
+                        if (!row.subjectCategoryId) return false;
+                        return subject.category === row.subjectCategoryId;
+                    });
+                  
+                    return (
+                        <TableRow key={row.id}>
+                             {isSeniorClass && (
+                                <TableCell>
+                                    <Select value={row.stream} onValueChange={(value) => handleScheduleChange(row.id, 'stream', value)}>
+                                        <SelectTrigger><SelectValue placeholder="Select Stream" /></SelectTrigger>
+                                        <SelectContent>
+                                            {streamOptions.map(option => <SelectItem key={option} value={option}>{option}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                </TableCell>
                             )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {row.date ? format(row.date, 'PPP') : <span>Pick a date</span>}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                          <Calendar
-                            mode="single"
-                            selected={row.date}
-                            onSelect={(date) => handleScheduleChange(row.id, 'date', date)}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </TableCell>
-                    <TableCell>
-                      <Input type="time" value={row.startTime} onChange={(e) => handleScheduleChange(row.id, 'startTime', e.target.value)} />
-                    </TableCell>
-                    <TableCell>
-                      <Input type="time" value={row.endTime} onChange={(e) => handleScheduleChange(row.id, 'endTime', e.target.value)} />
-                    </TableCell>
-                     <TableCell>
-                        {scheduleRows.length > 1 && (
-                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => handleRemoveRow(row.id)}>
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                            <TableCell>
+                                <Select value={row.subjectCategoryId} onValueChange={(value) => handleScheduleChange(row.id, 'subjectCategoryId', value)} disabled={isSeniorClass && !row.stream}>
+                                    <SelectTrigger><SelectValue placeholder="Select Category" /></SelectTrigger>
+                                    <SelectContent>
+                                        {subjectCategoryOptions.map(option => <SelectItem key={option.id} value={option.id}>{option.name}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </TableCell>
+                            <TableCell>
+                                <Select value={row.subjectId} onValueChange={(value) => handleScheduleChange(row.id, 'subjectId', value)} disabled={!row.subjectCategoryId}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select subject" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                    {filteredSubjects.map((subject) => (
+                                        <SelectItem key={subject.id} value={subject.id}>
+                                        {subject.name}
+                                        </SelectItem>
+                                    ))}
+                                    </SelectContent>
+                                </Select>
+                            </TableCell>
+                            <TableCell>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                <Button
+                                    variant={'outline'}
+                                    className={cn(
+                                    'w-full justify-start text-left font-normal',
+                                    !row.date && 'text-muted-foreground'
+                                    )}
+                                >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {row.date ? format(row.date, 'PPP') : <span>Pick a date</span>}
+                                </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0">
+                                <Calendar
+                                    mode="single"
+                                    selected={row.date}
+                                    onSelect={(date) => handleScheduleChange(row.id, 'date', date)}
+                                    initialFocus
+                                />
+                                </PopoverContent>
+                            </Popover>
+                            </TableCell>
+                            <TableCell>
+                            <Input type="time" value={row.startTime} onChange={(e) => handleScheduleChange(row.id, 'startTime', e.target.value)} />
+                            </TableCell>
+                            <TableCell>
+                            <Input type="time" value={row.endTime} onChange={(e) => handleScheduleChange(row.id, 'endTime', e.target.value)} />
+                            </TableCell>
+                            <TableCell>
+                                {scheduleRows.length > 1 && (
+                                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => handleRemoveRow(row.id)}>
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                )}
+                            </TableCell>
+                        </TableRow>
+                    )
+                })}
               </TableBody>
             </Table>
             <Button variant="outline" size="sm" onClick={handleAddRow} className="mt-4">
