@@ -558,6 +558,8 @@ const AddSubjectsToGroupForm = ({ onBack }: { onBack: () => void }) => {
 
 type SubjectConfigRow = {
     id: number;
+    stream: string;
+    subjectCategoryId: string;
     subjectId: string;
     theoryMinMarks: string;
     theoryMaxMarks: string;
@@ -569,22 +571,31 @@ type SubjectConfigRow = {
 const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, allSubjects: Subject[] }) => {
     
     const [selectedClassId, setSelectedClassId] = useState('');
+    const [showTable, setShowTable] = useState(false);
     const [subjectRows, setSubjectRows] = useState<SubjectConfigRow[]>([]);
 
     useEffect(() => {
-        // Reset rows when class changes
+        // Reset rows and hide table when class changes
         setSubjectRows([]);
+        setShowTable(false);
     }, [selectedClassId]);
 
-    const handleAddRow = () => {
+    const handleAddRow = (isFirst: boolean) => {
+        if (!showTable) setShowTable(true);
         setSubjectRows(prev => [
             ...prev,
-            { id: Date.now(), subjectId: '', theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }
+            { id: Date.now(), stream: '', subjectCategoryId: '', subjectId: '', theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }
         ]);
     };
 
     const handleRemoveRow = (id: number) => {
-        setSubjectRows(prev => prev.filter(row => row.id !== id));
+        setSubjectRows(prev => {
+            const newRows = prev.filter(row => row.id !== id);
+            if (newRows.length === 0) {
+                setShowTable(false);
+            }
+            return newRows;
+        });
     };
 
     const handleSubjectChange = (id: number, field: keyof Omit<SubjectConfigRow, 'id'>, value: any) => {
@@ -596,11 +607,9 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
         const bNum = parseInt(b.name.split(' ')[1]);
         return aNum - bNum;
     });
-    
-    const availableSubjects = useMemo(() => {
-        const selectedClass = mockClasses.find(c => c.id === selectedClassId);
-        return selectedClass?.subjects || allSubjects;
-    }, [selectedClassId, allSubjects]);
+
+    const selectedClassInfo = useMemo(() => mockClasses.find(c => c.id === selectedClassId), [selectedClassId]);
+    const isSeniorClass = selectedClassInfo?.name.includes('11') || selectedClassInfo?.name.includes('12');
 
     return (
         <Card>
@@ -616,84 +625,111 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div className="space-y-2 max-w-sm">
-                    <Label>Select Class</Label>
-                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select a class" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {sortedClasses.map(cls => (
-                                <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                <div className="flex items-end gap-4">
+                    <div className="space-y-2 max-w-sm">
+                        <Label>Select Class</Label>
+                        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a class" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {sortedClasses.map(cls => (
+                                    <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    {!showTable && selectedClassId && (
+                        <Button onClick={() => handleAddRow(true)}>
+                           <PlusCircle className="mr-2 h-4 w-4" /> Add Subject
+                        </Button>
+                    )}
                 </div>
 
-                {selectedClassId && (
+                {selectedClassId && showTable && (
                     <div className="space-y-4 pt-4 border-t">
                         <div className="rounded-md border">
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className="w-[25%]">Subject</TableHead>
+                                        {isSeniorClass && <TableHead>Stream</TableHead>}
+                                        <TableHead>Subject Category</TableHead>
+                                        <TableHead className="w-[20%]">Subject</TableHead>
                                         <TableHead>Theory Min</TableHead>
                                         <TableHead>Theory Max</TableHead>
-                                        <TableHead className="w-[20%]">Assessment</TableHead>
+                                        <TableHead>Assessment</TableHead>
                                         <TableHead>Assess. Min</TableHead>
                                         <TableHead>Assess. Max</TableHead>
                                         <TableHead className="w-[50px]"></TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {subjectRows.map(row => (
-                                        <TableRow key={row.id}>
-                                            <TableCell>
-                                                <Select value={row.subjectId} onValueChange={(value) => handleSubjectChange(row.id, 'subjectId', value)}>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select subject" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {availableSubjects.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
-                                                    </SelectContent>
-                                                </Select>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Input type="number" placeholder="Min" value={row.theoryMinMarks} onChange={e => handleSubjectChange(row.id, 'theoryMinMarks', e.target.value)} />
-                                            </TableCell>
-                                            <TableCell>
-                                                <Input type="number" placeholder="Max" value={row.theoryMaxMarks} onChange={e => handleSubjectChange(row.id, 'theoryMaxMarks', e.target.value)} />
-                                            </TableCell>
-                                            <TableCell>
-                                                <Select value={row.assessmentType} onValueChange={(value) => handleSubjectChange(row.id, 'assessmentType', value)}>
-                                                    <SelectTrigger>
-                                                        <SelectValue />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="Practical">Practical</SelectItem>
-                                                        <SelectItem value="Project">Project</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Input type="number" placeholder="Min" value={row.assessmentMinMarks} onChange={e => handleSubjectChange(row.id, 'assessmentMinMarks', e.target.value)} />
-                                            </TableCell>
-                                            <TableCell>
-                                                <Input type="number" placeholder="Max" value={row.assessmentMaxMarks} onChange={e => handleSubjectChange(row.id, 'assessmentMaxMarks', e.target.value)} />
-                                            </TableCell>
-                                            <TableCell>
-                                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => handleRemoveRow(row.id)}>
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
+                                    {subjectRows.map(row => {
+                                        const filteredSubjects = allSubjects.filter(subject => {
+                                            if (!row.subjectCategoryId) return false;
+                                            return subject.category === row.subjectCategoryId;
+                                        });
+
+                                        return (
+                                            <TableRow key={row.id}>
+                                                {isSeniorClass && (
+                                                    <TableCell>
+                                                        <Select value={row.stream} onValueChange={(value) => handleSubjectChange(row.id, 'stream', value)}>
+                                                            <SelectTrigger><SelectValue placeholder="Stream"/></SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="Science">Science</SelectItem>
+                                                                <SelectItem value="Commerce">Commerce</SelectItem>
+                                                                <SelectItem value="Humanities">Humanities</SelectItem>
+                                                                <SelectItem value="Agriculture">Agriculture</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </TableCell>
+                                                )}
+                                                <TableCell>
+                                                    <Select value={row.subjectCategoryId} onValueChange={(value) => handleSubjectChange(row.id, 'subjectCategoryId', value)}>
+                                                        <SelectTrigger><SelectValue placeholder="Category"/></SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="Core">Core</SelectItem>
+                                                            <SelectItem value="Language">Language</SelectItem>
+                                                            <SelectItem value="Vocational">Vocational</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Select value={row.subjectId} onValueChange={(value) => handleSubjectChange(row.id, 'subjectId', value)} disabled={!row.subjectCategoryId}>
+                                                        <SelectTrigger><SelectValue placeholder="Subject"/></SelectTrigger>
+                                                        <SelectContent>
+                                                            {filteredSubjects.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </TableCell>
+                                                <TableCell><Input type="number" placeholder="Min" value={row.theoryMinMarks} onChange={e => handleSubjectChange(row.id, 'theoryMinMarks', e.target.value)} /></TableCell>
+                                                <TableCell><Input type="number" placeholder="Max" value={row.theoryMaxMarks} onChange={e => handleSubjectChange(row.id, 'theoryMaxMarks', e.target.value)} /></TableCell>
+                                                <TableCell>
+                                                    <Select value={row.assessmentType} onValueChange={(value) => handleSubjectChange(row.id, 'assessmentType', value)}>
+                                                        <SelectTrigger><SelectValue /></SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="Practical">Practical</SelectItem>
+                                                            <SelectItem value="Project">Project</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </TableCell>
+                                                <TableCell><Input type="number" placeholder="Min" value={row.assessmentMinMarks} onChange={e => handleSubjectChange(row.id, 'assessmentMinMarks', e.target.value)} /></TableCell>
+                                                <TableCell><Input type="number" placeholder="Max" value={row.assessmentMaxMarks} onChange={e => handleSubjectChange(row.id, 'assessmentMaxMarks', e.target.value)} /></TableCell>
+                                                <TableCell>
+                                                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => handleRemoveRow(row.id)}>
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
                                 </TableBody>
                             </Table>
                         </div>
                         <div className="flex justify-between">
-                            <Button variant="outline" onClick={handleAddRow}>
-                                <PlusCircle className="mr-2 h-4 w-4" /> Add Subject
+                            <Button variant="outline" onClick={() => handleAddRow(false)}>
+                                <PlusCircle className="mr-2 h-4 w-4" /> Add another subject
                             </Button>
                              <Button>Save Configuration</Button>
                         </div>
@@ -791,6 +827,7 @@ export default function SubjectsForm() {
         </div>
     );
 }
+
 
 
 
