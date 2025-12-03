@@ -20,6 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import { ChevronDown } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 
 type SubjectInputItem = {
@@ -557,10 +558,7 @@ const AddSubjectsToGroupForm = ({ onBack }: { onBack: () => void }) => {
 
 type SubjectConfigRow = {
     id: number;
-    subjectCategory: 'Compulsory' | 'Language' | 'Vocational' | 'CWSN' | 'Group subjects' | '';
-    groupId?: string;
     subjectId: string;
-    theorySubType: 'basic-standard' | 'none';
     theoryMinMarks: string;
     theoryMaxMarks: string;
     assessmentType: 'Practical' | 'Project';
@@ -570,88 +568,27 @@ type SubjectConfigRow = {
 
 const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, allSubjects: Subject[] }) => {
     
-    type ClassConfig = {
-        id: number;
-        classId: string;
-        subjects: SubjectConfigRow[];
-    };
+    const [selectedClassId, setSelectedClassId] = useState('');
+    const [subjectRows, setSubjectRows] = useState<SubjectConfigRow[]>([]);
 
-    const newSubjectRow: SubjectConfigRow = { id: Date.now(), subjectCategory: '' as const, groupId: '', subjectId: '', theorySubType: 'basic-standard', theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical' as const, assessmentMinMarks: '', assessmentMaxMarks: '' };
-    
-    const [classConfigs, setClassConfigs] = useState<ClassConfig[]>([
-        { id: Date.now(), classId: '', subjects: [newSubjectRow] }
-    ]);
-    
-    const handleAddClassConfig = () => {
-        setClassConfigs(prev => [
+    useEffect(() => {
+        // Reset rows when class changes
+        setSubjectRows([]);
+    }, [selectedClassId]);
+
+    const handleAddRow = () => {
+        setSubjectRows(prev => [
             ...prev,
-            { id: Date.now(), classId: '', subjects: [{...newSubjectRow, id: Date.now()}] }
+            { id: Date.now(), subjectId: '', theoryMinMarks: '', theoryMaxMarks: '', assessmentType: 'Practical', assessmentMinMarks: '', assessmentMaxMarks: '' }
         ]);
     };
-    
-    const handleRemoveClassConfig = (id: number) => {
-        setClassConfigs(prev => prev.filter(c => c.id !== id));
+
+    const handleRemoveRow = (id: number) => {
+        setSubjectRows(prev => prev.filter(row => row.id !== id));
     };
 
-    const handleClassConfigChange = (id: number, field: 'classId', value: string) => {
-        setClassConfigs(prev => prev.map(c => c.id === id ? { ...c, [field]: value, subjects: [{...newSubjectRow, id: Date.now()}] } : c));
-    };
-    
-    const handleAddSubject = (classConfigId: number) => {
-        setClassConfigs(prev => prev.map(c => {
-            if (c.id === classConfigId) {
-                return {
-                    ...c,
-                    subjects: [
-                        ...c.subjects,
-                        { ...newSubjectRow, id: Date.now() }
-                    ]
-                };
-            }
-            return c;
-        }));
-    };
-
-    const handleRemoveSubject = (classConfigId: number, subjectId: number) => {
-        setClassConfigs(prev => prev.map(c => {
-            if (c.id === classConfigId) {
-                return { ...c, subjects: c.subjects.filter(s => s.id !== subjectId) };
-            }
-            return c;
-        }));
-    };
-
-    const handleSubjectChange = (classConfigId: number, subjectId: number, field: keyof Omit<SubjectConfigRow, 'id' | 'theorySubTypes'>, value: any) => {
-        setClassConfigs(prev => prev.map(c => {
-            if (c.id === classConfigId) {
-                return {
-                    ...c,
-                    subjects: c.subjects.map(s => {
-                        if (s.id === subjectId) {
-                            if(field === 'subjectCategory') {
-                                return { ...s, subjectCategory: value, subjectId: '', groupId: '' }; // Reset subject and group when category changes
-                            }
-                             if(field === 'groupId') {
-                                return { ...s, groupId: value, subjectId: '' }; // Reset subject when group changes
-                            }
-                            return { ...s, [field]: value };
-                        }
-                        return s;
-                    })
-                };
-            }
-            return c;
-        }));
-    };
-    
-    
-    const getSubjectName = (subject: SubjectConfigRow, classId: string) => {
-        if (!subject.subjectId || !subject.subjectCategory) return 'New Subject';
-        
-        const selectedClass = mockClasses.find(c => c.id === classId);
-        const classSubjects = selectedClass?.subjects.length ? selectedClass.subjects : allSubjects;
-
-        return classSubjects.find(s => s.id === subject.subjectId)?.name || 'New Subject';
+    const handleSubjectChange = (id: number, field: keyof Omit<SubjectConfigRow, 'id'>, value: any) => {
+        setSubjectRows(prev => prev.map(row => (row.id === id ? { ...row, [field]: value } : row)));
     };
 
     const sortedClasses = [...mockClasses].sort((a, b) => {
@@ -659,260 +596,11 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
         const bNum = parseInt(b.name.split(' ')[1]);
         return aNum - bNum;
     });
-
-    const ClassConfigCard = ({ config }: { config: ClassConfig }) => {
-        const selectedClass = mockClasses.find(c => c.id === config.classId);
-        const selectedClassName = selectedClass?.name;
-        
-        const headerTitle = selectedClassName || "New Class Configuration";
-
-        const categorizedClassSubjects = useMemo(() => {
-            if (!config.classId) return { Core: [], Language: [], Vocational: [] };
-            const selectedClass = mockClasses.find(c => c.id === config.classId);
-            const classSubjects = selectedClass?.subjects.length ? selectedClass.subjects : allSubjects;
-            
-            return {
-              Core: classSubjects.filter((s) => s.category === 'Core'),
-              Language: classSubjects.filter((s) => s.category === 'Language'),
-              Vocational: classSubjects.filter((s) => s.category === 'Vocational'),
-            };
-        }, [config.classId]);
-
-        const getSubjectCategoryOptions = () => {
-            if (!selectedClass) return [];
-            const className = selectedClass.name;
-            if (className === 'Class 9' || className === 'Class 10') {
-                return [
-                    { value: 'Compulsory', label: 'Compulsory' },
-                    { value: 'Language', label: 'Language' },
-                    { value: 'Vocational', label: 'Vocational' },
-                    { value: 'CWSN', label: 'CWSN' },
-                ];
-            }
-            if (className === 'Class 11' || className === 'Class 12') {
-                 return [
-                    { value: 'Group subjects', label: 'Group subjects' },
-                    { value: 'Language', label: 'Language' },
-                    { value: 'Vocational', label: 'Vocational' },
-                    { value: 'CWSN', label: 'CWSN' },
-                ];
-            }
-            return [];
-        };
-
-        const subjectCategoryOptions = getSubjectCategoryOptions();
-        
-        const groupOptions = [
-            { id: 'science', name: 'Science' },
-            { id: 'commerce', name: 'Commerce' },
-            { id: 'arts', name: 'Arts' },
-        ];
-
-
-        return (
-            <Accordion type="single" collapsible defaultValue="item-1" className="w-full">
-                <AccordionItem value="item-1" className="border-none">
-                    <Card>
-                         <div className="flex items-center justify-between p-4 w-full">
-                           <AccordionTrigger className="w-full p-0 hover:no-underline flex-1" asChild>
-                                <div className="flex items-center justify-between w-full cursor-pointer flex-1">
-                                    <div className="flex-1 text-lg font-semibold text-left">
-                                       {headerTitle}
-                                    </div>
-                                     <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
-                                </div>
-                            </AccordionTrigger>
-                           <div className="flex items-center gap-2 pl-4">
-                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); handleRemoveClassConfig(config.id); }}>
-                                   <Trash2 className="h-4 w-4" />
-                               </Button>
-                           </div>
-                        </div>
-                        <AccordionContent className="p-4 pt-0">
-                             <Accordion type="multiple" className="space-y-4" defaultValue={config.subjects.map(s => `item-${s.id}`)}>
-                                {config.subjects.map((subject, index) => (
-                                    <AccordionItem key={subject.id} value={`item-${subject.id}`} className="border-none">
-                                        <Card className="bg-muted/30">
-                                            <div className="flex items-center p-4">
-                                                <AccordionTrigger className="w-full p-0 hover:no-underline flex-1">
-                                                    <div className="flex items-center justify-between w-full">
-                                                        <div className="flex-1 text-lg font-semibold text-left">
-                                                            {index + 1}. {getSubjectName(subject, config.classId)}
-                                                        </div>
-                                                    </div>
-                                                </AccordionTrigger>
-                                                {config.subjects.length > 1 && (
-                                                    <div className="flex items-center gap-2 pl-4">
-                                                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); handleRemoveSubject(config.id, subject.id); }}>
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <AccordionContent className="p-4 pt-0">
-                                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 items-end">
-                                                    <div className="space-y-2 col-span-1">
-                                                        <Label>Class</Label>
-                                                        <Select value={config.classId} onValueChange={(value) => handleClassConfigChange(config.id, 'classId', value)}>
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Select a class" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {sortedClasses.map(cls => (
-                                                                    <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <Label>Subject Category</Label>
-                                                        <Select 
-                                                            value={subject.subjectCategory} 
-                                                            onValueChange={(value: 'Compulsory' | 'Language' | 'Vocational' | 'CWSN' | 'Group subjects') => handleSubjectChange(config.id, subject.id, 'subjectCategory', value)}
-                                                            disabled={!config.classId}
-                                                        >
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Select category" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {subjectCategoryOptions.map(option => (
-                                                                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </div>
-                                                    {subject.subjectCategory === 'Group subjects' && (
-                                                        <div className="space-y-2">
-                                                            <Label>Group</Label>
-                                                            <Select 
-                                                                value={subject.groupId}
-                                                                onValueChange={(value) => handleSubjectChange(config.id, subject.id, 'groupId', value)}
-                                                            >
-                                                                <SelectTrigger>
-                                                                    <SelectValue placeholder="Select group" />
-                                                                </SelectTrigger>
-                                                                <SelectContent>
-                                                                    {groupOptions.map(option => (
-                                                                        <SelectItem key={option.id} value={option.id}>{option.name}</SelectItem>
-                                                                    ))}
-                                                                </SelectContent>
-                                                            </Select>
-                                                        </div>
-                                                    )}
-                                                    <div className="space-y-2">
-                                                        <Label>Subject Name</Label>
-                                                        <Select 
-                                                            value={subject.subjectId} 
-                                                            onValueChange={(value) => handleSubjectChange(config.id, subject.id, 'subjectId', value)}
-                                                            disabled={!subject.subjectCategory || (subject.subjectCategory === 'Group subjects' && !subject.groupId)}
-                                                        >
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Select subject" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {subject.subjectCategory && categorizedClassSubjects[subject.subjectCategory === 'Compulsory' || subject.subjectCategory === 'Group subjects' ? 'Core' : subject.subjectCategory].map(s => (
-                                                                    <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </div>
-                                                </div>
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t pt-6">
-                                                    <div className="space-y-4">
-                                                        <h4 className="font-medium text-base">Theory</h4>
-                                                        <div className="space-y-2">
-                                                            <Label>Sub-type</Label>
-                                                            <RadioGroup
-                                                                value={subject.theorySubType}
-                                                                onValueChange={(value: 'basic-standard' | 'none') => handleSubjectChange(config.id, subject.id, 'theorySubType', value)}
-                                                                className="flex gap-4 h-10 items-center"
-                                                            >
-                                                                <div className="flex items-center space-x-2">
-                                                                    <RadioGroupItem value="basic-standard" id={`basic-standard-${subject.id}`} />
-                                                                    <Label htmlFor={`basic-standard-${subject.id}`} className="font-normal">Basic - Standard</Label>
-                                                                </div>
-                                                                <div className="flex items-center space-x-2">
-                                                                    <RadioGroupItem value="none" id={`none-${subject.id}`} />
-                                                                    <Label htmlFor={`none-${subject.id}`} className="font-normal">None</Label>
-                                                                </div>
-                                                            </RadioGroup>
-                                                        </div>
-                                                         <div className="space-y-2">
-                                                            <Label>Marks</Label>
-                                                            <div className="flex gap-2">
-                                                                <Input
-                                                                    type="number"
-                                                                    placeholder="Min Marks"
-                                                                    value={subject.theoryMinMarks}
-                                                                    onChange={e => handleSubjectChange(config.id, subject.id, 'theoryMinMarks', e.target.value)}
-                                                                />
-                                                                <Input
-                                                                    type="number"
-                                                                    placeholder="Max Marks"
-                                                                    value={subject.theoryMaxMarks}
-                                                                    onChange={e => handleSubjectChange(config.id, subject.id, 'theoryMaxMarks', e.target.value)}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="space-y-4">
-                                                         <h4 className="font-medium text-base">Other assessment type</h4>
-                                                         <div className="space-y-2">
-                                                            <Label>Type</Label>
-                                                            <RadioGroup
-                                                                value={subject.assessmentType}
-                                                                onValueChange={(value: 'Practical' | 'Project') => handleSubjectChange(config.id, subject.id, 'assessmentType', value)}
-                                                                className="flex gap-4 h-10 items-center"
-                                                            >
-                                                                <div className="flex items-center space-x-2">
-                                                                    <RadioGroupItem value="Practical" id={`prac-${subject.id}`} />
-                                                                    <Label htmlFor={`prac-${subject.id}`} className="font-normal">Practical</Label>
-                                                                </div>
-                                                                <div className="flex items-center space-x-2">
-                                                                    <RadioGroupItem value="Project" id={`proj-${subject.id}`} />
-                                                                    <Label htmlFor={`proj-${subject.id}`} className="font-normal">Project</Label>
-                                                                </div>
-                                                            </RadioGroup>
-                                                        </div>
-                                                        <div className="space-y-2">
-                                                            <Label>{subject.assessmentType} Marks</Label>
-                                                            <div className="flex gap-2">
-                                                                <Input
-                                                                    type="number"
-                                                                    placeholder="Min Marks"
-                                                                    value={subject.assessmentMinMarks}
-                                                                    onChange={e => handleSubjectChange(config.id, subject.id, 'assessmentMinMarks', e.target.value)}
-                                                                />
-                                                                <Input
-                                                                    type="number"
-                                                                    placeholder="Max Marks"
-                                                                    value={subject.assessmentMaxMarks}
-                                                                    onChange={e => handleSubjectChange(config.id, subject.id, 'assessmentMaxMarks', e.target.value)}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </AccordionContent>
-                                        </Card>
-                                    </AccordionItem>
-                                ))}
-                            </Accordion>
-
-                             <div className="flex justify-between items-center pt-4 mt-4 border-t">
-                                <Button variant="outline" onClick={() => handleAddSubject(config.id)}>
-                                    <PlusCircle className="mr-2 h-4 w-4" />
-                                    Add Another Subject
-                                </Button>
-                            </div>
-                        </AccordionContent>
-                    </Card>
-                </AccordionItem>
-            </Accordion>
-        )
-    };
-
+    
+    const availableSubjects = useMemo(() => {
+        const selectedClass = mockClasses.find(c => c.id === selectedClassId);
+        return selectedClass?.subjects || allSubjects;
+    }, [selectedClassId, allSubjects]);
 
     return (
         <Card>
@@ -928,19 +616,89 @@ const SubjectManagementCard = ({ onBack, allSubjects }: { onBack: () => void, al
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div className="space-y-4">
-                    {classConfigs.map(config => (
-                        <ClassConfigCard key={config.id} config={config} />
-                    ))}
+                <div className="space-y-2 max-w-sm">
+                    <Label>Select Class</Label>
+                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a class" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {sortedClasses.map(cls => (
+                                <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
 
-                <div className="flex justify-between items-center pt-4">
-                    <Button variant="outline" onClick={handleAddClassConfig}>
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Add another class
-                    </Button>
-                    <Button>Save All Configurations</Button>
-                </div>
+                {selectedClassId && (
+                    <div className="space-y-4 pt-4 border-t">
+                        <div className="rounded-md border">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-[25%]">Subject</TableHead>
+                                        <TableHead>Theory Min</TableHead>
+                                        <TableHead>Theory Max</TableHead>
+                                        <TableHead className="w-[20%]">Assessment</TableHead>
+                                        <TableHead>Assess. Min</TableHead>
+                                        <TableHead>Assess. Max</TableHead>
+                                        <TableHead className="w-[50px]"></TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {subjectRows.map(row => (
+                                        <TableRow key={row.id}>
+                                            <TableCell>
+                                                <Select value={row.subjectId} onValueChange={(value) => handleSubjectChange(row.id, 'subjectId', value)}>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select subject" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {availableSubjects.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                                                    </SelectContent>
+                                                </Select>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Input type="number" placeholder="Min" value={row.theoryMinMarks} onChange={e => handleSubjectChange(row.id, 'theoryMinMarks', e.target.value)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Input type="number" placeholder="Max" value={row.theoryMaxMarks} onChange={e => handleSubjectChange(row.id, 'theoryMaxMarks', e.target.value)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Select value={row.assessmentType} onValueChange={(value) => handleSubjectChange(row.id, 'assessmentType', value)}>
+                                                    <SelectTrigger>
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="Practical">Practical</SelectItem>
+                                                        <SelectItem value="Project">Project</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Input type="number" placeholder="Min" value={row.assessmentMinMarks} onChange={e => handleSubjectChange(row.id, 'assessmentMinMarks', e.target.value)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Input type="number" placeholder="Max" value={row.assessmentMaxMarks} onChange={e => handleSubjectChange(row.id, 'assessmentMaxMarks', e.target.value)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => handleRemoveRow(row.id)}>
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                        <div className="flex justify-between">
+                            <Button variant="outline" onClick={handleAddRow}>
+                                <PlusCircle className="mr-2 h-4 w-4" /> Add Subject
+                            </Button>
+                             <Button>Save Configuration</Button>
+                        </div>
+                    </div>
+                )}
             </CardContent>
         </Card>
     );
@@ -1033,6 +791,7 @@ export default function SubjectsForm() {
         </div>
     );
 }
+
 
 
 
